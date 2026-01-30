@@ -5,6 +5,9 @@ import {
   createMemoryHistory,
   Outlet,
 } from '@tanstack/react-router'
+import { LinkLeft, LinkRight } from '../components/panel-links'
+import { usePanelNav } from '../lib/panel-context'
+import { Button } from '../components/ui/button'
 
 const leftRoot = createRootRoute({
   component: () => <Outlet />,
@@ -14,8 +17,19 @@ const dashRoute = createRoute({
   getParentRoute: () => leftRoot,
   path: '/dash',
   component: function DashLayout() {
+    const { navigateMain } = usePanelNav()
     return (
       <div className="space-y-4">
+        <div className="flex flex-wrap gap-2">
+          <LinkLeft to="/dash/sub1">Sub 1</LinkLeft>
+          <LinkLeft to="/dash/sub2">Sub 2</LinkLeft>
+          <LinkLeft to="/dash">Dash Index</LinkLeft>
+          <LinkRight to="/route1">Right → Route 1</LinkRight>
+          <LinkRight to="/route2">Right → Route 2</LinkRight>
+          <Button variant="ghost" size="sm" onClick={() => navigateMain('/home')}>
+            Exit → /home
+          </Button>
+        </div>
         <div className="border border-border rounded-lg p-3 bg-muted/30">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
             Dash Layout
