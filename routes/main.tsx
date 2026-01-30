@@ -60,7 +60,7 @@ const homeRoute = createRoute({
     if (cause === 'enter') {
       logger.log('[route:main] entered /home', 'lifecycle')
     }
-    return { label: 'Home Page', description: 'Main landing page' }
+    return { label: '[context] Home Page', description: '[context] Main landing page' }
   },
   component: function HomeView() {
     const ctx = useRouteContext({ from: homeRoute.id })

@@ -61,7 +61,7 @@ const sub1Route = createRoute({
     if (cause === 'enter') {
       logger.log('[route:left] entered /dash/sub1', 'lifecycle')
     }
-    return { label: 'Sub-section 1', tag: 'panel-left' }
+    return { label: '[context] Sub-section 1', tag: '[context] panel-left' }
   },
   component: function Sub1View() {
     const ctx = useRouteContext({ strict: false }) as { label: string; tag: string }
