@@ -324,24 +324,213 @@ URL `/?left=/dash/sub1&right=/route2` — полностью описывает 
 
 ### Q6: Альтернативный подход — один роутер без Outlet
 
-Не исследован полностью. Идея:
-- Один роутер с browser history
-- Вместо `<Outlet />` — кастомный рендеринг через `router.routesById`
-- URL: `/?left=/dash/sub1&right=/route2`
-- Root component вручную ресолвит два компонента по search params
+~~Не исследован полностью.~~ → **Развит в Path C** (см. секцию 3.3).
 
-Это по сути текущая архитектура (routeMap lookup), но вопрос — можно ли её улучшить, сохранив один роутер, но добавив типизацию через `routesById`?
+---
+
+## 3.3 Path C: Единый роутер + `<LinkLeft>` / `<LinkRight>` со StripPrefix (ВЫБРАН)
+
+> Эволюция Q6. Развивает идею единого роутера с ручным рендерингом,
+> добавляя типобезопасные компоненты навигации.
+
+### Концепция
+
+Одно дерево, один роутер, один Register. Панельные роуты живут в ветках
+`/leftPanel/...` и `/rightPanel/...`. Кастомные `<LinkLeft>` и `<LinkRight>`
+типизированы по своей ветке, но генерируют query params вместо pathname.
+
+### Дерево роутов
+
+```typescript
+// routes.ts
+const rootRoute = createRootRoute({ component: AppShell })
+
+// Обычные роуты — стандартный Outlet
+const homeRoute = createRoute({ path: '/home', ... })
+const settingsRoute = createRoute({ path: '/settings', ... })
+const billingRoute = createRoute({ path: '/settings/billing', ... })
+
+// Левая панель
+const leftPanelRoot = createRoute({ path: '/leftPanel', ... })
+const dashRoute = createRoute({ getParentRoute: () => leftPanelRoot, path: '/dash', ... })
+const sub1Route = createRoute({ getParentRoute: () => dashRoute, path: '/sub1', ... })
+const sub2Route = createRoute({ getParentRoute: () => dashRoute, path: '/sub2', ... })
+
+// Правая панель
+const rightPanelRoot = createRoute({ path: '/rightPanel', ... })
+const route1 = createRoute({ getParentRoute: () => rightPanelRoot, path: '/route1', ... })
+const route2 = createRoute({ getParentRoute: () => rightPanelRoot, path: '/route2', ... })
+
+export const routeTree = rootRoute.addChildren([
+  homeRoute,
+  settingsRoute.addChildren([billingRoute]),
+  leftPanelRoot.addChildren([dashRoute.addChildren([sub1Route, sub2Route])]),
+  rightPanelRoot.addChildren([route1, route2]),
+])
+```
+
+### Типизация: StripPrefix
+
+```typescript
+import { RoutePaths } from '@tanstack/react-router'
+
+// Все пути из дерева
+type AllPaths = RoutePaths<typeof routeTree>
+// → '/' | '/home' | '/settings' | '/settings/billing'
+//   | '/leftPanel/dash' | '/leftPanel/dash/sub1' | '/leftPanel/dash/sub2'
+//   | '/rightPanel/route1' | '/rightPanel/route2'
+
+// Утилита для удаления префикса
+type StripPrefix<T extends string, P extends string> =
+  T extends `${P}${infer Rest}` ? Rest : never
+
+// Пути панелей без префиксов
+type LeftPanelPaths = StripPrefix<
+  Extract<AllPaths, `/leftPanel${string}`>,
+  '/leftPanel'
+>
+// → '/dash' | '/dash/sub1' | '/dash/sub2'
+
+type RightPanelPaths = StripPrefix<
+  Extract<AllPaths, `/rightPanel${string}`>,
+  '/rightPanel'
+>
+// → '/route1' | '/route2'
+```
+
+### Компоненты `<LinkLeft>` / `<LinkRight>`
+
+```tsx
+import { useNavigate } from '@tanstack/react-router'
+
+interface PanelLinkProps<TPaths extends string> {
+  to: TPaths
+  children: React.ReactNode
+  className?: string
+}
+
+function LinkLeft({ to, children, ...props }: PanelLinkProps<LeftPanelPaths>) {
+  const navigate = useNavigate()
+  return (
+    <a
+      href={`?left=${encodeURIComponent(to)}`}
+      onClick={(e) => {
+        e.preventDefault()
+        navigate({
+          search: (prev) => ({ ...prev, left: to }),
+        })
+      }}
+      {...props}
+    >
+      {children}
+    </a>
+  )
+}
+
+function LinkRight({ to, children, ...props }: PanelLinkProps<RightPanelPaths>) {
+  const navigate = useNavigate()
+  return (
+    <a
+      href={`?right=${encodeURIComponent(to)}`}
+      onClick={(e) => {
+        e.preventDefault()
+        navigate({
+          search: (prev) => ({ ...prev, right: to }),
+        })
+      }}
+      {...props}
+    >
+      {children}
+    </a>
+  )
+}
+```
+
+**DX:**
+```tsx
+<LinkLeft to="/dash/sub1">Open Sub1</LinkLeft>     // ✅ autocomplete
+<LinkLeft to="/nonexistent">Nope</LinkLeft>         // ❌ type error
+<LinkRight to="/route1">Open Route1</LinkRight>     // ✅ autocomplete
+<Link to="/home">Go Home</Link>                     // ✅ standard TanStack Link
+```
+
+### Рендеринг панелей
+
+```tsx
+function PanelShell() {
+  const router = useRouter()
+  const search = useSearch({ from: rootRoute.id })
+
+  // Добавляем префикс обратно для lookup
+  const leftPath = `/leftPanel${search.left}` as keyof typeof router.routesByPath
+  const rightPath = `/rightPanel${search.right}` as keyof typeof router.routesByPath
+
+  const LeftComponent = router.routesByPath[leftPath]?.options.component
+  const RightComponent = router.routesByPath[rightPath]?.options.component
+
+  return (
+    <div className="flex h-screen">
+      <div className="flex-1">
+        {LeftComponent ? <LeftComponent /> : <NotFound />}
+      </div>
+      <div className="flex-1">
+        {RightComponent ? <RightComponent /> : <NotFound />}
+      </div>
+    </div>
+  )
+}
+```
+
+### URL-формат
+
+```
+Обычный режим:    /settings/billing
+Панельный режим:  /?left=/dash/sub1&right=/route2
+```
+
+Пользователь видит чистые пути без `/leftPanel` префикса в URL.
+
+### Плюсы
+
+- **Один роутер** — нет синхронизации, нет race conditions
+- **Полная типизация** — `<LinkLeft to="...">` автокомплитит из реального route tree
+- **`router.routesByPath`** — runtime lookup без ручного routeMap
+- **Масштабируемость** — добавить роут = добавить `createRoute` в ветку
+- **Кросс-навигация** — `<LinkRight>` работает из любого компонента
+- **Deep linking** — URL полностью описывает состояние
+- **Browser Back/Forward** — один роутер, одна history, всё работает
+
+### Минусы / Открытые вопросы
+
+- `<LinkLeft>` / `<LinkRight>` — кастомные компоненты, не стандартный `<Link>`
+  (нет prefetch, нет active state detection из коробки)
+- Внутри панелей `useParams()` / `useSearch()` **не работают** —
+  панели рендерятся вручную, а не через matched route chain.
+  Нужен кастомный контекст или пробрасывание через props.
+- `router.routesByPath` lookup кастит строку — потенциально fragile
+- Нужно проверить: компоненты панельных роутов вызываются вне
+  стандартного match context — будут ли работать хуки TanStack Router
+  внутри них? (useLoaderData, useRouteContext, etc.)
+
+### Критический эксперимент
+
+Перед полной реализацией нужен POC, проверяющий:
+
+1. `RoutePaths<typeof routeTree>` действительно выводит union с `/leftPanel/...`
+2. `StripPrefix` корректно работает в IDE (автокомплит)
+3. `router.routesByPath['/leftPanel/dash']?.options.component` возвращает компонент
+4. Этот компонент рендерится без ошибок вне match context
 
 ---
 
 ## 5. Next Steps
 
-- [ ] **Prototype Path B** — минимальный POC с тремя роутерами и PanelSync
-- [ ] **Validate Q2** — проверить flash of content при инициализации
-- [ ] **Validate Q3** — проверить browser Back/Forward behavior
-- [ ] **Explore Q1** — типизация кросс-панельной навигации через дженерики
-- [ ] **Explore Q6** — single router + manual rendering с лучшей типизацией
-- [ ] **Benchmark** — замерить overhead от трёх роутеров vs. одного
+- [ ] **POC Path C** — минимальный прототип с единым деревом и `<LinkLeft>`
+- [ ] **Validate types** — проверить что `RoutePaths` + `StripPrefix` дают автокомплит
+- [ ] **Validate rendering** — рендерится ли компонент из `routesByPath` вне match context
+- [ ] **Validate hooks** — работают ли useParams/useSearch/useLoaderData в панельных компонентах
+- [ ] **Design panel context** — как пробросить params/search в панельные компоненты
+- [ ] **Browser Back/Forward** — один роутер → должно работать, но проверить
 
 ---
 
@@ -351,5 +540,7 @@ URL `/?left=/dash/sub1&right=/route2` — полностью описывает 
 |------|----------|-----------|
 | 2025-01-30 | Режимы взаимоисключающие (панели XOR основной) | Упрощает архитектуру, не нужно рендерить оба режима |
 | 2025-01-30 | Переключение по наличию query params | `?left=` или `?right=` → панели, иначе → обычный роут |
-| 2025-01-30 | Path A (единое дерево) отклонён | Outlet не поддерживает два активных branch-а |
-| 2025-01-30 | Path B (три роутера + memory + sync) — кандидат | Даёт типобезопасность, масштабируемость, чистое разделение |
+| 2025-01-30 | Path A (единое дерево + Outlet) отклонён | Outlet не поддерживает два активных branch-а |
+| 2025-01-30 | Path B (три роутера + memory + sync) исследован | Работает, но кросс-навигация только через хелпер без типизации |
+| 2025-01-30 | Path C (единый роутер + LinkLeft/LinkRight + StripPrefix) выбран | Один роутер, полная типизация, кросс-навигация, без синхронизации |
+| 2025-01-30 | StripPrefix для DX | `<LinkLeft to="/dash/sub1">` вместо `<LinkLeft to="/leftPanel/dash/sub1">` |
