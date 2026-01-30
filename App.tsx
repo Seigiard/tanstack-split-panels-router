@@ -1,9 +1,7 @@
-import React from 'react';
-import { RouterProvider } from '@tanstack/react-router';
-import { router } from './router';
+import React from 'react'
 
 const App: React.FC = () => {
-  return <RouterProvider router={router} />;
-};
+  return <div className="p-8 text-center text-muted-foreground">POC shell — routing not wired yet</div>
+}
 
-export default App;
+export default App
