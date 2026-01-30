@@ -1,0 +1,80 @@
+import {
+  createRootRoute,
+  createRoute,
+  createRouter,
+  Outlet,
+} from '@tanstack/react-router'
+
+export const rootRoute = createRootRoute({
+  component: function AppShell() {
+    return <Outlet />
+  },
+  validateSearch: (search: Record<string, unknown>) => ({
+    left: typeof search.left === 'string' ? search.left : undefined,
+    right: typeof search.right === 'string' ? search.right : undefined,
+  }),
+})
+
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/',
+  component: function IndexPage() {
+    return (
+      <div className="p-8 text-center">
+        <h1 className="text-2xl font-bold mb-4">Split-State Router POC</h1>
+        <p className="text-muted-foreground">Normal mode — no panels</p>
+      </div>
+    )
+  },
+})
+
+const homeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/home',
+  component: function HomeView() {
+    return (
+      <div className="p-8">
+        <h1 className="text-2xl font-bold">Home</h1>
+        <p className="text-muted-foreground mt-2">Normal route — /home</p>
+      </div>
+    )
+  },
+})
+
+const settingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/settings',
+  component: function SettingsLayout() {
+    return (
+      <div className="p-8">
+        <h2 className="text-xl font-bold mb-4">Settings</h2>
+        <Outlet />
+      </div>
+    )
+  },
+})
+
+const billingRoute = createRoute({
+  getParentRoute: () => settingsRoute,
+  path: '/billing',
+  component: function BillingView() {
+    return <p className="text-muted-foreground">Billing settings content</p>
+  },
+})
+
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  homeRoute,
+  settingsRoute.addChildren([billingRoute]),
+])
+
+export const mainRouter = createRouter({
+  routeTree,
+  defaultPreload: 'intent',
+})
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof mainRouter
+  }
+}
