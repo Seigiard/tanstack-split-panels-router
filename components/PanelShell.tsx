@@ -7,6 +7,7 @@ import { createBottomRouter } from '../routes/bottom-panel'
 import { PanelContext, type PanelNavigators } from '../lib/panel-context'
 import { Separator } from './ui/separator'
 import { Button } from './ui/button'
+import { logger } from '../lib/logger'
 
 export function PanelShell() {
   const search = useSearch({ from: rootRoute.id })
@@ -40,6 +41,7 @@ export function PanelShell() {
 
   const navigators: PanelNavigators = useMemo(() => ({
     navigateLeft: (to) => {
+      logger.log('[left] → ' + to, 'navigation')
       panelNavigate(leftRouter, to)
       navigate({
         to: '/',
@@ -47,6 +49,7 @@ export function PanelShell() {
       })
     },
     navigateRight: (to) => {
+      logger.log('[right] → ' + to, 'navigation')
       panelNavigate(rightRouter, to)
       navigate({
         to: '/',
@@ -54,6 +57,7 @@ export function PanelShell() {
       })
     },
     navigateBottom: (to) => {
+      logger.log('[bottom] → ' + to, 'navigation')
       if (!bottomRouterRef.current) {
         bottomRouterRef.current = createBottomRouter(to)
       } else {
@@ -65,6 +69,7 @@ export function PanelShell() {
       })
     },
     closeBottom: () => {
+      logger.log('[bottom] closed', 'navigation')
       bottomRouterRef.current = null
       navigate({
         to: '/',
@@ -72,6 +77,7 @@ export function PanelShell() {
       })
     },
     navigateMain: (to) => {
+      logger.log('[main] → ' + to, 'navigation')
       navigate({ to: to as '/', search: { left: undefined, right: undefined, bottom: undefined } })
     },
   }), [leftRouter, rightRouter, navigate, search.left, search.right, search.bottom])
