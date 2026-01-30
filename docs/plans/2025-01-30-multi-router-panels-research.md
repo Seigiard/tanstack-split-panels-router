@@ -328,7 +328,7 @@ URL `/?left=/dash/sub1&right=/route2` — полностью описывает 
 
 ---
 
-## 3.3 Path C: Единый роутер + `<LinkLeft>` / `<LinkRight>` со StripPrefix (ВЫБРАН)
+## 3.3 Path C: Единый роутер + `<LinkLeft>` / `<LinkRight>` со StripPrefix (ОТКЛОНЁН)
 
 > Эволюция Q6. Развивает идею единого роутера с ручным рендерингом,
 > добавляя типобезопасные компоненты навигации.
@@ -374,17 +374,11 @@ export const routeTree = rootRoute.addChildren([
 ```typescript
 import { RoutePaths } from '@tanstack/react-router'
 
-// Все пути из дерева
 type AllPaths = RoutePaths<typeof routeTree>
-// → '/' | '/home' | '/settings' | '/settings/billing'
-//   | '/leftPanel/dash' | '/leftPanel/dash/sub1' | '/leftPanel/dash/sub2'
-//   | '/rightPanel/route1' | '/rightPanel/route2'
 
-// Утилита для удаления префикса
 type StripPrefix<T extends string, P extends string> =
   T extends `${P}${infer Rest}` ? Rest : never
 
-// Пути панелей без префиксов
 type LeftPanelPaths = StripPrefix<
   Extract<AllPaths, `/leftPanel${string}`>,
   '/leftPanel'
@@ -398,62 +392,6 @@ type RightPanelPaths = StripPrefix<
 // → '/route1' | '/route2'
 ```
 
-### Компоненты `<LinkLeft>` / `<LinkRight>`
-
-```tsx
-import { useNavigate } from '@tanstack/react-router'
-
-interface PanelLinkProps<TPaths extends string> {
-  to: TPaths
-  children: React.ReactNode
-  className?: string
-}
-
-function LinkLeft({ to, children, ...props }: PanelLinkProps<LeftPanelPaths>) {
-  const navigate = useNavigate()
-  return (
-    <a
-      href={`?left=${encodeURIComponent(to)}`}
-      onClick={(e) => {
-        e.preventDefault()
-        navigate({
-          search: (prev) => ({ ...prev, left: to }),
-        })
-      }}
-      {...props}
-    >
-      {children}
-    </a>
-  )
-}
-
-function LinkRight({ to, children, ...props }: PanelLinkProps<RightPanelPaths>) {
-  const navigate = useNavigate()
-  return (
-    <a
-      href={`?right=${encodeURIComponent(to)}`}
-      onClick={(e) => {
-        e.preventDefault()
-        navigate({
-          search: (prev) => ({ ...prev, right: to }),
-        })
-      }}
-      {...props}
-    >
-      {children}
-    </a>
-  )
-}
-```
-
-**DX:**
-```tsx
-<LinkLeft to="/dash/sub1">Open Sub1</LinkLeft>     // ✅ autocomplete
-<LinkLeft to="/nonexistent">Nope</LinkLeft>         // ❌ type error
-<LinkRight to="/route1">Open Route1</LinkRight>     // ✅ autocomplete
-<Link to="/home">Go Home</Link>                     // ✅ standard TanStack Link
-```
-
 ### Рендеринг панелей
 
 ```tsx
@@ -461,7 +399,6 @@ function PanelShell() {
   const router = useRouter()
   const search = useSearch({ from: rootRoute.id })
 
-  // Добавляем префикс обратно для lookup
   const leftPath = `/leftPanel${search.left}` as keyof typeof router.routesByPath
   const rightPath = `/rightPanel${search.right}` as keyof typeof router.routesByPath
 
@@ -481,6 +418,242 @@ function PanelShell() {
 }
 ```
 
+### Почему отклонён: `<Outlet>` не работает внутри панелей
+
+Панельные компоненты рендерятся вручную через `router.routesByPath` — они
+**не находятся в match chain**. У них нет `matchId` в React Context.
+
+Это значит:
+- `<Outlet>` внутри панельного layout-а вернёт `null`
+- Вложенные роуты (`/dash` → `/dash/sub1`) не рендерятся через Outlet
+- `useParams()`, `useSearch()`, `useLoaderData()` не работают
+- Панели становятся плоскими — каждый путь = отдельный компонент без layout nesting
+
+**Это убивает масштабируемость** (goal #2) — для любого нетривиального приложения
+нужны вложенные layout-ы внутри панелей.
+
+### Что сохраняем из Path C
+
+Типизация через `RoutePaths` + `StripPrefix` **работает** и переносится в Path D.
+Концепция `<LinkLeft>` / `<LinkRight>` тоже переносится.
+
+---
+
+## 3.4 Path D: Гибрид B + C — Три роутера + типизированные LinkLeft/LinkRight (ТЕКУЩИЙ КАНДИДАТ)
+
+> Берёт рендеринг из Path B (отдельные RouterProvider с memory history —
+> Outlet работает) и типизацию из Path C (StripPrefix + RoutePaths).
+
+### Концепция
+
+Три роутера для **рендеринга** (каждый со своим match chain и Outlet),
+но типизация `<LinkLeft>` / `<LinkRight>` строится из реальных route tree.
+Кросс-панельная навигация через shared `PanelContext`.
+
+### Архитектура
+
+```
+┌───────────────────────────────────────────────────────┐
+│  MainRouter (browser history)                          │
+│  Дерево: /home, /settings/billing, ...                 │
+│  Владеет URL: pathname + search params                 │
+│                                                        │
+│  ?left= или ?right= → рендерит <PanelShell>           │
+│  иначе → стандартный <Outlet>                          │
+└──────────┬──────────────────────┬─────────────────────┘
+           │                      │
+     PanelSync                PanelSync
+     sync ?left=              sync ?right=
+           │                      │
+┌──────────▼─────────┐  ┌────────▼──────────────────┐
+│ LeftRouter          │  │ RightRouter                │
+│ memory history      │  │ memory history             │
+│ /dash               │  │ /route1                    │
+│   └── /dash/sub1    │  │ /route2                    │
+│   └── /dash/sub2    │  │                            │
+│                     │  │                            │
+│ ✅ Outlet работает  │  │ ✅ Outlet работает          │
+│ ✅ useParams()      │  │ ✅ useParams()              │
+│ ✅ useLoaderData()  │  │ ✅ useLoaderData()          │
+└─────────────────────┘  └────────────────────────────┘
+```
+
+### Определение роутов
+
+```typescript
+// routes/left-panel.ts
+const leftRoot = createRootRoute({ component: LeftPanelLayout })
+const dashRoute = createRoute({
+  getParentRoute: () => leftRoot,
+  path: '/dash',
+  component: DashLayout,  // содержит <Outlet /> — РАБОТАЕТ
+})
+const sub1Route = createRoute({
+  getParentRoute: () => dashRoute,
+  path: '/sub1',
+  component: Sub1View,
+})
+const sub2Route = createRoute({
+  getParentRoute: () => dashRoute,
+  path: '/sub2',
+  component: Sub2View,
+})
+
+export const leftPanelTree = leftRoot.addChildren([
+  dashRoute.addChildren([sub1Route, sub2Route]),
+])
+
+export const leftRouter = createRouter({
+  routeTree: leftPanelTree,
+  history: createMemoryHistory({ initialEntries: ['/dash'] }),
+})
+
+// routes/right-panel.ts — аналогично
+export const rightRouter = createRouter({
+  routeTree: rightPanelTree,
+  history: createMemoryHistory({ initialEntries: ['/route1'] }),
+})
+```
+
+### Типизация: RoutePaths от panel trees
+
+```typescript
+import { RoutePaths } from '@tanstack/react-router'
+
+// Типы путей извлекаются из деревьев панельных роутеров
+type LeftPanelPaths = RoutePaths<typeof leftPanelTree>
+// → '/' | '/dash' | '/dash/sub1' | '/dash/sub2'
+
+type RightPanelPaths = RoutePaths<typeof rightPanelTree>
+// → '/' | '/route1' | '/route2'
+```
+
+> **Примечание:** StripPrefix здесь НЕ НУЖЕН — панельные деревья
+> уже не содержат `/leftPanel` префикс. Пути чистые из коробки.
+> StripPrefix понадобился бы только при едином дереве (Path C).
+
+### `<LinkLeft>` / `<LinkRight>` через PanelContext
+
+```tsx
+// lib/panel-context.ts
+interface PanelNavigators {
+  navigateLeft: (to: LeftPanelPaths) => void
+  navigateRight: (to: RightPanelPaths) => void
+  navigateMain: (to: string) => void
+}
+
+const PanelContext = createContext<PanelNavigators | null>(null)
+
+function usePanelNav() {
+  const ctx = useContext(PanelContext)
+  if (!ctx) throw new Error('usePanelNav must be used within PanelShell')
+  return ctx
+}
+```
+
+```tsx
+// components/panel-links.tsx
+interface PanelLinkProps<TPaths extends string> {
+  to: TPaths
+  children: React.ReactNode
+  className?: string
+}
+
+function LinkLeft({ to, children, ...props }: PanelLinkProps<LeftPanelPaths>) {
+  const { navigateLeft } = usePanelNav()
+  return (
+    <a
+      href={`/?left=${encodeURIComponent(to)}`}
+      onClick={(e) => {
+        e.preventDefault()
+        navigateLeft(to)
+      }}
+      {...props}
+    >
+      {children}
+    </a>
+  )
+}
+
+function LinkRight({ to, children, ...props }: PanelLinkProps<RightPanelPaths>) {
+  const { navigateRight } = usePanelNav()
+  return (
+    <a
+      href={`/?right=${encodeURIComponent(to)}`}
+      onClick={(e) => {
+        e.preventDefault()
+        navigateRight(to)
+      }}
+      {...props}
+    >
+      {children}
+    </a>
+  )
+}
+```
+
+**DX:**
+```tsx
+// Внутри левой панели — навигация своей панели
+<LinkLeft to="/dash/sub1">Sub1</LinkLeft>         // ✅ autocomplete от leftPanelTree
+
+// Внутри левой панели — навигация ПРАВОЙ панели
+<LinkRight to="/route1">Open in right</LinkRight> // ✅ autocomplete от rightPanelTree
+
+// Ошибки типов:
+<LinkLeft to="/nonexistent">Nope</LinkLeft>        // ❌ type error
+<LinkRight to="/dash/sub1">Nope</LinkRight>        // ❌ type error — это левый путь
+
+// Обычная навигация (выход из панельного режима):
+<Link to="/home">Exit panels</Link>               // ✅ standard TanStack Link
+```
+
+### PanelShell с PanelContext
+
+```tsx
+function PanelShell() {
+  const search = useSearch({ from: rootRoute.id })
+
+  // Инициализация memory history из URL
+  useEffect(() => {
+    if (search.left) leftRouter.navigate({ to: search.left })
+    if (search.right) rightRouter.navigate({ to: search.right })
+  }, [])
+
+  const navigators: PanelNavigators = useMemo(() => ({
+    navigateLeft: (to) => {
+      leftRouter.navigate({ to })
+      // sync to URL
+      mainRouter.navigate({
+        search: (prev) => ({ ...prev, left: to }),
+      })
+    },
+    navigateRight: (to) => {
+      rightRouter.navigate({ to })
+      mainRouter.navigate({
+        search: (prev) => ({ ...prev, right: to }),
+      })
+    },
+    navigateMain: (to) => {
+      mainRouter.navigate({ to })
+    },
+  }), [])
+
+  return (
+    <PanelContext.Provider value={navigators}>
+      <div className="flex h-screen">
+        <div className="flex-1">
+          <RouterProvider router={leftRouter} />
+        </div>
+        <div className="flex-1">
+          <RouterProvider router={rightRouter} />
+        </div>
+      </div>
+    </PanelContext.Provider>
+  )
+}
+```
+
 ### URL-формат
 
 ```
@@ -488,49 +661,57 @@ function PanelShell() {
 Панельный режим:  /?left=/dash/sub1&right=/route2
 ```
 
-Пользователь видит чистые пути без `/leftPanel` префикса в URL.
+### Что работает (vs Path C)
 
-### Плюсы
-
-- **Один роутер** — нет синхронизации, нет race conditions
-- **Полная типизация** — `<LinkLeft to="...">` автокомплитит из реального route tree
-- **`router.routesByPath`** — runtime lookup без ручного routeMap
-- **Масштабируемость** — добавить роут = добавить `createRoute` в ветку
-- **Кросс-навигация** — `<LinkRight>` работает из любого компонента
-- **Deep linking** — URL полностью описывает состояние
-- **Browser Back/Forward** — один роутер, одна history, всё работает
+| Feature | Path C (single router) | Path D (hybrid) |
+|---------|:---:|:---:|
+| Типизация `<LinkLeft to="...">` | ✅ | ✅ |
+| Автокомплит путей | ✅ | ✅ |
+| Кросс-панельная навигация | ✅ `<LinkRight>` | ✅ `<LinkRight>` через PanelContext |
+| `<Outlet>` внутри панелей | ❌ **не работает** | ✅ работает |
+| `useParams()` в панелях | ❌ нет match context | ✅ есть match context |
+| `useLoaderData()` в панелях | ❌ нет match context | ✅ есть match context |
+| Error boundaries в панелях | ❌ ручной | ✅ из коробки |
+| Один роутер | ✅ | ❌ три роутера |
+| Без синхронизации | ✅ | ❌ PanelSync нужен |
+| Browser Back/Forward | ✅ одна history | ⚠️ нужна проверка |
 
 ### Минусы / Открытые вопросы
 
-- `<LinkLeft>` / `<LinkRight>` — кастомные компоненты, не стандартный `<Link>`
-  (нет prefetch, нет active state detection из коробки)
-- Внутри панелей `useParams()` / `useSearch()` **не работают** —
-  панели рендерятся вручную, а не через matched route chain.
-  Нужен кастомный контекст или пробрасывание через props.
-- `router.routesByPath` lookup кастит строку — потенциально fragile
-- Нужно проверить: компоненты панельных роутов вызываются вне
-  стандартного match context — будут ли работать хуки TanStack Router
-  внутри них? (useLoaderData, useRouteContext, etc.)
+- **PanelContext должен быть доступен внутри панельных RouterProvider** —
+  нужно проверить: `PanelContext.Provider` оборачивает `RouterProvider`,
+  значит `usePanelNav()` внутри панельных компонентов должен работать.
+  Но React Context проходит через `RouterProvider`?
+  Ответ: **ДА** — `RouterProvider` не создаёт boundary для внешних контекстов.
 
-### Критический эксперимент
+- **Type Register**: глобальный `Register` может быть только один.
+  Внутри левой панели `useParams()` типизирован по `leftRouter`,
+  внутри правой — по `rightRouter`. Глобальный `useParams()` вне
+  панелей типизирован по `mainRouter`. Каждый RouterProvider задаёт свой контекст.
+  **Но** `Register` — compile-time, один на проект. Нужно использовать
+  `leftRouter.useParams()` вместо глобального импорта?
+  → **Требует проверки в POC.**
 
-Перед полной реализацией нужен POC, проверяющий:
+- **PanelSync**: `navigateLeft` и `navigateRight` вызывают навигацию
+  в двух роутерах (panel + main). Нужно убедиться, что нет race condition
+  при быстрых последовательных кликах.
 
-1. `RoutePaths<typeof routeTree>` действительно выводит union с `/leftPanel/...`
-2. `StripPrefix` корректно работает в IDE (автокомплит)
-3. `router.routesByPath['/leftPanel/dash']?.options.component` возвращает компонент
-4. Этот компонент рендерится без ошибок вне match context
+- **Инициализация**: memory history создаётся с `initialEntries`,
+  но URL может содержать другой путь. `useEffect` синхронизирует,
+  но возможен flash of wrong content на первый рендер.
+  → Решение: создавать memory history из URL params (lazy init).
 
 ---
 
 ## 5. Next Steps
 
-- [ ] **POC Path C** — минимальный прототип с единым деревом и `<LinkLeft>`
-- [ ] **Validate types** — проверить что `RoutePaths` + `StripPrefix` дают автокомплит
-- [ ] **Validate rendering** — рендерится ли компонент из `routesByPath` вне match context
-- [ ] **Validate hooks** — работают ли useParams/useSearch/useLoaderData в панельных компонентах
-- [ ] **Design panel context** — как пробросить params/search в панельные компоненты
-- [ ] **Browser Back/Forward** — один роутер → должно работать, но проверить
+- [ ] **POC Path D** — три роутера + PanelContext + типизированные LinkLeft/LinkRight
+- [ ] **Validate Outlet** — `<Outlet>` внутри панельных layout-ов работает
+- [ ] **Validate PanelContext** — `usePanelNav()` доступен внутри RouterProvider
+- [ ] **Validate types** — `RoutePaths<typeof leftPanelTree>` даёт автокомплит
+- [ ] **Validate Register** — как работает type registration с тремя роутерами
+- [ ] **Validate init** — flash of content при инициализации memory history
+- [ ] **Validate Back/Forward** — browser history при панельной навигации
 
 ---
 
@@ -542,5 +723,7 @@ function PanelShell() {
 | 2025-01-30 | Переключение по наличию query params | `?left=` или `?right=` → панели, иначе → обычный роут |
 | 2025-01-30 | Path A (единое дерево + Outlet) отклонён | Outlet не поддерживает два активных branch-а |
 | 2025-01-30 | Path B (три роутера + memory + sync) исследован | Работает, но кросс-навигация только через хелпер без типизации |
-| 2025-01-30 | Path C (единый роутер + LinkLeft/LinkRight + StripPrefix) выбран | Один роутер, полная типизация, кросс-навигация, без синхронизации |
-| 2025-01-30 | StripPrefix для DX | `<LinkLeft to="/dash/sub1">` вместо `<LinkLeft to="/leftPanel/dash/sub1">` |
+| 2025-01-30 | Path C (единый роутер + StripPrefix) отклонён | Outlet не работает внутри панелей — убивает вложенность layout-ов |
+| 2025-01-30 | Path D (гибрид B + C) выбран | Три роутера для Outlet + типизация из RoutePaths panel trees |
+| 2025-01-30 | StripPrefix не нужен в Path D | Панельные деревья уже без префиксов — пути чистые |
+| 2025-01-30 | PanelContext для кросс-навигации | `<LinkLeft>` / `<LinkRight>` типизированы и работают из любого компонента |
