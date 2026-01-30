@@ -18,6 +18,7 @@ function formatTime(date: Date): string {
 
 function entryColor(entry: LogEntry): string {
   if (entry.type === 'navigation') return 'text-blue-400'
+  if (entry.type === 'lifecycle') return 'text-green-400'
   return 'text-muted-foreground'
 }
 

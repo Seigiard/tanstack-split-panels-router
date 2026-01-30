@@ -5,9 +5,11 @@ import {
   Outlet,
   Link,
   useSearch,
+  useRouteContext,
 } from '@tanstack/react-router'
 import { PanelShell } from '../components/PanelShell'
 import { Button } from '../components/ui/button'
+import { logger } from '../lib/logger'
 
 export const rootRoute = createRootRoute({
   component: function AppShell() {
@@ -54,11 +56,18 @@ const indexRoute = createRoute({
 const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/home',
+  beforeLoad: ({ cause }) => {
+    if (cause === 'enter') {
+      logger.log('[main] entered /home', 'lifecycle')
+    }
+    return { label: 'Home Page', description: 'Main landing page' }
+  },
   component: function HomeView() {
+    const ctx = useRouteContext({ from: homeRoute.id })
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold">Home</h1>
-        <p className="text-muted-foreground mt-2">Normal route — /home</p>
+        <h1 className="text-2xl font-bold">{ctx.label}</h1>
+        <p className="text-muted-foreground mt-2">{ctx.description}</p>
       </div>
     )
   },

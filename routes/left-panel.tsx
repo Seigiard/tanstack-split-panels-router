@@ -4,10 +4,12 @@ import {
   createRouter,
   createMemoryHistory,
   Outlet,
+  useRouteContext,
 } from '@tanstack/react-router'
 import { LinkLeft, LinkRight } from '../components/panel-links'
 import { usePanelNav } from '../lib/panel-context'
 import { Button } from '../components/ui/button'
+import { logger } from '../lib/logger'
 
 const leftRoot = createRootRoute({
   component: () => <Outlet />,
@@ -55,8 +57,19 @@ const dashIndexRoute = createRoute({
 const sub1Route = createRoute({
   getParentRoute: () => dashRoute,
   path: '/sub1',
+  beforeLoad: ({ cause }) => {
+    if (cause === 'enter') {
+      logger.log('[left] entered /dash/sub1', 'lifecycle')
+    }
+    return { label: 'Sub-section 1', tag: 'panel-left' }
+  },
   component: function Sub1View() {
-    return <p className="py-4">Sub-section 1 content</p>
+    const ctx = useRouteContext({ strict: false }) as { label: string; tag: string }
+    return (
+      <p className="py-4">
+        {ctx.label} <span className="text-xs text-muted-foreground">({ctx.tag})</span>
+      </p>
+    )
   },
 })
 
