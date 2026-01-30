@@ -3,11 +3,33 @@ import {
   createRoute,
   createRouter,
   Outlet,
+  Link,
+  useSearch,
 } from '@tanstack/react-router'
+import { PanelShell } from '../components/PanelShell'
+import { Button } from '../components/ui/button'
 
 export const rootRoute = createRootRoute({
   component: function AppShell() {
-    return <Outlet />
+    const search = useSearch({ from: rootRoute.id })
+    const isPanelMode = search.left !== undefined || search.right !== undefined
+
+    if (isPanelMode) {
+      return <PanelShell />
+    }
+
+    return (
+      <div>
+        <nav className="flex gap-2 p-4 border-b border-border">
+          <Link to="/home" search={{ left: undefined, right: undefined }}><Button variant="ghost" size="sm">Home</Button></Link>
+          <Link to="/settings/billing" search={{ left: undefined, right: undefined }}><Button variant="ghost" size="sm">Settings</Button></Link>
+          <Link to="/" search={{ left: '/dash', right: '/route1' }}>
+            <Button variant="outline" size="sm">Open Panels</Button>
+          </Link>
+        </nav>
+        <Outlet />
+      </div>
+    )
   },
   validateSearch: (search: Record<string, unknown>) => ({
     left: typeof search.left === 'string' ? search.left : undefined,
