@@ -729,3 +729,139 @@ git add -A && git commit -m "chore: remove old single-router files, POC complete
 | 11 | Deep linking | Direct URL opens correct state | no |
 | — | PanelContext | usePanelNav() works inside RouterProvider | YES |
 | — | Cross-nav | LinkRight inside left panel updates right | YES |
+
+---
+
+## Implementation Results (2025-01-30)
+
+> **Status: POC COMPLETE — ALL VALIDATIONS PASS**
+> **Branch:** `tanstack` (12 commits from `master`)
+
+### Validation Results
+
+| # | What | Result | Notes |
+|---|------|--------|-------|
+| 8 | Outlet in panels | **PASS** | DashLayout wraps children, child swap works, index route works |
+| 9 | Type safety | **PASS** | `RoutePaths` resolves to typed union, `@ts-expect-error` confirmed 3 invalid paths |
+| 10 | Back/Forward | **PASS** | `/home` → panels → sub1 → Back → Back → Forward all correct |
+| 11 | Deep linking | **PASS** | Direct URL `/?left=/dash/sub2&right=/route2` + F5 both preserve state |
+| — | PanelContext | **PASS** | `usePanelNav()` works inside panel `RouterProvider` boundaries |
+| — | Cross-nav | **PASS** | `LinkRight` in left panel updates right panel, `LinkLeft` in right updates left |
+
+### Corrections to Plan (Deviations from Original)
+
+#### 1. File extensions: `.tsx` not `.ts`
+
+**Plan said:** `routes/left-panel.ts`, `routes/right-panel.ts`, `routes/main.ts`
+**Actual:** `.tsx` — files contain JSX (component functions with `<Outlet />`, `<div>`, etc.)
+
+#### 2. `RoutePaths` import source
+
+**Plan said:** `import type { RoutePaths } from '@tanstack/react-router'`
+**Actual:** `import type { RoutePaths } from '@tanstack/router-core'`
+
+`RoutePaths` is defined in `@tanstack/router-core` (`routeInfo.js` module) but is **not re-exported** from `@tanstack/react-router`. Must import from `router-core` directly.
+
+#### 3. `strict` mode required in tsconfig.json
+
+**Not in plan.** TanStack Router v1.157 requires `strictNullChecks: true` (or `strict: true`). Without it, `createRouter()` produces a type error: `not assignable to "strictNullChecks must be enabled in tsconfig.json"`.
+
+**Fix applied:** Added `"strict": true` to `tsconfig.json`. Also required adding `@types/react` and `@types/react-dom` as dev dependencies.
+
+#### 4. Panel router `.navigate()` type conflict with global Register
+
+**Plan's PanelShell code** called `leftRouter.navigate({ to })` and `mainRouter.navigate({ search: ... })` directly.
+
+**Problem:** TanStack Router's `declare module` / `Register` interface types **all** `.navigate()` calls against the registered main router's route tree — including panel routers that have their own separate trees. So `leftRouter.navigate({ to: '/dash/sub1' })` fails because `/dash/sub1` is not a main router path.
+
+**Fix applied:** Cast panel router navigate:
+```typescript
+;(leftRouter.navigate as (opts: { to: string }) => void)({ to })
+```
+
+For main router search updates, use `useNavigate()` hook with explicit search object instead of spread:
+```typescript
+navigate({ to: '/', search: { left: to, right: search.right || '/route1' } })
+```
+
+#### 5. `validateSearch` makes search params required on all `<Link>`
+
+**Plan's Link code:** `<Link to="/home">` (no search prop)
+
+**Problem:** When root route has `validateSearch` returning `{ left, right }`, TanStack Router requires **all** `<Link>` components to pass a `search` prop — even for normal-mode links that don't use panels.
+
+**Fix applied:**
+```tsx
+<Link to="/home" search={{ left: undefined, right: undefined }}>
+```
+
+#### 6. `navigateMain` needs search params cleared
+
+**Plan said:** `mainRouter.navigate({ to })`
+
+**Problem:** Navigating to a normal route from panel mode needs to clear search params, otherwise `left`/`right` persist and the app stays in panel mode.
+
+**Fix applied:**
+```typescript
+navigate({ to: to as '/', search: { left: undefined, right: undefined } })
+```
+
+### Architecture (Final, Verified)
+
+```
+App.tsx
+└── RouterProvider(mainRouter)          ← browser history, owns URL
+    └── rootRoute (AppShell)
+        ├── isPanelMode=false → <nav> + <Outlet>
+        │   ├── / (IndexPage)
+        │   ├── /home (HomeView)
+        │   └── /settings → /settings/billing
+        │
+        └── isPanelMode=true → <PanelShell>
+            └── PanelContext.Provider
+                ├── RouterProvider(leftRouter)   ← memory history
+                │   └── /dash (DashLayout + Outlet)
+                │       ├── / (DashIndex)
+                │       ├── /sub1 (Sub1View)
+                │       └── /sub2 (Sub2View)
+                │
+                └── RouterProvider(rightRouter)  ← memory history
+                    ├── /route1 (Route1View)
+                    └── /route2 (Route2View)
+```
+
+### Key Files (Final)
+
+| File | Purpose |
+|------|---------|
+| `routes/main.tsx` | Main router: root route with validateSearch, AppShell with mode switching, normal routes |
+| `routes/left-panel.tsx` | Left panel route tree with DashLayout/Outlet, memory history factory |
+| `routes/right-panel.tsx` | Right panel route tree, memory history factory |
+| `lib/panel-context.tsx` | PanelContext, usePanelNav(), LeftPanelPaths/RightPanelPaths types |
+| `components/panel-links.tsx` | LinkLeft/LinkRight typed buttons |
+| `components/PanelShell.tsx` | Dual RouterProvider, URL↔memory sync, PanelContext provider |
+| `App.tsx` | Entry: `<RouterProvider router={mainRouter} />` |
+
+### Commit Log
+
+| Hash | Message |
+|------|---------|
+| `4f63b17` | chore: clean slate for Path D POC |
+| `201a016` | feat: define left and right panel route trees |
+| `7d768fa` | feat: main router with normal routes |
+| `8bb3fbf` | feat: PanelContext and typed LinkLeft/LinkRight |
+| `031dcce` | feat: PanelShell with PanelSync and PanelContext |
+| `81336cc` | feat: mode switching between normal and panel modes |
+| `f43b6be` | feat: navigation controls in panel views |
+| `578ab4f` | verify: Outlet works inside panel RouterProvider |
+| `11b9ebe` | verify: RoutePaths extracts typed union from panel trees |
+| `c90bc3a` | verify: browser back/forward across mode transitions |
+| `89fdb39` | verify: deep linking and F5 preserve panel state |
+| `5301898` | chore: remove old single-router files, POC complete |
+
+### Known Issues / Future Work
+
+1. **Pre-existing:** `components/ui/breadcrumb.tsx` imports `@tabler/icons-react` which is not installed. Not blocking — file is unused.
+2. **Panel router re-creation on mode re-entry:** Panel routers are created once via `useRef` in PanelShell. If PanelShell unmounts (exit panel mode) and remounts (re-enter), new routers are created. This is correct behavior for POC but may need optimization for production (router pool / cache).
+3. **Search param encoding:** URLs show `%2F` for `/` in query params (`?left=%2Fdash%2Fsub1`). Functionally correct but visually noisy. Could use custom serializer for cleaner URLs.
+4. **No error boundaries** in panel routers — invalid panel paths show blank. Production needs 404 handling per panel.
