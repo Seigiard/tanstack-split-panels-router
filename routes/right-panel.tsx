@@ -19,7 +19,7 @@ const route1 = createRoute({
   path: '/route1',
   beforeLoad: ({ cause }) => {
     if (cause === 'enter') {
-      logger.log('[right] entered /route1', 'lifecycle')
+      logger.log('[route:right] entered /route1', 'lifecycle')
     }
   },
   component: function Route1View() {

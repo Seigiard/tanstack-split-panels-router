@@ -41,7 +41,7 @@ export function PanelShell() {
 
   const navigators: PanelNavigators = useMemo(() => ({
     navigateLeft: (to) => {
-      logger.log('[left] → ' + to, 'navigation')
+      logger.log('[nav:left] → ' + to, 'navigation')
       panelNavigate(leftRouter, to)
       navigate({
         to: '/',
@@ -49,7 +49,7 @@ export function PanelShell() {
       })
     },
     navigateRight: (to) => {
-      logger.log('[right] → ' + to, 'navigation')
+      logger.log('[nav:right] → ' + to, 'navigation')
       panelNavigate(rightRouter, to)
       navigate({
         to: '/',
@@ -57,7 +57,7 @@ export function PanelShell() {
       })
     },
     navigateBottom: (to) => {
-      logger.log('[bottom] → ' + to, 'navigation')
+      logger.log('[nav:bottom] → ' + to, 'navigation')
       if (!bottomRouterRef.current) {
         bottomRouterRef.current = createBottomRouter(to)
       } else {
@@ -69,7 +69,7 @@ export function PanelShell() {
       })
     },
     closeBottom: () => {
-      logger.log('[bottom] closed', 'navigation')
+      logger.log('[nav:bottom] closed', 'navigation')
       bottomRouterRef.current = null
       navigate({
         to: '/',
@@ -77,7 +77,7 @@ export function PanelShell() {
       })
     },
     navigateMain: (to) => {
-      logger.log('[main] → ' + to, 'navigation')
+      logger.log('[nav:main] → ' + to, 'navigation')
       navigate({ to: to as '/', search: { left: undefined, right: undefined, bottom: undefined } })
     },
   }), [leftRouter, rightRouter, navigate, search.left, search.right, search.bottom])

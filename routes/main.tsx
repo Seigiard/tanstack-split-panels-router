@@ -58,7 +58,7 @@ const homeRoute = createRoute({
   path: '/home',
   beforeLoad: ({ cause }) => {
     if (cause === 'enter') {
-      logger.log('[main] entered /home', 'lifecycle')
+      logger.log('[route:main] entered /home', 'lifecycle')
     }
     return { label: 'Home Page', description: 'Main landing page' }
   },

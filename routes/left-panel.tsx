@@ -59,7 +59,7 @@ const sub1Route = createRoute({
   path: '/sub1',
   beforeLoad: ({ cause }) => {
     if (cause === 'enter') {
-      logger.log('[left] entered /dash/sub1', 'lifecycle')
+      logger.log('[route:left] entered /dash/sub1', 'lifecycle')
     }
     return { label: 'Sub-section 1', tag: 'panel-left' }
   },
