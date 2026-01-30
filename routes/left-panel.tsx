@@ -17,7 +17,7 @@ const dashRoute = createRoute({
   getParentRoute: () => leftRoot,
   path: '/dash',
   component: function DashLayout() {
-    const { navigateMain } = usePanelNav()
+    const { navigateMain, navigateBottom } = usePanelNav()
     return (
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2">
@@ -28,6 +28,9 @@ const dashRoute = createRoute({
           <LinkRight to="/route2">Right → Route 2</LinkRight>
           <Button variant="ghost" size="sm" onClick={() => navigateMain('/home')}>
             Exit → /home
+          </Button>
+          <Button variant="secondary" size="sm" className="ml-auto" onClick={() => navigateBottom('/logs')}>
+            Logs
           </Button>
         </div>
         <div className="border border-border rounded-lg p-3 bg-muted/30">
