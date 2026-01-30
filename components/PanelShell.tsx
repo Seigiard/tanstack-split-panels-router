@@ -42,10 +42,22 @@ export function PanelShell() {
         search: { left: search.left || '/dash', right: to, bottom: search.bottom },
       })
     },
+    navigateBottom: (to) => {
+      navigate({
+        to: '/',
+        search: { left: search.left || '/dash', right: search.right || '/route1', bottom: to },
+      })
+    },
+    closeBottom: () => {
+      navigate({
+        to: '/',
+        search: { left: search.left || '/dash', right: search.right || '/route1', bottom: undefined },
+      })
+    },
     navigateMain: (to) => {
       navigate({ to: to as '/', search: { left: undefined, right: undefined, bottom: undefined } })
     },
-  }), [leftRouter, rightRouter, navigate, search.left, search.right])
+  }), [leftRouter, rightRouter, navigate, search.left, search.right, search.bottom])
 
   return (
     <PanelContext.Provider value={navigators}>
