@@ -32,18 +32,18 @@ export function PanelShell() {
       panelNavigate(leftRouter, to)
       navigate({
         to: '/',
-        search: { left: to, right: search.right || '/route1' },
+        search: { left: to, right: search.right || '/route1', bottom: search.bottom },
       })
     },
     navigateRight: (to) => {
       panelNavigate(rightRouter, to)
       navigate({
         to: '/',
-        search: { left: search.left || '/dash', right: to },
+        search: { left: search.left || '/dash', right: to, bottom: search.bottom },
       })
     },
     navigateMain: (to) => {
-      navigate({ to: to as '/', search: { left: undefined, right: undefined } })
+      navigate({ to: to as '/', search: { left: undefined, right: undefined, bottom: undefined } })
     },
   }), [leftRouter, rightRouter, navigate, search.left, search.right])
 

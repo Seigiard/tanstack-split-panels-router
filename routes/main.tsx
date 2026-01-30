@@ -21,9 +21,9 @@ export const rootRoute = createRootRoute({
     return (
       <div>
         <nav className="flex gap-2 p-4 border-b border-border">
-          <Link to="/home" search={{ left: undefined, right: undefined }}><Button variant="ghost" size="sm">Home</Button></Link>
-          <Link to="/settings/billing" search={{ left: undefined, right: undefined }}><Button variant="ghost" size="sm">Settings</Button></Link>
-          <Link to="/" search={{ left: '/dash', right: '/route1' }}>
+          <Link to="/home" search={{ left: undefined, right: undefined, bottom: undefined }}><Button variant="ghost" size="sm">Home</Button></Link>
+          <Link to="/settings/billing" search={{ left: undefined, right: undefined, bottom: undefined }}><Button variant="ghost" size="sm">Settings</Button></Link>
+          <Link to="/" search={{ left: '/dash', right: '/route1', bottom: undefined }}>
             <Button variant="outline" size="sm">Open Panels</Button>
           </Link>
         </nav>
@@ -34,6 +34,7 @@ export const rootRoute = createRootRoute({
   validateSearch: (search: Record<string, unknown>) => ({
     left: typeof search.left === 'string' ? search.left : undefined,
     right: typeof search.right === 'string' ? search.right : undefined,
+    bottom: typeof search.bottom === 'string' ? search.bottom : undefined,
   }),
 })
 
