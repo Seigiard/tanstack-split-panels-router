@@ -1,0 +1,5 @@
+{
+  "name": "SplitState Router",
+  "description": "A dual-pane prototype using TanStack Router code-based routing where UI state is driven entirely by independent 'left' and 'right' query parameters.",
+  "requestFramePermissions": []
+}
