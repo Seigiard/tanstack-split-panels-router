@@ -27,6 +27,12 @@ class Logger {
 
 export const logger = new Logger()
 
+export function beforeLoadLog(cause: string, route: string): void {
+  if (cause === 'enter') {
+    logger.log(`[route:${route}] entered`, 'lifecycle')
+  }
+}
+
 export function useLogEntries(): LogEntry[] {
   return useSyncExternalStore(
     (cb) => logger.subscribe(cb),

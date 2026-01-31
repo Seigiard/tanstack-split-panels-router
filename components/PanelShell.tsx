@@ -3,7 +3,6 @@ import { RouterProvider, useSearch, useNavigate } from '@tanstack/react-router'
 import { rootRoute } from '../routes/main'
 import { createLeftRouter } from '../routes/left-panel'
 import { createRightRouter } from '../routes/right-panel'
-import { createBottomRouter } from '../routes/bottom-panel'
 import { PanelContext, type PanelNavigators } from '../lib/panel-context'
 import { Separator } from './ui/separator'
 import { Button } from './ui/button'
@@ -15,29 +14,29 @@ export function PanelShell() {
 
   const leftRouterRef = useRef(createLeftRouter(search.left || '/dash'))
   const rightRouterRef = useRef(createRightRouter(search.right || '/route1'))
-  const bottomRouterRef = useRef(
-    search.bottom ? createBottomRouter(search.bottom) : null
-  )
   const leftRouter = leftRouterRef.current
   const rightRouter = rightRouterRef.current
 
-  const panelNavigate = (router: ReturnType<typeof createLeftRouter> | ReturnType<typeof createRightRouter> | ReturnType<typeof createBottomRouter>, to: string) => {
+  const panelNavigate = (router: ReturnType<typeof createLeftRouter> | ReturnType<typeof createRightRouter>, to: string) => {
     ;(router.navigate as (opts: { to: string }) => void)({ to })
   }
 
+  const prevLeftRef = useRef(search.left)
+  const prevRightRef = useRef(search.right)
+
   useEffect(() => {
-    if (search.left) panelNavigate(leftRouter, search.left)
+    if (search.left && search.left !== prevLeftRef.current) {
+      panelNavigate(leftRouter, search.left)
+    }
+    prevLeftRef.current = search.left
   }, [search.left, leftRouter])
 
   useEffect(() => {
-    if (search.right) panelNavigate(rightRouter, search.right)
-  }, [search.right, rightRouter])
-
-  useEffect(() => {
-    if (search.bottom && bottomRouterRef.current) {
-      panelNavigate(bottomRouterRef.current, search.bottom)
+    if (search.right && search.right !== prevRightRef.current) {
+      panelNavigate(rightRouter, search.right)
     }
-  }, [search.bottom])
+    prevRightRef.current = search.right
+  }, [search.right, rightRouter])
 
   const navigators: PanelNavigators = useMemo(() => ({
     navigateLeft: (to) => {
@@ -45,7 +44,7 @@ export function PanelShell() {
       panelNavigate(leftRouter, to)
       navigate({
         to: '/',
-        search: { left: to, right: search.right || '/route1', bottom: search.bottom },
+        search: { left: to, right: search.right },
       })
     },
     navigateRight: (to) => {
@@ -53,71 +52,55 @@ export function PanelShell() {
       panelNavigate(rightRouter, to)
       navigate({
         to: '/',
-        search: { left: search.left || '/dash', right: to, bottom: search.bottom },
+        search: { left: search.left || '/dash', right: to },
       })
     },
-    navigateBottom: (to) => {
-      logger.log('[nav:bottom] → ' + to, 'navigation')
-      if (!bottomRouterRef.current) {
-        bottomRouterRef.current = createBottomRouter(to)
-      } else {
-        panelNavigate(bottomRouterRef.current, to)
-      }
+    showRight: (to) => {
+      logger.log('[nav:right] show → ' + to, 'navigation')
+      panelNavigate(rightRouter, to)
       navigate({
         to: '/',
-        search: { left: search.left || '/dash', right: search.right || '/route1', bottom: to },
+        search: { left: search.left || '/dash', right: to },
       })
     },
-    closeBottom: () => {
-      logger.log('[nav:bottom] closed', 'navigation')
-      bottomRouterRef.current = null
+    closeRight: () => {
+      logger.log('[nav:right] closed', 'navigation')
       navigate({
         to: '/',
-        search: { left: search.left || '/dash', right: search.right || '/route1', bottom: undefined },
+        search: { left: search.left || '/dash', right: undefined },
       })
     },
     navigateMain: (to) => {
       logger.log('[nav:main] → ' + to, 'navigation')
-      navigate({ to: to as '/', search: { left: undefined, right: undefined, bottom: undefined } })
+      navigate({ to: to as '/', search: { left: undefined, right: undefined } })
     },
-  }), [leftRouter, rightRouter, navigate, search.left, search.right, search.bottom])
+  }), [leftRouter, rightRouter, navigate, search.left, search.right])
+
+  const rightVisible = search.right !== undefined
 
   return (
     <PanelContext.Provider value={navigators}>
-      <div className="flex flex-col h-screen w-full overflow-hidden">
-        {/* Top: left + right */}
-        <div className="flex flex-1 min-h-0 overflow-hidden">
-          <div className="flex-1 min-w-0 overflow-y-auto p-4">
-            <h2 className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-4">
-              Left Panel
-            </h2>
-            <RouterProvider router={leftRouter} />
-          </div>
-
-          <Separator orientation="vertical" />
-
-          <div className="flex-1 min-w-0 overflow-y-auto p-4">
-            <h2 className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-4">
-              Right Panel
-            </h2>
-            <RouterProvider router={rightRouter} />
-          </div>
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        <div className="flex-1 min-w-0 overflow-y-auto p-4">
+          <h2 className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-4">
+            Left Panel
+          </h2>
+          <RouterProvider router={leftRouter} />
         </div>
 
-        {/* Bottom (conditional) */}
-        {search.bottom && bottomRouterRef.current && (
+        {rightVisible && (
           <>
-            <Separator orientation="horizontal" />
-            <div className="h-48 overflow-y-auto p-4 shrink-0">
-              <div className="flex items-center justify-between mb-2">
+            <Separator orientation="vertical" />
+            <div className="flex-1 min-w-0 overflow-y-auto p-4">
+              <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
-                  Bottom Panel
+                  Right Panel
                 </h2>
-                <Button variant="ghost" size="sm" onClick={() => navigators.closeBottom()}>
+                <Button variant="ghost" size="sm" onClick={() => navigators.closeRight()}>
                   ✕
                 </Button>
               </div>
-              <RouterProvider router={bottomRouterRef.current} />
+              <RouterProvider router={rightRouter} />
             </div>
           </>
         )}

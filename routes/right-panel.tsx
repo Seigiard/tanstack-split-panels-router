@@ -8,7 +8,7 @@ import {
 import { LinkLeft, LinkRight } from '../components/panel-links'
 import { usePanelNav } from '../lib/panel-context'
 import { Button } from '../components/ui/button'
-import { logger } from '../lib/logger'
+import { beforeLoadLog } from '../lib/logger'
 
 const rightRoot = createRootRoute({
   component: () => <Outlet />,
@@ -17,11 +17,7 @@ const rightRoot = createRootRoute({
 const route1 = createRoute({
   getParentRoute: () => rightRoot,
   path: '/route1',
-  beforeLoad: ({ cause }) => {
-    if (cause === 'enter') {
-      logger.log('[route:right] entered /route1', 'lifecycle')
-    }
-  },
+  beforeLoad: ({ cause }) => beforeLoadLog(cause, 'right:/route1'),
   component: function Route1View() {
     const { navigateMain } = usePanelNav()
     return (
@@ -43,6 +39,7 @@ const route1 = createRoute({
 const route2 = createRoute({
   getParentRoute: () => rightRoot,
   path: '/route2',
+  beforeLoad: ({ cause }) => beforeLoadLog(cause, 'right:/route2'),
   component: function Route2View() {
     const { navigateMain } = usePanelNav()
     return (
