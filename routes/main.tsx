@@ -3,14 +3,14 @@ import {
   createRoute,
   createRouter,
   Outlet,
-  Link,
   useSearch,
   useRouteContext,
 } from '@tanstack/react-router'
 
 import { LogPanel } from '../components/LogPanel'
 import { PanelShell } from '../components/PanelShell'
-import { Button } from '../components/ui/button'
+import { AppSidebar } from '../components/AppSidebar'
+import { SidebarProvider, SidebarInset } from '../components/ui/sidebar'
 import { beforeLoadLog } from '../lib/logger'
 
 export const rootRoute = createRootRoute({
@@ -19,36 +19,19 @@ export const rootRoute = createRootRoute({
     const isPanelMode = search.left !== undefined || search.right !== undefined
 
     return (
-      <div className='flex flex-col h-screen'>
-        <nav className='flex gap-2 p-4 border-b border-border'>
-          <Link to='/home' search={{ left: undefined, right: undefined }}>
-            <Button variant='ghost' size='sm'>
-              Home
-            </Button>
-          </Link>
-          <Link
-            to='/settings/billing'
-            search={{ left: undefined, right: undefined }}
-          >
-            <Button variant='ghost' size='sm'>
-              Settings
-            </Button>
-          </Link>
-          <Link to='/' search={{ left: '/dash', right: undefined }}>
-            <Button variant='outline' size='sm'>
-              Open Panels
-            </Button>
-          </Link>
-        </nav>
-        {isPanelMode ? (
-          <PanelShell />
-        ) : (
-          <div className='flex-1 min-h-0 overflow-y-auto'>
-            <Outlet />
-          </div>
-        )}
-        <LogPanel />
-      </div>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset className='flex flex-col h-screen'>
+          {isPanelMode ? (
+            <PanelShell />
+          ) : (
+            <div className='flex-1 min-h-0 overflow-y-auto'>
+              <Outlet />
+            </div>
+          )}
+          <LogPanel />
+        </SidebarInset>
+      </SidebarProvider>
     )
   },
   validateSearch: (search: Record<string, unknown>) => ({
