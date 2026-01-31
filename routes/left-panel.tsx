@@ -27,7 +27,7 @@ const dashRoute = createRoute({
           <LinkLeft to="/dash/sub1">Sub 1</LinkLeft>
           <LinkLeft to="/dash/sub2">Sub 2</LinkLeft>
           <LinkLeft to="/dash">Dash Index</LinkLeft>
-          <Button variant="outline" size="sm" onClick={() => showRight('/route1')}>
+          <Button variant="outline" size="sm" onClick={() => showRight('/posts')}>
             Show Agent
           </Button>
           <Button variant="ghost" size="sm" onClick={() => navigateMain('/home')}>

@@ -8,8 +8,8 @@ export type RightPanelPaths = RoutePaths<typeof rightPanelTree>
 
 export interface PanelNavigators {
   navigateLeft: (to: LeftPanelPaths) => void
-  navigateRight: (to: RightPanelPaths) => void
-  showRight: (to: RightPanelPaths) => void
+  navigateRight: (to: string) => void
+  showRight: (to: string) => void
   closeRight: () => void
   navigateMain: (to: string) => void
 }

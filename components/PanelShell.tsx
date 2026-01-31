@@ -13,7 +13,7 @@ export function PanelShell() {
   const navigate = useNavigate()
 
   const leftRouterRef = useRef(createLeftRouter(search.left || '/dash'))
-  const rightRouterRef = useRef(createRightRouter(search.right || '/route1'))
+  const rightRouterRef = useRef(createRightRouter(search.right || '/posts'))
   const leftRouter = leftRouterRef.current
   const rightRouter = rightRouterRef.current
 

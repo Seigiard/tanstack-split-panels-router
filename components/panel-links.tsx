@@ -1,5 +1,5 @@
 import React from 'react'
-import type { LeftPanelPaths, RightPanelPaths } from '../lib/panel-context'
+import type { LeftPanelPaths } from '../lib/panel-context'
 import { usePanelNav } from '../lib/panel-context'
 import { Button } from './ui/button'
 
@@ -25,7 +25,7 @@ export function LinkLeft({ to, children, variant = 'outline', size = 'sm', class
   )
 }
 
-export function LinkRight({ to, children, variant = 'outline', size = 'sm', className }: PanelLinkProps<RightPanelPaths>) {
+export function LinkRight({ to, children, variant = 'outline', size = 'sm', className }: PanelLinkProps<string>) {
   const { navigateRight } = usePanelNav()
   return (
     <Button
