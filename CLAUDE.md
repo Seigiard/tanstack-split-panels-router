@@ -47,7 +47,7 @@ Trivial index routes define `component` inline.
 
 ```
 routes/              # all route definitions + shared route components
-routes/components/   # shared: AppSidebar, PanelShell, LogPanel, panel-links
+routes/components/   # shared: AppSidebar, PanelShell, LogPanel
 lib/                 # panel-context, logger, utils
 components/ui/       # shadcn/ui primitives (don't modify)
 ```

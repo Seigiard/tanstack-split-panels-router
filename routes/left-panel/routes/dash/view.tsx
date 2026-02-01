@@ -1,5 +1,5 @@
 import { Outlet } from '@tanstack/react-router'
-import { LinkLeft } from '@/routes/components/panel-links'
+import { LinkLeftPanel } from '@/components/ui/link'
 import { usePanelNav } from '@/lib/panel-context'
 import { Button } from '@/components/ui/button'
 
@@ -8,9 +8,15 @@ export function DashLayout() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-        <LinkLeft to="/dash/sub1">Sub 1</LinkLeft>
-        <LinkLeft to="/dash/sub2">Sub 2</LinkLeft>
-        <LinkLeft to="/dash">Dash Index</LinkLeft>
+        <LinkLeftPanel to="/dash/sub1" className="inline-flex items-center rounded-md border border-input bg-background px-3 py-1 text-sm hover:bg-accent hover:text-accent-foreground">
+          Sub 1
+        </LinkLeftPanel>
+        <LinkLeftPanel to="/dash/sub2" className="inline-flex items-center rounded-md border border-input bg-background px-3 py-1 text-sm hover:bg-accent hover:text-accent-foreground">
+          Sub 2
+        </LinkLeftPanel>
+        <LinkLeftPanel to="/dash" className="inline-flex items-center rounded-md border border-input bg-background px-3 py-1 text-sm hover:bg-accent hover:text-accent-foreground">
+          Dash Index
+        </LinkLeftPanel>
         <Button variant="outline" size="sm" onClick={() => showRight('/posts')}>
           Show Agent
         </Button>

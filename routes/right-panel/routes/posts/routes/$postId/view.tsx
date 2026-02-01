@@ -1,5 +1,4 @@
-import { usePanelNav } from '@/lib/panel-context'
-import { Button } from '@/components/ui/button'
+import { LinkRightPanel } from '@/components/ui/link'
 import { postDetailRoute } from './route'
 
 type Post = { id: number; title: string; body: string; userId: number }
@@ -7,12 +6,11 @@ type Comment = { id: number; postId: number; name: string; email: string; body: 
 
 export function PostDetailView() {
   const { post, comments } = postDetailRoute.useLoaderData() as { post: Post; comments: Comment[] }
-  const { navigateRight } = usePanelNav()
   return (
     <div className="space-y-4">
-      <Button variant="ghost" size="sm" onClick={() => navigateRight('/posts')}>
+      <LinkRightPanel to="/posts" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
         ← Back to posts
-      </Button>
+      </LinkRightPanel>
       <div>
         <h3 className="text-sm font-semibold">{post.title}</h3>
         <p className="text-sm text-muted-foreground mt-1">{post.body}</p>
