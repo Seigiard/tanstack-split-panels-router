@@ -19,17 +19,22 @@ Read `docs/context/splitstate-router.md` for full architecture, gotchas, and pat
 bun run dev          # Dev server on port 3000
 bun run build        # Production build
 bunx tsc --noEmit    # Type check
+bun run fix          # Format (oxfmt) + lint fix (oxlint)
 ```
+
+## Workflow
+
+Always run `bun run fix` after completing a task (before committing).
 
 ## File Structure Conventions
 
-| File | Role |
-|------|------|
-| `route.tsx` | Route definition + tree assembly (createRoute, beforeLoad, loader) |
-| `view.tsx` | React component for the route |
-| `index.tsx` | Index route of parent (path `/`) |
-| `components/` | Local components scoped to this route |
-| `routes/` | Child routes |
+| File          | Role                                                               |
+| ------------- | ------------------------------------------------------------------ |
+| `route.tsx`   | Route definition + tree assembly (createRoute, beforeLoad, loader) |
+| `view.tsx`    | React component for the route                                      |
+| `index.tsx`   | Index route of parent (path `/`)                                   |
+| `components/` | Local components scoped to this route                              |
+| `routes/`     | Child routes                                                       |
 
 By default, `route.tsx` imports `view.tsx` and sets `component` directly in `createRoute()`.
 
