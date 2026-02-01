@@ -1,7 +1,7 @@
 # SplitState Router — Architecture Context
 
 > For AI agents and developers working on this codebase.
-> Last updated: 2025-02-01 after route file reorganization (branch: `tanstack`).
+> Last updated: 2026-02-01 after adding users routes with loaders (branch: `tanstack`).
 
 ## What This Project Is
 
@@ -20,20 +20,23 @@ A dual-panel navigation system built on TanStack Router v1. Two independent view
 App.tsx
 └── RouterProvider(mainRouter)           ← browser history, owns URL
     └── rootRoute (AppShell)
-        ├── <AppSidebar> (Home | Settings | Panels)  ← always visible
+        ├── <AppSidebar> (Home | Users | Panels)  ← always visible
         │
         ├── isPanelMode=false → <Outlet>
         │   ├── / (IndexPage)
         │   ├── /home (HomeView)
-        │   └── /settings/billing
+        │   ├── /users (UsersView)              ← loader: json-mock.org
+        │   └── /users/$userId (UserDetailView)
         │
         ├── isPanelMode=true → <PanelShell>
         │   └── PanelContext.Provider
         │       ├── RouterProvider(leftRouter)    ← memory history
-        │       │   └── /dash (DashLayout + Outlet)
-        │       │       ├── / (DashIndex)
-        │       │       ├── /sub1 (Sub1View)
-        │       │       └── /sub2 (Sub2View)
+        │       │   ├── /dash (DashLayout + Outlet)
+        │       │   │   ├── / (DashIndex)
+        │       │   │   ├── /sub1 (Sub1View)
+        │       │   │   └── /sub2 (Sub2View)
+        │       │   ├── /users (UsersView)              ← loader: fake.jsonmockapi.com
+        │       │   └── /users/$userId (UserDetailView)
         │       │
         │       └── RouterProvider(rightRouter)   ← memory history, conditional
         │           ├── /posts (PostsListView)
@@ -44,7 +47,7 @@ App.tsx
 
 ### Mode Switching
 
-- **Normal mode:** URL is a pathname (`/home`, `/settings/billing`). Standard TanStack Router behavior.
+- **Normal mode:** URL is a pathname (`/home`, `/users`). Standard TanStack Router behavior.
 - **Panel mode:** URL has query params `/?left=/dash`. Presence of `?left` or `?right` triggers panel mode.
 - Switching: `isPanelMode = search.left !== undefined || search.right !== undefined`
 
@@ -66,7 +69,7 @@ App.tsx
 
 ### Persistent Elements
 
-- **AppSidebar** (Home, Settings, Panels) — renders in root layout, visible in both modes
+- **AppSidebar** (Home, Users, Panels) — renders in root layout, visible in both modes
 - **LogPanel** — renders in root layout below content, visible in both modes
 - `PanelShell` no longer wraps itself in `h-screen` or renders its own LogPanel
 
@@ -98,28 +101,35 @@ routes/
 │   ├── route.tsx                      # homeRoute
 │   └── view.tsx                       # HomeView
 │
-├── settings/
-│   ├── route.tsx                      # settingsRoute (layout)
-│   ├── view.tsx                       # SettingsLayout
+├── users/
+│   ├── route.tsx                      # usersRoute (loader: json-mock.org)
+│   ├── view.tsx                       # UsersView
 │   └── routes/
-│       └── billing/
-│           ├── route.tsx              # billingRoute
-│           └── view.tsx               # BillingView
+│       └── $userId/
+│           ├── route.tsx              # userDetailRoute (loader)
+│           └── view.tsx               # UserDetailView
 │
 ├── left-panel/
 │   ├── route.tsx                      # leftRoot, leftPanelTree, createLeftRouter
 │   └── routes/
-│       └── dash/
-│           ├── route.tsx              # dashRoute (layout)
-│           ├── view.tsx               # DashLayout
-│           ├── index.tsx              # dashIndexRoute — "select a sub-section"
+│       ├── dash/
+│       │   ├── route.tsx              # dashRoute (layout)
+│       │   ├── view.tsx               # DashLayout
+│       │   ├── index.tsx              # dashIndexRoute — "select a sub-section"
+│       │   └── routes/
+│       │       ├── sub1/
+│       │       │   ├── route.tsx
+│       │       │   └── view.tsx
+│       │       └── sub2/
+│       │           ├── route.tsx
+│       │           └── view.tsx
+│       └── users/
+│           ├── route.tsx              # usersRoute (loader: fake.jsonmockapi.com)
+│           ├── view.tsx               # UsersView
 │           └── routes/
-│               ├── sub1/
-│               │   ├── route.tsx
-│               │   └── view.tsx
-│               └── sub2/
-│                   ├── route.tsx
-│                   └── view.tsx
+│               └── $userId/
+│                   ├── route.tsx      # userDetailRoute (loader)
+│                   └── view.tsx       # UserDetailView
 │
 └── right-panel/
     ├── route.tsx                      # rightRoot, rightPanelTree, createRightRouter
@@ -145,30 +155,19 @@ routes/
 
 ### Component Wiring
 
-**Default:** `route.tsx` imports `view.tsx` and sets `component` directly:
-
-```typescript
-// routes/settings/route.tsx
-import { SettingsLayout } from './view'
-
-export const settingsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/settings',
-  component: SettingsLayout,
-})
-```
+**Default:** `route.tsx` imports `view.tsx` and sets `component` directly in `createRoute()`.
 
 **When view imports route** (for `useLoaderData`, `useRouteContext({ from: route.id })`): direct import would create a circular dependency. In this case, `route.tsx` is created without `component`, and the parent assembly file wires it via `.update()`:
 
 ```typescript
-// routes/right-panel/route.tsx (assembly)
-import { postsRoute } from './routes/posts/route'
-import { PostsListView } from './routes/posts/view'
+// routes/route.tsx (assembly)
+import { usersRoute } from './users/route'
+import { UsersView } from './users/view'
 
-postsRoute.update({ component: PostsListView })
+usersRoute.update({ component: UsersView })
 ```
 
-Routes using `.update()`: `homeRoute`, `postsRoute`, `postDetailRoute`.
+Routes using `.update()`: `homeRoute`, `usersRoute`, `userDetailRoute` (main + left panel), `postsRoute`, `postDetailRoute`.
 
 **Trivial index routes** (like `routes/index.tsx`) define `component` inline.
 
