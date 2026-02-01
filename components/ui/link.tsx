@@ -1,45 +1,68 @@
 import type { LeftPanelPaths } from '@/lib/panel-context'
-import {
-  Link as TanStackLink,
-  type LinkProps as TanStackLinkProps,
-} from '@tanstack/react-router'
-import type { MouseEvent } from 'react'
+import { Link as TanStackLink } from '@tanstack/react-router'
+import { useContext, type MouseEvent } from 'react'
 
-import { usePanelNav } from '@/lib/panel-context'
+import { PanelContext } from '@/lib/panel-context'
 import { mainRouter } from '@/routes/route'
 
-type BaseLinkProps = Omit<TanStackLinkProps, 'search'>
+interface LinkProps {
+  to?: string
+  children?: React.ReactNode
+  className?: string
+}
 
-export function Link(props: BaseLinkProps): React.JSX.Element {
+export function Link({
+  to,
+  children,
+  className,
+}: LinkProps): React.JSX.Element {
   return (
     <TanStackLink
-      {...props}
-      search={{ left: undefined, right: undefined } as Record<string, unknown>}
-    />
+      to={(to ?? '/') as '/'}
+      search={
+        { left: undefined, right: undefined } as {
+          left: string | undefined
+          right: string | undefined
+        }
+      }
+      className={className}
+    >
+      {children}
+    </TanStackLink>
   )
 }
 
-interface LinkPanelsProps extends Omit<TanStackLinkProps, 'to' | 'search'> {
+interface LinkPanelsProps {
   left: LeftPanelPaths
   right?: string
+  children?: React.ReactNode
+  className?: string
 }
 
 export function LinkPanels({
   left,
   right,
-  ...props
+  children,
+  className,
 }: LinkPanelsProps): React.JSX.Element {
   return (
     <TanStackLink
-      {...props}
       to='/'
-      search={{ left, right: right ?? undefined } as Record<string, unknown>}
-    />
+      search={
+        { left, right: right ?? undefined } as {
+          left: string | undefined
+          right: string | undefined
+        }
+      }
+      className={className}
+    >
+      {children}
+    </TanStackLink>
   )
 }
 
 interface LinkLeftPanelProps {
-  to: LeftPanelPaths
+  to: LeftPanelPaths | (string & {})
   children: React.ReactNode
   className?: string
 }
@@ -49,7 +72,7 @@ export function LinkLeftPanel({
   children,
   className,
 }: LinkLeftPanelProps): React.JSX.Element {
-  const { navigateLeft } = usePanelNav()
+  const panelNav = useContext(PanelContext)
 
   const href = mainRouter.buildLocation({
     to: '/',
@@ -61,8 +84,9 @@ export function LinkLeftPanel({
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey) return
+    if (!panelNav) return
     e.preventDefault()
-    navigateLeft(to)
+    panelNav.navigateLeft(to as LeftPanelPaths)
   }
 
   return (
@@ -83,7 +107,7 @@ export function LinkRightPanel({
   children,
   className,
 }: LinkRightPanelProps): React.JSX.Element {
-  const { navigateRight } = usePanelNav()
+  const panelNav = useContext(PanelContext)
 
   const href = mainRouter.buildLocation({
     to: '/',
@@ -95,8 +119,9 @@ export function LinkRightPanel({
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey) return
+    if (!panelNav) return
     e.preventDefault()
-    navigateRight(to)
+    panelNav.navigateRight(to)
   }
 
   return (

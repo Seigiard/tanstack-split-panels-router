@@ -24,7 +24,8 @@ bun run fix          # Format (oxfmt) + lint fix (oxlint)
 
 ## Workflow
 
-Always run `bun run fix` after completing a task (before committing).
+- Always run `bun run fix` after completing a task (before committing).
+- All user-facing content on the site must be in English.
 
 ## File Structure Conventions
 
