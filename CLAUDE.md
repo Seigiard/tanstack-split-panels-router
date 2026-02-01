@@ -39,7 +39,7 @@ bun run fix          # Format (oxfmt) + lint fix (oxlint)
 
 By default, `route.tsx` imports `view.tsx` and sets `component` directly in `createRoute()`.
 
-When `view.tsx` imports its own `route.tsx` (for `useLoaderData`/`useRouteContext({ from: route.id })`), this would create a circular dependency. In that case, the parent assembly file wires component via `.update({ component })`. Currently applies to: `homeRoute`, `postsRoute`, `postDetailRoute`.
+When `view.tsx` imports its own `route.tsx` (for `useLoaderData`/`useRouteContext({ from: route.id })`), this would create a circular dependency. In that case, the parent assembly file wires component via `.update({ component })`. Currently applies to: `homeRoute`, `usersRoute`, `userDetailRoute` (main + left panel), `postsRoute`, `postDetailRoute`.
 
 Trivial index routes define `component` inline.
 
@@ -65,3 +65,7 @@ components/ui/       # shadcn/ui primitives (don't modify)
 **Panel route:** create under `routes/<panel>/routes/<name>/`, wire in `routes/<panel>/route.tsx`
 
 See "Patterns" section in `docs/context/splitstate-router.md` for full steps.
+
+## Feature Tracking
+
+After implementing a TanStack Router feature, update the status table in `routes/home/view.tsx` — change `<Todo />` to the matching Done badge (`<DoneMain>`, `<DoneLeft>`, `<DoneRight>`).

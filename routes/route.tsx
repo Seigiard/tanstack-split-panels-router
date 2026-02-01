@@ -12,8 +12,10 @@ import { LogPanel } from './components/LogPanel'
 import { PanelShell } from './components/PanelShell'
 import { homeRoute } from './home/route'
 import { HomeView } from './home/view'
-import { settingsRoute } from './settings/route'
-import { billingRoute } from './settings/routes/billing/route'
+import { usersRoute } from './users/route'
+import { userDetailRoute } from './users/routes/$userId/route'
+import { UserDetailView } from './users/routes/$userId/view'
+import { UsersView } from './users/view'
 
 import { indexRoute } from './index'
 
@@ -45,11 +47,14 @@ export const rootRoute = createRootRoute({
 })
 
 homeRoute.update({ component: HomeView })
+usersRoute.update({ component: UsersView })
+userDetailRoute.update({ component: UserDetailView })
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
   homeRoute,
-  settingsRoute.addChildren([billingRoute]),
+  usersRoute,
+  userDetailRoute,
 ])
 
 export const mainRouter = createRouter({

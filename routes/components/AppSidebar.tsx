@@ -1,5 +1,5 @@
 import { useLocation, useSearch } from '@tanstack/react-router'
-import { TbHome, TbSettings, TbColumns } from 'react-icons/tb'
+import { TbHome, TbUsers, TbColumns } from 'react-icons/tb'
 
 import { Link, LinkPanels } from '@/components/ui/link'
 import {
@@ -39,12 +39,12 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton
                 isActive={
-                  !isPanelMode && location.pathname.startsWith('/settings')
+                  !isPanelMode && location.pathname.startsWith('/users')
                 }
-                render={<Link to='/settings/billing' />}
+                render={<Link to='/users' />}
               >
-                <TbSettings />
-                <span>Settings</span>
+                <TbUsers />
+                <span>Users</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 

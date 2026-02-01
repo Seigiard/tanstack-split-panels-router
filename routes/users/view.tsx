@@ -1,0 +1,34 @@
+import type { User } from './route'
+
+import { Link } from '@/components/ui/link'
+
+import { usersRoute } from './route'
+
+export function UsersView() {
+  const users = usersRoute.useLoaderData() as User[]
+
+  return (
+    <div className='max-w-4xl p-8'>
+      <h2 className='mb-4 text-xl font-bold'>Users</h2>
+      <div className='grid gap-3'>
+        {users.map((user) => (
+          <Link
+            key={user.userId}
+            to={`/users/${user.userId}`}
+            className='flex items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-muted/50'
+          >
+            <div>
+              <div className='font-medium'>
+                {user.firstName} {user.lastName}
+              </div>
+              <div className='text-sm text-muted-foreground'>{user.email}</div>
+            </div>
+            <div className='text-sm text-muted-foreground'>
+              {user.address.city}, {user.address.state}
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
+}

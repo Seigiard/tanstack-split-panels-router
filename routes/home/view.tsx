@@ -73,7 +73,7 @@ export function HomeView() {
                 </div>
               </td>
               <td>
-                <Todo />
+                <DoneMain to='/users' />
               </td>
               <td>
                 <DoneRight to='/posts' />
@@ -199,7 +199,7 @@ export function HomeView() {
                 </div>
               </td>
               <td>
-                <Todo />
+                <DoneMain to='/users/1' />
               </td>
               <td>
                 <DoneRight to='/posts/1' />
@@ -213,7 +213,7 @@ export function HomeView() {
                 </div>
               </td>
               <td>
-                <DoneMain to='/settings/billing' />
+                <Todo />
               </td>
               <td>
                 <DoneLeft to='/dash' />
