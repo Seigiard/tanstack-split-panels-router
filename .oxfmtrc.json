@@ -22,9 +22,9 @@
     ]
   },
   "experimentalTailwindcss": {
-    "stylesheet": "./src/styles/globals.css",
+    "stylesheet": "./index.css",
     "attributes": ["class", "className"],
-    "functions": ["cn", "tv"]
+    "functions": ["cn", "tv", "twMerge", "clsx"]
   },
   "ignorePatterns": [
     "**/.next/**",

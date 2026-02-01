@@ -3,17 +3,26 @@
     "JavaScript": {
       "language_servers": ["oxfmt", "oxlint", "tsgo", "vtsls"],
       "format_on_save": "on",
-      "formatter": [{ "language_server": { "name": "oxfmt" } }, { "code_action": "source.fixAll.oxc" }]
+      "formatter": [
+        { "language_server": { "name": "oxfmt" } },
+        { "code_action": "source.fixAll.oxc" }
+      ]
     },
     "TypeScript": {
       "language_servers": ["oxfmt", "oxlint", "tsgo", "vtsls"],
       "format_on_save": "on",
-      "formatter": [{ "language_server": { "name": "oxfmt" } }, { "code_action": "source.fixAll.oxc" }]
+      "formatter": [
+        { "language_server": { "name": "oxfmt" } },
+        { "code_action": "source.fixAll.oxc" }
+      ]
     },
     "TSX": {
-      "language_servers": ["oxfmt", "oxlint", "tsgo", "vtsls"],
+      "language_servers": ["oxfmt", "oxlint", "tsgo", "vtsls", "tailwindcss-language-server"],
       "format_on_save": "on",
-      "formatter": [{ "language_server": { "name": "oxfmt" } }, { "code_action": "source.fixAll.oxc" }]
+      "formatter": [
+        { "language_server": { "name": "oxfmt" } },
+        { "code_action": "source.fixAll.oxc" }
+      ]
     },
     "JSON": {
       "language_servers": ["oxfmt"],
@@ -36,7 +45,7 @@
       "formatter": [{ "language_server": { "name": "oxfmt" } }]
     },
     "CSS": {
-      "language_servers": ["oxfmt"],
+      "language_servers": ["oxfmt", "tailwindcss-intellisense-css"],
       "format_on_save": "on",
       "formatter": [{ "language_server": { "name": "oxfmt" } }]
     },
@@ -47,6 +56,14 @@
     }
   },
   "lsp": {
+    "tailwindcss-language-server": {
+      "settings": {
+        "classFunctions": ["cn", "tv", "twMerge", "clsx"],
+        "experimental": {
+          "classRegex": ["[cls|className]\\s\\:\\=\\s\"([^\"]*)"]
+        }
+      }
+    },
     "oxlint": {
       "initialization_options": {
         "settings": {
