@@ -1,14 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { useLogEntries, type LogEntry } from '../lib/logger'
+
+import { useLogEntries } from '../lib/logger'
 
 function formatTime(date: Date): string {
   return date.toLocaleTimeString('en-US', { hour12: false })
-}
-
-function entryColor(entry: LogEntry): string {
-  if (entry.type === 'navigation') return 'text-blue-400'
-  if (entry.type === 'lifecycle') return 'text-green-400'
-  return 'text-muted-foreground'
 }
 
 export function LogPanel() {
@@ -24,19 +19,31 @@ export function LogPanel() {
   return (
     <div
       ref={scrollRef}
-      className="h-32 overflow-y-auto border-t border-border bg-muted/30 px-4 py-2 shrink-0"
+      className='h-[30svh] shrink-0 space-y-0.5 overflow-y-auto border-t border-border bg-muted/30 px-4 py-2'
     >
-      {entries.length === 0 ? (
-        <p className="text-sm text-muted-foreground font-mono">No log entries yet.</p>
-      ) : (
-        <div className="space-y-0.5">
-          {entries.map((entry, i) => (
-            <p key={i} className={`text-sm font-mono ${entryColor(entry)}`}>
-              [{formatTime(entry.timestamp)}] {entry.message}
-            </p>
-          ))}
-        </div>
-      )}
+      <Logs />
     </div>
+  )
+}
+
+function Logs() {
+  const entries = useLogEntries()
+
+  if (entries.length === 0) {
+    return (
+      <p className='font-mono text-sm text-muted-foreground'>
+        No log entries yet.
+      </p>
+    )
+  }
+
+  return (
+    <>
+      {entries.map((entry, i) => (
+        <p key={i} className={'font-mono text-sm text-muted-foreground'}>
+          [{formatTime(entry.timestamp)}] {entry.message}
+        </p>
+      ))}
+    </>
   )
 }
