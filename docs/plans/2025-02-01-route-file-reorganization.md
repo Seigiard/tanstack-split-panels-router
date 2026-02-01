@@ -4,13 +4,13 @@
 
 ## Conventions
 
-| File | Role |
-|------|------|
-| `route.tsx` | Route definition + tree assembly |
-| `view.tsx` | React component for the route |
-| `index.tsx` | Index route of parent (path `/`) |
-| `components/` | Local components for the route |
-| `routes/` | Child routes |
+| File          | Role                             |
+| ------------- | -------------------------------- |
+| `route.tsx`   | Route definition + tree assembly |
+| `view.tsx`    | React component for the route    |
+| `index.tsx`   | Index route of parent (path `/`) |
+| `components/` | Local components for the route   |
+| `routes/`     | Child routes                     |
 
 ## Target Structure
 

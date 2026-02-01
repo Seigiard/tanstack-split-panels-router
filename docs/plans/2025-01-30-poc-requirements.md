@@ -82,10 +82,12 @@
 ### 3.1 Добавление нового панельного роута
 
 Разработчик должен:
+
 1. Добавить `createRoute(...)` в дерево панели
 2. Всё — типы, навигация, рендеринг подхватятся автоматически
 
 Разработчик **не должен**:
+
 - Вручную обновлять реестр / routeMap
 - Писать отдельную типизацию для нового роута
 - Модифицировать компоненты навигации
@@ -246,6 +248,7 @@
 ### Компоненты для POC
 
 Минимальные — достаточно отображать:
+
 - Имя текущего роута
 - Кнопки навигации внутри панели
 - Кнопку кросс-панельной навигации
@@ -282,15 +285,15 @@ POC считается **провалом**, если:
 Эти требования **не привязаны к TanStack Router**. При попытке реализации
 на другом роутере (react-router, wouter, и т.д.) нужно проверить:
 
-| Capability | TanStack Router | react-router | Нужно для POC |
-|------------|:---:|:---:|:---:|
-| Custom history | ✅ RouterHistory | ✅ createMemoryRouter | да |
-| Multiple RouterProvider | ✅ (с caveats) | ✅ RouterProvider | да |
-| Type-safe route paths | ✅ RoutePaths<T> | ❌ (нет вывода типов) | да |
-| Nested Outlet | ✅ | ✅ | да |
-| useParams typed | ✅ | ⚠️ (generic) | да |
-| Route loaders | ✅ | ✅ | nice-to-have |
-| Search params validation | ✅ validateSearch | ❌ (manual) | да |
+| Capability               |  TanStack Router  |     react-router      | Нужно для POC |
+| ------------------------ | :---------------: | :-------------------: | :-----------: |
+| Custom history           | ✅ RouterHistory  | ✅ createMemoryRouter |      да       |
+| Multiple RouterProvider  |  ✅ (с caveats)   |   ✅ RouterProvider   |      да       |
+| Type-safe route paths    | ✅ RoutePaths<T>  | ❌ (нет вывода типов) |      да       |
+| Nested Outlet            |        ✅         |          ✅           |      да       |
+| useParams typed          |        ✅         |     ⚠️ (generic)      |      да       |
+| Route loaders            |        ✅         |          ✅           | nice-to-have  |
+| Search params validation | ✅ validateSearch |      ❌ (manual)      |      да       |
 
 > **Вывод**: react-router не даёт типобезопасность из route tree.
 > Если переходить на react-router, потребуется ручная типизация путей

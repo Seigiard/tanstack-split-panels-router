@@ -1,4 +1,5 @@
 import { createRoute } from '@tanstack/react-router'
+
 import { beforeLoadLog } from '../../lib/logger'
 import { rootRoute } from '../route'
 

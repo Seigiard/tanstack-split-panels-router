@@ -1,8 +1,12 @@
-import type { MouseEvent } from 'react'
-import { Link as TanStackLink, type LinkProps as TanStackLinkProps } from '@tanstack/react-router'
-import { mainRouter } from '@/routes/route'
-import { usePanelNav } from '@/lib/panel-context'
 import type { LeftPanelPaths } from '@/lib/panel-context'
+import {
+  Link as TanStackLink,
+  type LinkProps as TanStackLinkProps,
+} from '@tanstack/react-router'
+import type { MouseEvent } from 'react'
+
+import { usePanelNav } from '@/lib/panel-context'
+import { mainRouter } from '@/routes/route'
 
 type BaseLinkProps = Omit<TanStackLinkProps, 'search'>
 
@@ -20,11 +24,15 @@ interface LinkPanelsProps extends Omit<TanStackLinkProps, 'to' | 'search'> {
   right?: string
 }
 
-export function LinkPanels({ left, right, ...props }: LinkPanelsProps): React.JSX.Element {
+export function LinkPanels({
+  left,
+  right,
+  ...props
+}: LinkPanelsProps): React.JSX.Element {
   return (
     <TanStackLink
       {...props}
-      to="/"
+      to='/'
       search={{ left, right: right ?? undefined } as Record<string, unknown>}
     />
   )
@@ -36,12 +44,19 @@ interface LinkLeftPanelProps {
   className?: string
 }
 
-export function LinkLeftPanel({ to, children, className }: LinkLeftPanelProps): React.JSX.Element {
+export function LinkLeftPanel({
+  to,
+  children,
+  className,
+}: LinkLeftPanelProps): React.JSX.Element {
   const { navigateLeft } = usePanelNav()
 
   const href = mainRouter.buildLocation({
     to: '/',
-    search: (prev: Record<string, unknown>) => ({ left: to, right: (prev as { right?: string }).right ?? undefined }),
+    search: (prev: Record<string, unknown>) => ({
+      left: to,
+      right: (prev as { right?: string }).right ?? undefined,
+    }),
   }).href
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
@@ -63,12 +78,19 @@ interface LinkRightPanelProps {
   className?: string
 }
 
-export function LinkRightPanel({ to, children, className }: LinkRightPanelProps): React.JSX.Element {
+export function LinkRightPanel({
+  to,
+  children,
+  className,
+}: LinkRightPanelProps): React.JSX.Element {
   const { navigateRight } = usePanelNav()
 
   const href = mainRouter.buildLocation({
     to: '/',
-    search: (prev: Record<string, unknown>) => ({ left: (prev as { left?: string }).left ?? undefined, right: to }),
+    search: (prev: Record<string, unknown>) => ({
+      left: (prev as { left?: string }).left ?? undefined,
+      right: to,
+    }),
   }).href
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {

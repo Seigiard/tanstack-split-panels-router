@@ -5,16 +5,17 @@ import {
   useSearch,
 } from '@tanstack/react-router'
 
-import { LogPanel } from './components/LogPanel'
-import { PanelShell } from './components/PanelShell'
-import { AppSidebar } from './components/AppSidebar'
 import { SidebarProvider, SidebarInset } from '../components/ui/sidebar'
 
-import { indexRoute } from './index'
+import { AppSidebar } from './components/AppSidebar'
+import { LogPanel } from './components/LogPanel'
+import { PanelShell } from './components/PanelShell'
 import { homeRoute } from './home/route'
 import { HomeView } from './home/view'
 import { settingsRoute } from './settings/route'
 import { billingRoute } from './settings/routes/billing/route'
+
+import { indexRoute } from './index'
 
 export const rootRoute = createRootRoute({
   component: function AppShell() {
@@ -24,11 +25,11 @@ export const rootRoute = createRootRoute({
     return (
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset className='flex flex-col h-screen'>
+        <SidebarInset className='flex h-screen flex-col'>
           {isPanelMode ? (
             <PanelShell />
           ) : (
-            <div className='flex-1 min-h-0 overflow-y-auto'>
+            <div className='min-h-0 flex-1 overflow-y-auto'>
               <Outlet />
             </div>
           )}

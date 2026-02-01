@@ -74,13 +74,13 @@ App.tsx
 
 ### Conventions
 
-| File | Role |
-|------|------|
-| `route.tsx` | Route definition + tree assembly (createRoute, beforeLoad, loader) |
-| `view.tsx` | React component for the route |
-| `index.tsx` | Index route of parent (path `/`) |
-| `components/` | Local components scoped to this route |
-| `routes/` | Child routes |
+| File          | Role                                                               |
+| ------------- | ------------------------------------------------------------------ |
+| `route.tsx`   | Route definition + tree assembly (createRoute, beforeLoad, loader) |
+| `view.tsx`    | React component for the route                                      |
+| `index.tsx`   | Index route of parent (path `/`)                                   |
+| `components/` | Local components scoped to this route                              |
+| `routes/`     | Child routes                                                       |
 
 ### Directory Tree
 
@@ -135,13 +135,13 @@ routes/
 
 ### Other Key Files
 
-| File | Purpose |
-|------|---------|
-| `App.tsx` | Entry: `<RouterProvider router={mainRouter} />` |
-| `lib/panel-context.tsx` | `PanelContext`, `usePanelNav()` hook, `LeftPanelPaths`/`RightPanelPaths` types |
-| `lib/logger.ts` | `Logger` singleton, `useLogEntries()` hook, `beforeLoadLog(cause, route)` helper |
-| `lib/utils.ts` | `cn()` utility (clsx + tailwind-merge) |
-| `components/ui/*` | shadcn/ui components (Button, Separator, Card, Badge, etc.) |
+| File                    | Purpose                                                                          |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| `App.tsx`               | Entry: `<RouterProvider router={mainRouter} />`                                  |
+| `lib/panel-context.tsx` | `PanelContext`, `usePanelNav()` hook, `LeftPanelPaths`/`RightPanelPaths` types   |
+| `lib/logger.ts`         | `Logger` singleton, `useLogEntries()` hook, `beforeLoadLog(cause, route)` helper |
+| `lib/utils.ts`          | `cn()` utility (clsx + tailwind-merge)                                           |
+| `components/ui/*`       | shadcn/ui components (Button, Separator, Card, Badge, etc.)                      |
 
 ### Component Wiring
 
@@ -221,6 +221,7 @@ navigate({ to: '/home', search: { left: undefined, right: undefined } })
 ### 5. `strict: true` required in tsconfig
 
 TanStack Router v1.157 requires `strictNullChecks`. Without it:
+
 ```
 error TS2345: not assignable to "strictNullChecks must be enabled in tsconfig.json"
 ```
@@ -299,7 +300,8 @@ import { dashRoute } from '@/routes/left-panel/routes/dash/route'
 Components inside any panel use `usePanelNav()` to navigate other panels:
 
 ```tsx
-const { navigateLeft, navigateRight, showRight, closeRight, navigateMain } = usePanelNav()
+const { navigateLeft, navigateRight, showRight, closeRight, navigateMain } =
+  usePanelNav()
 
 // Navigate another panel (panel already visible)
 navigateRight('/posts/5')

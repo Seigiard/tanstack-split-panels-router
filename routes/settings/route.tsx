@@ -1,6 +1,8 @@
 import { createRoute } from '@tanstack/react-router'
+
 import { beforeLoadLog } from '../../lib/logger'
 import { rootRoute } from '../route'
+
 import { SettingsLayout } from './view'
 
 export const settingsRoute = createRoute({

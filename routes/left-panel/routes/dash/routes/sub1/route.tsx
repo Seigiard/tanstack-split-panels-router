@@ -1,6 +1,8 @@
 import { createRoute } from '@tanstack/react-router'
+
 import { beforeLoadLog } from '@/lib/logger'
 import { dashRoute } from '@/routes/left-panel/routes/dash/route'
+
 import { Sub1View } from './view'
 
 export const sub1Route = createRoute({

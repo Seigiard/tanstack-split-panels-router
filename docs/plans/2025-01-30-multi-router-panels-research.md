@@ -40,6 +40,7 @@ interface RouterHistory {
 ```
 
 Доступные реализации:
+
 - `createBrowserHistory()` — стандартная (pathname)
 - `createHashHistory()` — hash-based
 - `createMemoryHistory()` — in-memory, без URL
@@ -52,6 +53,7 @@ interface RouterHistory {
 Можно маунтить несколько `<RouterProvider router={...}>` на одной странице. Каждый принимает свой router instance.
 
 **Проблемы:**
+
 - Два роутера с `createBrowserHistory()` конфликтуют за `window.history` и `popstate`
 - Только один URL — если оба пишут, перезаписывают друг друга
 - **Решение**: secondary routers используют `createMemoryHistory()`
@@ -77,6 +79,7 @@ export const Outlet = React.memo(function OutletImpl() {
 **Source**: [Match.tsx#L311-L335](https://github.com/TanStack/router/blob/5ae6217746965726310e90633a02aeb88aa7c960/packages/react-router/src/Match.tsx#L311-L335)
 
 **Нельзя:**
+
 - Иметь два активных branch-а в одном роутере
 - Кастомизировать matching logic
 - Заменить `<Matches />` внутри `RouterProvider`
@@ -86,7 +89,7 @@ export const Outlet = React.memo(function OutletImpl() {
 `router.state.matches` — всегда одна цепочка root → leaf. Для `/users/123/files`:
 
 ```typescript
-[
+;[
   { routeId: '__root__' },
   { routeId: '/users' },
   { routeId: '/users/$userId', params: { userId: '123' } },
@@ -101,7 +104,7 @@ export const Outlet = React.memo(function OutletImpl() {
 ```typescript
 declare module '@tanstack/react-router' {
   interface Register {
-    router: typeof mainRouter  // только один тип
+    router: typeof mainRouter // только один тип
   }
 }
 ```
@@ -110,16 +113,16 @@ declare module '@tanstack/react-router' {
 
 ### 2.6 Доступные точки расширения
 
-| Feature | Customizable? | How |
-|---------|:---:|-----|
-| History | YES | `createRouter({ history })` |
-| Component fallback | YES | `defaultComponent`, per-route `component` |
-| Error boundaries | YES | `defaultErrorComponent` |
-| Wrappers | YES | `Wrap`, `InnerWrap` options |
-| Match logic | NO | Hardcoded |
-| Outlet traversal | NO | Always `matches[index + 1]` |
-| Multiple branches | NO | Single hierarchical path |
-| Custom render | NO | `<Matches />` hardcoded in Provider |
+| Feature            | Customizable? | How                                       |
+| ------------------ | :-----------: | ----------------------------------------- |
+| History            |      YES      | `createRouter({ history })`               |
+| Component fallback |      YES      | `defaultComponent`, per-route `component` |
+| Error boundaries   |      YES      | `defaultErrorComponent`                   |
+| Wrappers           |      YES      | `Wrap`, `InnerWrap` options               |
+| Match logic        |      NO       | Hardcoded                                 |
+| Outlet traversal   |      NO       | Always `matches[index + 1]`               |
+| Multiple branches  |      NO       | Single hierarchical path                  |
+| Custom render      |      NO       | `<Matches />` hardcoded in Provider       |
 
 ---
 
@@ -128,6 +131,7 @@ declare module '@tanstack/react-router' {
 ### 3.1 Path A: Единый роутер + namespace-префиксы (ОТКЛОНЁН)
 
 **Идея:**
+
 ```
 rootRoute
   ├── /home
@@ -141,6 +145,7 @@ Custom history маппит `/leftPanel/...` → `?left=...`, `/rightPanel/...` 
 `<Link to="/rightPanel/route2">` работает из любого места — типизировано.
 
 **Почему отклонён:**
+
 - `Outlet` поддерживает только один активный branch
 - `<Link to="/rightPanel/route2">` вызовет обычную навигацию, заменит весь match
 - Невозможно рендерить два branch-а одновременно из одного роутера
@@ -215,10 +220,10 @@ function createPanelSync({ mainRouter, leftRouter, rightRouter }) {
   const unsubs = [
     mainRouter.subscribe('onResolved', syncFromURL),
     leftRouter.subscribe('onResolved', () =>
-      syncToURL('left', leftRouter.state.location.pathname)
+      syncToURL('left', leftRouter.state.location.pathname),
     ),
     rightRouter.subscribe('onResolved', () =>
-      syncToURL('right', rightRouter.state.location.pathname)
+      syncToURL('right', rightRouter.state.location.pathname),
     ),
   ]
 
@@ -236,7 +241,7 @@ function PanelShell() {
   }, [])
 
   return (
-    <div className="flex h-screen">
+    <div className='flex h-screen'>
       <RouterProvider router={leftRouter} />
       <RouterProvider router={rightRouter} />
     </div>
@@ -249,12 +254,14 @@ function PanelShell() {
 MainRouter рендерит `<PanelShell>` если в search есть `left` или `right`, иначе — обычный `<Outlet />`.
 
 **Плюсы:**
+
 - Типобезопасность внутри каждой панели (useParams, useSearch, Link — всё работает)
 - Вложенные роуты, loaders, error boundaries — всё из коробки
 - Чистое разделение: memory history не конфликтует с browser history
 - `isSyncing` флаг предотвращает циклы
 
 **Минусы:**
+
 - Кросс-панельная навигация через хелпер, не через `<Link>`
 - Type Register — только один глобальный, остальные через `router.useParams()`
 - Дополнительный слой синхронизации (PanelSync)
@@ -286,6 +293,7 @@ const { navigateRight } = usePanelContext()
 ### Q2: Начальная синхронизация
 
 Порядок:
+
 1. URL: `/?left=/dash/sub1&right=/route2`
 2. MainRouter парсит → рендерит PanelShell
 3. useEffect создаёт PanelSync → syncFromURL()
@@ -296,7 +304,8 @@ const { navigateRight } = usePanelContext()
 **Возможное решение:** инициализировать memory history из текущего URL:
 
 ```typescript
-const leftInitial = new URLSearchParams(window.location.search).get('left') || '/dash'
+const leftInitial =
+  new URLSearchParams(window.location.search).get('left') || '/dash'
 export const leftRouter = createRouter({
   history: createMemoryHistory({ initialEntries: [leftInitial] }),
 })
@@ -305,6 +314,7 @@ export const leftRouter = createRouter({
 ### Q3: Browser Back/Forward
 
 Когда пользователь нажимает Back в браузере:
+
 1. MainRouter получает popstate
 2. PanelSync.syncFromURL() обновляет memory routers
 
@@ -319,6 +329,7 @@ URL `/?left=/dash/sub1&right=/route2` — полностью описывает 
 Сейчас leftRouter и rightRouter имеют разные деревья. Что если один и тот же роут нужен в обеих панелях?
 
 **Варианты:**
+
 - Общее дерево для обоих → два роутера с одинаковым routeTree, но разной memory history
 - Разные деревья, общие компоненты → view components импортируются в оба дерева
 
@@ -376,8 +387,10 @@ import { RoutePaths } from '@tanstack/react-router'
 
 type AllPaths = RoutePaths<typeof routeTree>
 
-type StripPrefix<T extends string, P extends string> =
-  T extends `${P}${infer Rest}` ? Rest : never
+type StripPrefix<
+  T extends string,
+  P extends string,
+> = T extends `${P}${infer Rest}` ? Rest : never
 
 type LeftPanelPaths = StripPrefix<
   Extract<AllPaths, `/leftPanel${string}`>,
@@ -399,18 +412,20 @@ function PanelShell() {
   const router = useRouter()
   const search = useSearch({ from: rootRoute.id })
 
-  const leftPath = `/leftPanel${search.left}` as keyof typeof router.routesByPath
-  const rightPath = `/rightPanel${search.right}` as keyof typeof router.routesByPath
+  const leftPath =
+    `/leftPanel${search.left}` as keyof typeof router.routesByPath
+  const rightPath =
+    `/rightPanel${search.right}` as keyof typeof router.routesByPath
 
   const LeftComponent = router.routesByPath[leftPath]?.options.component
   const RightComponent = router.routesByPath[rightPath]?.options.component
 
   return (
-    <div className="flex h-screen">
-      <div className="flex-1">
+    <div className='flex h-screen'>
+      <div className='flex-1'>
         {LeftComponent ? <LeftComponent /> : <NotFound />}
       </div>
-      <div className="flex-1">
+      <div className='flex-1'>
         {RightComponent ? <RightComponent /> : <NotFound />}
       </div>
     </div>
@@ -424,6 +439,7 @@ function PanelShell() {
 **не находятся в match chain**. У них нет `matchId` в React Context.
 
 Это значит:
+
 - `<Outlet>` внутри панельного layout-а вернёт `null`
 - Вложенные роуты (`/dash` → `/dash/sub1`) не рендерятся через Outlet
 - `useParams()`, `useSearch()`, `useLoaderData()` не работают
@@ -486,7 +502,7 @@ const leftRoot = createRootRoute({ component: LeftPanelLayout })
 const dashRoute = createRoute({
   getParentRoute: () => leftRoot,
   path: '/dash',
-  component: DashLayout,  // содержит <Outlet /> — РАБОТАЕТ
+  component: DashLayout, // содержит <Outlet /> — РАБОТАЕТ
 })
 const sub1Route = createRoute({
   getParentRoute: () => dashRoute,
@@ -575,7 +591,11 @@ function LinkLeft({ to, children, ...props }: PanelLinkProps<LeftPanelPaths>) {
   )
 }
 
-function LinkRight({ to, children, ...props }: PanelLinkProps<RightPanelPaths>) {
+function LinkRight({
+  to,
+  children,
+  ...props
+}: PanelLinkProps<RightPanelPaths>) {
   const { navigateRight } = usePanelNav()
   return (
     <a
@@ -593,6 +613,7 @@ function LinkRight({ to, children, ...props }: PanelLinkProps<RightPanelPaths>) 
 ```
 
 **DX:**
+
 ```tsx
 // Внутри левой панели — навигация своей панели
 <LinkLeft to="/dash/sub1">Sub1</LinkLeft>         // ✅ autocomplete от leftPanelTree
@@ -620,32 +641,35 @@ function PanelShell() {
     if (search.right) rightRouter.navigate({ to: search.right })
   }, [])
 
-  const navigators: PanelNavigators = useMemo(() => ({
-    navigateLeft: (to) => {
-      leftRouter.navigate({ to })
-      // sync to URL
-      mainRouter.navigate({
-        search: (prev) => ({ ...prev, left: to }),
-      })
-    },
-    navigateRight: (to) => {
-      rightRouter.navigate({ to })
-      mainRouter.navigate({
-        search: (prev) => ({ ...prev, right: to }),
-      })
-    },
-    navigateMain: (to) => {
-      mainRouter.navigate({ to })
-    },
-  }), [])
+  const navigators: PanelNavigators = useMemo(
+    () => ({
+      navigateLeft: (to) => {
+        leftRouter.navigate({ to })
+        // sync to URL
+        mainRouter.navigate({
+          search: (prev) => ({ ...prev, left: to }),
+        })
+      },
+      navigateRight: (to) => {
+        rightRouter.navigate({ to })
+        mainRouter.navigate({
+          search: (prev) => ({ ...prev, right: to }),
+        })
+      },
+      navigateMain: (to) => {
+        mainRouter.navigate({ to })
+      },
+    }),
+    [],
+  )
 
   return (
     <PanelContext.Provider value={navigators}>
-      <div className="flex h-screen">
-        <div className="flex-1">
+      <div className='flex h-screen'>
+        <div className='flex-1'>
           <RouterProvider router={leftRouter} />
         </div>
-        <div className="flex-1">
+        <div className='flex-1'>
           <RouterProvider router={rightRouter} />
         </div>
       </div>
@@ -663,18 +687,18 @@ function PanelShell() {
 
 ### Что работает (vs Path C)
 
-| Feature | Path C (single router) | Path D (hybrid) |
-|---------|:---:|:---:|
-| Типизация `<LinkLeft to="...">` | ✅ | ✅ |
-| Автокомплит путей | ✅ | ✅ |
-| Кросс-панельная навигация | ✅ `<LinkRight>` | ✅ `<LinkRight>` через PanelContext |
-| `<Outlet>` внутри панелей | ❌ **не работает** | ✅ работает |
-| `useParams()` в панелях | ❌ нет match context | ✅ есть match context |
-| `useLoaderData()` в панелях | ❌ нет match context | ✅ есть match context |
-| Error boundaries в панелях | ❌ ручной | ✅ из коробки |
-| Один роутер | ✅ | ❌ три роутера |
-| Без синхронизации | ✅ | ❌ PanelSync нужен |
-| Browser Back/Forward | ✅ одна history | ⚠️ нужна проверка |
+| Feature                         | Path C (single router) |           Path D (hybrid)           |
+| ------------------------------- | :--------------------: | :---------------------------------: |
+| Типизация `<LinkLeft to="...">` |           ✅           |                 ✅                  |
+| Автокомплит путей               |           ✅           |                 ✅                  |
+| Кросс-панельная навигация       |    ✅ `<LinkRight>`    | ✅ `<LinkRight>` через PanelContext |
+| `<Outlet>` внутри панелей       |   ❌ **не работает**   |             ✅ работает             |
+| `useParams()` в панелях         |  ❌ нет match context  |        ✅ есть match context        |
+| `useLoaderData()` в панелях     |  ❌ нет match context  |        ✅ есть match context        |
+| Error boundaries в панелях      |       ❌ ручной        |            ✅ из коробки            |
+| Один роутер                     |           ✅           |           ❌ три роутера            |
+| Без синхронизации               |           ✅           |         ❌ PanelSync нужен          |
+| Browser Back/Forward            |    ✅ одна history     |          ⚠️ нужна проверка          |
 
 ### Минусы / Открытые вопросы
 
@@ -717,13 +741,13 @@ function PanelShell() {
 
 ## 6. Decision Log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2025-01-30 | Режимы взаимоисключающие (панели XOR основной) | Упрощает архитектуру, не нужно рендерить оба режима |
-| 2025-01-30 | Переключение по наличию query params | `?left=` или `?right=` → панели, иначе → обычный роут |
-| 2025-01-30 | Path A (единое дерево + Outlet) отклонён | Outlet не поддерживает два активных branch-а |
-| 2025-01-30 | Path B (три роутера + memory + sync) исследован | Работает, но кросс-навигация только через хелпер без типизации |
-| 2025-01-30 | Path C (единый роутер + StripPrefix) отклонён | Outlet не работает внутри панелей — убивает вложенность layout-ов |
-| 2025-01-30 | Path D (гибрид B + C) выбран | Три роутера для Outlet + типизация из RoutePaths panel trees |
-| 2025-01-30 | StripPrefix не нужен в Path D | Панельные деревья уже без префиксов — пути чистые |
-| 2025-01-30 | PanelContext для кросс-навигации | `<LinkLeft>` / `<LinkRight>` типизированы и работают из любого компонента |
+| Date       | Decision                                        | Rationale                                                                 |
+| ---------- | ----------------------------------------------- | ------------------------------------------------------------------------- |
+| 2025-01-30 | Режимы взаимоисключающие (панели XOR основной)  | Упрощает архитектуру, не нужно рендерить оба режима                       |
+| 2025-01-30 | Переключение по наличию query params            | `?left=` или `?right=` → панели, иначе → обычный роут                     |
+| 2025-01-30 | Path A (единое дерево + Outlet) отклонён        | Outlet не поддерживает два активных branch-а                              |
+| 2025-01-30 | Path B (три роутера + memory + sync) исследован | Работает, но кросс-навигация только через хелпер без типизации            |
+| 2025-01-30 | Path C (единый роутер + StripPrefix) отклонён   | Outlet не работает внутри панелей — убивает вложенность layout-ов         |
+| 2025-01-30 | Path D (гибрид B + C) выбран                    | Три роутера для Outlet + типизация из RoutePaths panel trees              |
+| 2025-01-30 | StripPrefix не нужен в Path D                   | Панельные деревья уже без префиксов — пути чистые                         |
+| 2025-01-30 | PanelContext для кросс-навигации                | `<LinkLeft>` / `<LinkRight>` типизированы и работают из любого компонента |

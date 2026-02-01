@@ -114,11 +114,13 @@ function LogsView() {
   }
 
   return (
-    <div ref={scrollRef} className="overflow-y-auto max-h-full">
+    <div ref={scrollRef} className='overflow-y-auto max-h-full'>
       {entries.length === 0 ? (
-        <p className="text-sm text-muted-foreground font-mono">No log entries yet.</p>
+        <p className='text-sm text-muted-foreground font-mono'>
+          No log entries yet.
+        </p>
       ) : (
-        <div className="space-y-0.5">
+        <div className='space-y-0.5'>
           {entries.map((entry, i) => (
             <p
               key={i}
@@ -141,6 +143,7 @@ function LogsView() {
 **Step 2:** Verify: `bunx tsc --noEmit` + `bun run build`
 
 **Step 3:** Verify in browser:
+
 - Open `/?left=/dash&right=/route1`
 - Click "Logs" button → bottom panel opens with empty or initial log
 - Click navigation buttons (Sub 1, Right → Route 2, etc.) → log entries appear in real-time

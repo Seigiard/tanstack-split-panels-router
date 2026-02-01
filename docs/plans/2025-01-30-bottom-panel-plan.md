@@ -5,6 +5,7 @@
 **Goal:** Add a third (bottom) panel with its own memory router, toggled via `?bottom=/logs` search param.
 
 **Layout:**
+
 ```
 ┌──────────────┬──────────────┐
 │  Left Panel  │ Right Panel  │
@@ -65,11 +66,14 @@ const logsRoute = createRoute({
   path: '/logs',
   component: function LogsView() {
     return (
-      <div className="py-2">
-        <p className="text-sm font-mono text-muted-foreground">
-          [2025-01-30 12:00:01] System initialized<br />
-          [2025-01-30 12:00:02] Connected to data source<br />
-          [2025-01-30 12:00:03] Panel sync active<br />
+      <div className='py-2'>
+        <p className='text-sm font-mono text-muted-foreground'>
+          [2025-01-30 12:00:01] System initialized
+          <br />
+          [2025-01-30 12:00:02] Connected to data source
+          <br />
+          [2025-01-30 12:00:03] Panel sync active
+          <br />
           [2025-01-30 12:00:05] Awaiting user input...
         </p>
       </div>
@@ -121,7 +125,7 @@ export function createBottomRouter(initialPath: string = '/logs') {
 
 ```tsx
 const bottomRouterRef = useRef(
-  search.bottom ? createBottomRouter(search.bottom) : null
+  search.bottom ? createBottomRouter(search.bottom) : null,
 )
 ```
 
@@ -165,16 +169,16 @@ closeBottom: () => {
 
 ```tsx
 <PanelContext.Provider value={navigators}>
-  <div className="flex flex-col h-screen w-full overflow-hidden">
+  <div className='flex flex-col h-screen w-full overflow-hidden'>
     {/* Top: left + right */}
-    <div className="flex flex-1 min-h-0 overflow-hidden">
-      <div className="flex-1 min-w-0 overflow-y-auto p-4">
-        <h2 className="...">Left Panel</h2>
+    <div className='flex flex-1 min-h-0 overflow-hidden'>
+      <div className='flex-1 min-w-0 overflow-y-auto p-4'>
+        <h2 className='...'>Left Panel</h2>
         <RouterProvider router={leftRouter} />
       </div>
-      <Separator orientation="vertical" />
-      <div className="flex-1 min-w-0 overflow-y-auto p-4">
-        <h2 className="...">Right Panel</h2>
+      <Separator orientation='vertical' />
+      <div className='flex-1 min-w-0 overflow-y-auto p-4'>
+        <h2 className='...'>Right Panel</h2>
         <RouterProvider router={rightRouter} />
       </div>
     </div>
@@ -182,13 +186,17 @@ closeBottom: () => {
     {/* Bottom (conditional) */}
     {search.bottom && bottomRouterRef.current && (
       <>
-        <Separator orientation="horizontal" />
-        <div className="h-48 overflow-y-auto p-4 shrink-0">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
+        <Separator orientation='horizontal' />
+        <div className='h-48 overflow-y-auto p-4 shrink-0'>
+          <div className='flex items-center justify-between mb-2'>
+            <h2 className='text-xs font-bold tracking-widest text-muted-foreground uppercase'>
               Bottom Panel
             </h2>
-            <Button variant="ghost" size="sm" onClick={() => navigators.closeBottom()}>
+            <Button
+              variant='ghost'
+              size='sm'
+              onClick={() => navigators.closeBottom()}
+            >
               ✕
             </Button>
           </div>
@@ -222,6 +230,7 @@ const { navigateMain, navigateBottom } = usePanelNav()
 ```
 
 **Step 2:** Verify in browser:
+
 - Open `/?left=/dash&right=/route1` — no bottom panel
 - Click "Logs" button in left panel → URL becomes `/?left=/dash&right=/route1&bottom=/logs`
 - Bottom panel appears with static log text and X button
@@ -237,6 +246,7 @@ const { navigateMain, navigateBottom } = usePanelNav()
 **Goal:** Verify all POC criteria extend to bottom panel.
 
 **Checks:**
+
 1. Deep link: open `/?left=/dash&right=/route1&bottom=/logs` directly — bottom panel shows
 2. F5: refresh preserves bottom panel state
 3. Back/Forward: open bottom → close → Back restores it

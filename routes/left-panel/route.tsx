@@ -4,8 +4,9 @@ import {
   createMemoryHistory,
   Outlet,
 } from '@tanstack/react-router'
-import { dashRoute } from './routes/dash/route'
+
 import { dashIndexRoute } from './routes/dash/index'
+import { dashRoute } from './routes/dash/route'
 import { sub1Route } from './routes/dash/routes/sub1/route'
 import { sub2Route } from './routes/dash/routes/sub2/route'
 

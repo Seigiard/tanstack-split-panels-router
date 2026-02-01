@@ -1,4 +1,5 @@
 import { LinkRightPanel } from '@/components/ui/link'
+
 import { postsRoute } from './route'
 
 type Post = { id: number; title: string; body: string; userId: number }
@@ -6,16 +7,16 @@ type Post = { id: number; title: string; body: string; userId: number }
 export function PostsListView() {
   const posts = postsRoute.useLoaderData() as Post[]
   return (
-    <div className="space-y-1">
-      <h3 className="text-sm font-semibold mb-2">Posts</h3>
-      <ul className="space-y-1">
+    <div className='space-y-1'>
+      <h3 className='mb-2 text-sm font-semibold'>Posts</h3>
+      <ul className='space-y-1'>
         {posts.map((post) => (
           <li key={post.id}>
             <LinkRightPanel
               to={`/posts/${post.id}`}
-              className="block w-full text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors"
+              className='block w-full rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted'
             >
-              <span className="text-muted-foreground mr-1.5">{post.id}.</span>
+              <span className='mr-1.5 text-muted-foreground'>{post.id}.</span>
               {post.title}
             </LinkRightPanel>
           </li>

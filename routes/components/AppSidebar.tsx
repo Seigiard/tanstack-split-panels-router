@@ -1,5 +1,7 @@
-import { useLocation, useSearch } from "@tanstack/react-router"
-import { TbHome, TbSettings, TbColumns } from "react-icons/tb"
+import { useLocation, useSearch } from '@tanstack/react-router'
+import { TbHome, TbSettings, TbColumns } from 'react-icons/tb'
+
+import { Link, LinkPanels } from '@/components/ui/link'
 import {
   Sidebar,
   SidebarContent,
@@ -8,9 +10,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { Link, LinkPanels } from "@/components/ui/link"
-import { rootRoute } from "@/routes/route"
+} from '@/components/ui/sidebar'
+import { rootRoute } from '@/routes/route'
 
 export function AppSidebar() {
   const location = useLocation()
@@ -18,8 +19,8 @@ export function AppSidebar() {
   const isPanelMode = search.left !== undefined || search.right !== undefined
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="p-3 font-semibold text-sm">
+    <Sidebar collapsible='icon'>
+      <SidebarHeader className='p-3 text-sm font-semibold'>
         <span>SplitState</span>
       </SidebarHeader>
       <SidebarContent>
@@ -27,8 +28,8 @@ export function AppSidebar() {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                isActive={!isPanelMode && location.pathname.startsWith("/home")}
-                render={<Link to="/home" />}
+                isActive={!isPanelMode && location.pathname.startsWith('/home')}
+                render={<Link to='/home' />}
               >
                 <TbHome />
                 <span>Home</span>
@@ -37,8 +38,10 @@ export function AppSidebar() {
 
             <SidebarMenuItem>
               <SidebarMenuButton
-                isActive={!isPanelMode && location.pathname.startsWith("/settings")}
-                render={<Link to="/settings/billing" />}
+                isActive={
+                  !isPanelMode && location.pathname.startsWith('/settings')
+                }
+                render={<Link to='/settings/billing' />}
               >
                 <TbSettings />
                 <span>Settings</span>
@@ -48,7 +51,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton
                 isActive={isPanelMode}
-                render={<LinkPanels left="/dash" />}
+                render={<LinkPanels left='/dash' />}
               >
                 <TbColumns />
                 <span>Panels</span>

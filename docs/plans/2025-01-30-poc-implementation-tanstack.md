@@ -9,6 +9,7 @@
 **Tech Stack:** React 19, TanStack Router v1, TypeScript 5.8, Vite 6, Tailwind CSS 4, shadcn/ui (base-nova style)
 
 **Ref docs (READ FIRST):**
+
 - `docs/plans/2025-01-30-poc-requirements.md` — full requirements and edge cases
 - `docs/plans/2025-01-30-multi-router-panels-research.md` — research, Path D design (section 3.4)
 
@@ -27,6 +28,7 @@
 ## Task 1: Clean slate — remove current routing
 
 **Files:**
+
 - Delete content: `router.tsx`, `components/Layout.tsx`, `components/Panel.tsx`, `components/PanelNav.tsx`, `views/registry.tsx`
 - Keep: `types.ts`, `App.tsx`, `index.tsx`, `index.html`, `index.css`, `lib/utils.ts`, `components/ui/*`
 
@@ -39,7 +41,11 @@ Delete old routing files. Keep App.tsx but gut it:
 import React from 'react'
 
 const App: React.FC = () => {
-  return <div className="p-8 text-center text-muted-foreground">POC shell — routing not wired yet</div>
+  return (
+    <div className='p-8 text-center text-muted-foreground'>
+      POC shell — routing not wired yet
+    </div>
+  )
 }
 
 export default App
@@ -62,6 +68,7 @@ git add -A && git commit -m "chore: clean slate for Path D POC"
 ## Task 2: Define panel route trees and routers
 
 **Files:**
+
 - Create: `routes/left-panel.ts`
 - Create: `routes/right-panel.ts`
 
@@ -192,6 +199,7 @@ git add routes/ && git commit -m "feat: define left and right panel route trees"
 ## Task 3: Define main router with mode switching
 
 **Files:**
+
 - Create: `routes/main.ts`
 
 **Step 1: Create main router**
@@ -300,6 +308,7 @@ export default App
 **Step 3: Verify main routes work**
 
 Run: `bun run dev`
+
 - Open `http://localhost:3000/` → "Split-State Router POC"
 - Open `http://localhost:3000/home` → "Home"
 - Open `http://localhost:3000/settings/billing` → "Settings" + "Billing settings content"
@@ -315,6 +324,7 @@ git add routes/main.ts App.tsx && git commit -m "feat: main router with normal r
 ## Task 4: Panel context and typed link components
 
 **Files:**
+
 - Create: `lib/panel-context.tsx`
 - Create: `components/panel-links.tsx`
 
@@ -362,7 +372,13 @@ interface PanelLinkProps<TPaths extends string> {
   size?: 'default' | 'sm' | 'lg'
 }
 
-export function LinkLeft({ to, children, variant = 'outline', size = 'sm', className }: PanelLinkProps<LeftPanelPaths>) {
+export function LinkLeft({
+  to,
+  children,
+  variant = 'outline',
+  size = 'sm',
+  className,
+}: PanelLinkProps<LeftPanelPaths>) {
   const { navigateLeft } = usePanelNav()
   return (
     <Button
@@ -376,7 +392,13 @@ export function LinkLeft({ to, children, variant = 'outline', size = 'sm', class
   )
 }
 
-export function LinkRight({ to, children, variant = 'outline', size = 'sm', className }: PanelLinkProps<RightPanelPaths>) {
+export function LinkRight({
+  to,
+  children,
+  variant = 'outline',
+  size = 'sm',
+  className,
+}: PanelLinkProps<RightPanelPaths>) {
   const { navigateRight } = usePanelNav()
   return (
     <Button
@@ -410,6 +432,7 @@ git add lib/panel-context.tsx components/panel-links.tsx && git commit -m "feat:
 ## Task 5: PanelShell with PanelSync
 
 **Files:**
+
 - Create: `components/PanelShell.tsx`
 
 **Step 1: Create PanelShell**
@@ -445,38 +468,41 @@ export function PanelShell() {
     }
   }, [search.right])
 
-  const navigators: PanelNavigators = useMemo(() => ({
-    navigateLeft: (to) => {
-      leftRouter.navigate({ to })
-      mainRouter.navigate({
-        search: (prev) => ({ ...prev, left: to }),
-      })
-    },
-    navigateRight: (to) => {
-      rightRouter.navigate({ to })
-      mainRouter.navigate({
-        search: (prev) => ({ ...prev, right: to }),
-      })
-    },
-    navigateMain: (to) => {
-      mainRouter.navigate({ to })
-    },
-  }), [leftRouter, rightRouter])
+  const navigators: PanelNavigators = useMemo(
+    () => ({
+      navigateLeft: (to) => {
+        leftRouter.navigate({ to })
+        mainRouter.navigate({
+          search: (prev) => ({ ...prev, left: to }),
+        })
+      },
+      navigateRight: (to) => {
+        rightRouter.navigate({ to })
+        mainRouter.navigate({
+          search: (prev) => ({ ...prev, right: to }),
+        })
+      },
+      navigateMain: (to) => {
+        mainRouter.navigate({ to })
+      },
+    }),
+    [leftRouter, rightRouter],
+  )
 
   return (
     <PanelContext.Provider value={navigators}>
-      <div className="flex h-screen w-full overflow-hidden">
-        <div className="flex-1 min-w-0 overflow-y-auto p-4">
-          <h2 className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-4">
+      <div className='flex h-screen w-full overflow-hidden'>
+        <div className='flex-1 min-w-0 overflow-y-auto p-4'>
+          <h2 className='text-xs font-bold tracking-widest text-muted-foreground uppercase mb-4'>
             Left Panel
           </h2>
           <RouterProvider router={leftRouter} />
         </div>
 
-        <Separator orientation="vertical" />
+        <Separator orientation='vertical' />
 
-        <div className="flex-1 min-w-0 overflow-y-auto p-4">
-          <h2 className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-4">
+        <div className='flex-1 min-w-0 overflow-y-auto p-4'>
+          <h2 className='text-xs font-bold tracking-widest text-muted-foreground uppercase mb-4'>
             Right Panel
           </h2>
           <RouterProvider router={rightRouter} />
@@ -498,6 +524,7 @@ git add components/PanelShell.tsx && git commit -m "feat: PanelShell with PanelS
 ## Task 6: Wire mode switching in AppShell
 
 **Files:**
+
 - Modify: `routes/main.ts` — update AppShell component
 
 **Step 1: Update AppShell to switch modes**
@@ -520,11 +547,21 @@ function AppShell() {
 
   return (
     <div>
-      <nav className="flex gap-2 p-4 border-b border-border">
-        <Link to="/home"><Button variant="ghost" size="sm">Home</Button></Link>
-        <Link to="/settings/billing"><Button variant="ghost" size="sm">Settings</Button></Link>
-        <Link to="/" search={{ left: '/dash', right: '/route1' }}>
-          <Button variant="outline" size="sm">Open Panels</Button>
+      <nav className='flex gap-2 p-4 border-b border-border'>
+        <Link to='/home'>
+          <Button variant='ghost' size='sm'>
+            Home
+          </Button>
+        </Link>
+        <Link to='/settings/billing'>
+          <Button variant='ghost' size='sm'>
+            Settings
+          </Button>
+        </Link>
+        <Link to='/' search={{ left: '/dash', right: '/route1' }}>
+          <Button variant='outline' size='sm'>
+            Open Panels
+          </Button>
         </Link>
       </nav>
       <Outlet />
@@ -550,17 +587,20 @@ git add routes/main.ts && git commit -m "feat: mode switching between normal and
 ## Task 7: Add navigation controls to panel views
 
 **Files:**
+
 - Modify: `routes/left-panel.ts` — add LinkLeft, LinkRight, and navigation buttons to views
 - Modify: `routes/right-panel.ts` — same
 
 **Step 1: Update left panel views with navigation**
 
 Update the component functions in `routes/left-panel.ts` to include:
+
 - Intra-panel navigation (LinkLeft to sibling routes)
 - Cross-panel navigation (LinkRight to open something in right panel)
 - Exit to normal mode (Link to /home)
 
 Each view should display:
+
 - Its own name/path
 - Navigation buttons using `LinkLeft` and `LinkRight`
 - A "Go to /home" button to exit panel mode
@@ -696,6 +736,7 @@ git commit --allow-empty -m "verify: deep linking and F5 preserve panel state"
 ## Task 12: Clean up old files and final commit
 
 **Files:**
+
 - Delete: `router.tsx` (old single-router setup)
 - Delete: `views/registry.tsx` (old view registry)
 - Delete: `components/Layout.tsx`, `components/Panel.tsx`, `components/PanelNav.tsx` (old panel components)
@@ -721,14 +762,14 @@ git add -A && git commit -m "chore: remove old single-router files, POC complete
 
 ## Summary of POC Validation Points
 
-| # | What | Pass Criterion | Fail → Stop |
-|---|------|---------------|:-----------:|
-| 8 | Outlet in panels | DashLayout wraps Sub1View via Outlet | YES |
-| 9 | Type safety | RoutePaths extracts union, ts-expect-error works | YES |
-| 10 | Back/Forward | History restores panel state | no |
-| 11 | Deep linking | Direct URL opens correct state | no |
-| — | PanelContext | usePanelNav() works inside RouterProvider | YES |
-| — | Cross-nav | LinkRight inside left panel updates right | YES |
+| #   | What             | Pass Criterion                                   | Fail → Stop |
+| --- | ---------------- | ------------------------------------------------ | :---------: |
+| 8   | Outlet in panels | DashLayout wraps Sub1View via Outlet             |     YES     |
+| 9   | Type safety      | RoutePaths extracts union, ts-expect-error works |     YES     |
+| 10  | Back/Forward     | History restores panel state                     |     no      |
+| 11  | Deep linking     | Direct URL opens correct state                   |     no      |
+| —   | PanelContext     | usePanelNav() works inside RouterProvider        |     YES     |
+| —   | Cross-nav        | LinkRight inside left panel updates right        |     YES     |
 
 ---
 
@@ -739,14 +780,14 @@ git add -A && git commit -m "chore: remove old single-router files, POC complete
 
 ### Validation Results
 
-| # | What | Result | Notes |
-|---|------|--------|-------|
-| 8 | Outlet in panels | **PASS** | DashLayout wraps children, child swap works, index route works |
-| 9 | Type safety | **PASS** | `RoutePaths` resolves to typed union, `@ts-expect-error` confirmed 3 invalid paths |
-| 10 | Back/Forward | **PASS** | `/home` → panels → sub1 → Back → Back → Forward all correct |
-| 11 | Deep linking | **PASS** | Direct URL `/?left=/dash/sub2&right=/route2` + F5 both preserve state |
-| — | PanelContext | **PASS** | `usePanelNav()` works inside panel `RouterProvider` boundaries |
-| — | Cross-nav | **PASS** | `LinkRight` in left panel updates right panel, `LinkLeft` in right updates left |
+| #   | What             | Result   | Notes                                                                              |
+| --- | ---------------- | -------- | ---------------------------------------------------------------------------------- |
+| 8   | Outlet in panels | **PASS** | DashLayout wraps children, child swap works, index route works                     |
+| 9   | Type safety      | **PASS** | `RoutePaths` resolves to typed union, `@ts-expect-error` confirmed 3 invalid paths |
+| 10  | Back/Forward     | **PASS** | `/home` → panels → sub1 → Back → Back → Forward all correct                        |
+| 11  | Deep linking     | **PASS** | Direct URL `/?left=/dash/sub2&right=/route2` + F5 both preserve state              |
+| —   | PanelContext     | **PASS** | `usePanelNav()` works inside panel `RouterProvider` boundaries                     |
+| —   | Cross-nav        | **PASS** | `LinkRight` in left panel updates right panel, `LinkLeft` in right updates left    |
 
 ### Corrections to Plan (Deviations from Original)
 
@@ -775,11 +816,13 @@ git add -A && git commit -m "chore: remove old single-router files, POC complete
 **Problem:** TanStack Router's `declare module` / `Register` interface types **all** `.navigate()` calls against the registered main router's route tree — including panel routers that have their own separate trees. So `leftRouter.navigate({ to: '/dash/sub1' })` fails because `/dash/sub1` is not a main router path.
 
 **Fix applied:** Cast panel router navigate:
+
 ```typescript
 ;(leftRouter.navigate as (opts: { to: string }) => void)({ to })
 ```
 
 For main router search updates, use `useNavigate()` hook with explicit search object instead of spread:
+
 ```typescript
 navigate({ to: '/', search: { left: to, right: search.right || '/route1' } })
 ```
@@ -791,6 +834,7 @@ navigate({ to: '/', search: { left: to, right: search.right || '/route1' } })
 **Problem:** When root route has `validateSearch` returning `{ left, right }`, TanStack Router requires **all** `<Link>` components to pass a `search` prop — even for normal-mode links that don't use panels.
 
 **Fix applied:**
+
 ```tsx
 <Link to="/home" search={{ left: undefined, right: undefined }}>
 ```
@@ -802,6 +846,7 @@ navigate({ to: '/', search: { left: to, right: search.right || '/route1' } })
 **Problem:** Navigating to a normal route from panel mode needs to clear search params, otherwise `left`/`right` persist and the app stays in panel mode.
 
 **Fix applied:**
+
 ```typescript
 navigate({ to: to as '/', search: { left: undefined, right: undefined } })
 ```
@@ -832,32 +877,32 @@ App.tsx
 
 ### Key Files (Final)
 
-| File | Purpose |
-|------|---------|
-| `routes/main.tsx` | Main router: root route with validateSearch, AppShell with mode switching, normal routes |
-| `routes/left-panel.tsx` | Left panel route tree with DashLayout/Outlet, memory history factory |
-| `routes/right-panel.tsx` | Right panel route tree, memory history factory |
-| `lib/panel-context.tsx` | PanelContext, usePanelNav(), LeftPanelPaths/RightPanelPaths types |
-| `components/panel-links.tsx` | LinkLeft/LinkRight typed buttons |
-| `components/PanelShell.tsx` | Dual RouterProvider, URL↔memory sync, PanelContext provider |
-| `App.tsx` | Entry: `<RouterProvider router={mainRouter} />` |
+| File                         | Purpose                                                                                  |
+| ---------------------------- | ---------------------------------------------------------------------------------------- |
+| `routes/main.tsx`            | Main router: root route with validateSearch, AppShell with mode switching, normal routes |
+| `routes/left-panel.tsx`      | Left panel route tree with DashLayout/Outlet, memory history factory                     |
+| `routes/right-panel.tsx`     | Right panel route tree, memory history factory                                           |
+| `lib/panel-context.tsx`      | PanelContext, usePanelNav(), LeftPanelPaths/RightPanelPaths types                        |
+| `components/panel-links.tsx` | LinkLeft/LinkRight typed buttons                                                         |
+| `components/PanelShell.tsx`  | Dual RouterProvider, URL↔memory sync, PanelContext provider                              |
+| `App.tsx`                    | Entry: `<RouterProvider router={mainRouter} />`                                          |
 
 ### Commit Log
 
-| Hash | Message |
-|------|---------|
-| `4f63b17` | chore: clean slate for Path D POC |
-| `201a016` | feat: define left and right panel route trees |
-| `7d768fa` | feat: main router with normal routes |
-| `8bb3fbf` | feat: PanelContext and typed LinkLeft/LinkRight |
-| `031dcce` | feat: PanelShell with PanelSync and PanelContext |
-| `81336cc` | feat: mode switching between normal and panel modes |
-| `f43b6be` | feat: navigation controls in panel views |
-| `578ab4f` | verify: Outlet works inside panel RouterProvider |
+| Hash      | Message                                                  |
+| --------- | -------------------------------------------------------- |
+| `4f63b17` | chore: clean slate for Path D POC                        |
+| `201a016` | feat: define left and right panel route trees            |
+| `7d768fa` | feat: main router with normal routes                     |
+| `8bb3fbf` | feat: PanelContext and typed LinkLeft/LinkRight          |
+| `031dcce` | feat: PanelShell with PanelSync and PanelContext         |
+| `81336cc` | feat: mode switching between normal and panel modes      |
+| `f43b6be` | feat: navigation controls in panel views                 |
+| `578ab4f` | verify: Outlet works inside panel RouterProvider         |
 | `11b9ebe` | verify: RoutePaths extracts typed union from panel trees |
-| `c90bc3a` | verify: browser back/forward across mode transitions |
-| `89fdb39` | verify: deep linking and F5 preserve panel state |
-| `5301898` | chore: remove old single-router files, POC complete |
+| `c90bc3a` | verify: browser back/forward across mode transitions     |
+| `89fdb39` | verify: deep linking and F5 preserve panel state         |
+| `5301898` | chore: remove old single-router files, POC complete      |
 
 ### Known Issues / Future Work
 

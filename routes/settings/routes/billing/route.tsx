@@ -1,6 +1,8 @@
 import { createRoute } from '@tanstack/react-router'
+
 import { beforeLoadLog } from '../../../../lib/logger'
 import { settingsRoute } from '../../route'
+
 import { BillingView } from './view'
 
 export const billingRoute = createRoute({
