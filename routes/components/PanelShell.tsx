@@ -1,5 +1,5 @@
 import { RouterProvider, useSearch, useNavigate } from '@tanstack/react-router'
-import { useLayoutEffect, useMemo, useRef } from 'react'
+import { PropsWithChildren, useLayoutEffect, useMemo, useRef } from 'react'
 
 import { Button } from '../../components/ui/button'
 import { Separator } from '../../components/ui/separator'
@@ -91,34 +91,39 @@ export function PanelShell() {
   return (
     <PanelContext.Provider value={navigators}>
       <div className='flex min-h-0 flex-1 overflow-hidden'>
-        <div className='min-w-0 flex-1 overflow-y-auto p-4'>
-          <h2 className='mb-4 text-xs font-bold tracking-widest text-muted-foreground uppercase'>
-            Left Panel
-          </h2>
+        <Panel title='Left Panel'>
           <RouterProvider router={leftRouter} />
-        </div>
+        </Panel>
 
         {rightVisible && (
           <>
             <Separator orientation='vertical' />
-            <div className='min-w-0 flex-1 overflow-y-auto p-4'>
-              <div className='mb-4 flex items-center justify-between'>
-                <h2 className='text-xs font-bold tracking-widest text-muted-foreground uppercase'>
-                  Right Panel
-                </h2>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  onClick={() => navigators.closeRight()}
-                >
-                  ✕
-                </Button>
-              </div>
+            <Panel title='Right Panel'>
+              <Button
+                variant='ghost'
+                size='sm'
+                onClick={() => navigators.closeRight()}
+              >
+                ✕
+              </Button>
               <RouterProvider router={rightRouter} />
-            </div>
+            </Panel>
           </>
         )}
       </div>
     </PanelContext.Provider>
+  )
+}
+
+function Panel({ children, title }: PropsWithChildren<{ title: string }>) {
+  return (
+    <div className='grid min-w-0 flex-1 grid-rows-[min-content_1fr] gap-2 bg-accent p-2'>
+      <h2 className='text-[10px] font-bold tracking-widest text-muted-foreground uppercase'>
+        {title}
+      </h2>
+      <div className='h-full overflow-y-auto rounded-xl bg-white p-4 shadow-sm'>
+        {children}
+      </div>
+    </div>
   )
 }
