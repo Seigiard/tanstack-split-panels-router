@@ -1,11 +1,6 @@
-import {
-  createRootRoute,
-  createRouter,
-  createMemoryHistory,
-  Outlet,
-} from '@tanstack/react-router'
+import { createRootRoute, Outlet } from '@tanstack/react-router'
 
-import { RoutePending } from '@/routes/components/RoutePending'
+import { createPanelRouter } from '@/lib/create-panel-router'
 
 import { postsRoute } from './routes/posts/route'
 import { postDetailRoute } from './routes/posts/routes/$postId/route'
@@ -24,24 +19,4 @@ export const rightPanelTree = rightRoot.addChildren([
   postDetailRoute,
 ])
 
-export function createRightRouter(
-  initialPath: string = '/posts',
-): ReturnType<typeof createRouter> {
-  return createRouter({
-    routeTree: rightPanelTree,
-    history: createMemoryHistory({ initialEntries: [initialPath] }),
-    defaultPendingComponent: RoutePending,
-    defaultPendingMs: 200,
-  })
-}
-
-let _rightRouter: ReturnType<typeof createRightRouter> | null = null
-
-export function getRightRouter(
-  initialPath: string = '/posts',
-): ReturnType<typeof createRightRouter> {
-  if (!_rightRouter) {
-    _rightRouter = createRightRouter(initialPath)
-  }
-  return _rightRouter
-}
+export const getRightRouter = createPanelRouter(rightPanelTree, '/posts')

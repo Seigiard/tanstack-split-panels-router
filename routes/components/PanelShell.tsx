@@ -1,3 +1,4 @@
+import type { PanelRouter } from '../../lib/create-panel-router'
 import { RouterProvider, useSearch, useNavigate } from '@tanstack/react-router'
 import { PropsWithChildren, useLayoutEffect, useMemo, useRef } from 'react'
 
@@ -5,8 +6,8 @@ import { Button } from '../../components/ui/button'
 import { Separator } from '../../components/ui/separator'
 import { logger } from '../../lib/logger'
 import { PanelContext, type PanelNavigators } from '../../lib/panel-context'
-import { createLeftRouter, getLeftRouter } from '../left-panel/route'
-import { createRightRouter, getRightRouter } from '../right-panel/route'
+import { getLeftRouter } from '../left-panel/route'
+import { getRightRouter } from '../right-panel/route'
 import { rootRoute } from '../route'
 
 export function PanelShell() {
@@ -16,12 +17,7 @@ export function PanelShell() {
   const leftRouter = getLeftRouter(search.left || '/dash')
   const rightRouter = getRightRouter(search.right || '/posts')
 
-  const panelNavigate = (
-    router:
-      | ReturnType<typeof createLeftRouter>
-      | ReturnType<typeof createRightRouter>,
-    to: string,
-  ) => {
+  const panelNavigate = (router: PanelRouter, to: string) => {
     ;(router.navigate as (opts: { to: string }) => void)({ to })
   }
 

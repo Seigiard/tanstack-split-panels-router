@@ -1,11 +1,6 @@
-import {
-  createRootRoute,
-  createRouter,
-  createMemoryHistory,
-  Outlet,
-} from '@tanstack/react-router'
+import { createRootRoute, Outlet } from '@tanstack/react-router'
 
-import { RoutePending } from '@/routes/components/RoutePending'
+import { createPanelRouter } from '@/lib/create-panel-router'
 
 import { dashIndexRoute } from './routes/dash/index'
 import { dashRoute } from './routes/dash/route'
@@ -33,22 +28,4 @@ export const leftPanelTree = leftRoot.addChildren([
   userDetailRoute,
 ])
 
-export function createLeftRouter(initialPath: string = '/dash') {
-  return createRouter({
-    routeTree: leftPanelTree,
-    history: createMemoryHistory({ initialEntries: [initialPath] }),
-    defaultPendingComponent: RoutePending,
-    defaultPendingMs: 200,
-  })
-}
-
-let _leftRouter: ReturnType<typeof createLeftRouter> | null = null
-
-export function getLeftRouter(
-  initialPath: string = '/dash',
-): ReturnType<typeof createLeftRouter> {
-  if (!_leftRouter) {
-    _leftRouter = createLeftRouter(initialPath)
-  }
-  return _leftRouter
-}
+export const getLeftRouter = createPanelRouter(leftPanelTree, '/dash')
