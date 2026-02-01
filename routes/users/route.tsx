@@ -2,6 +2,7 @@ import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
 import { rootRoute } from '@/routes/route'
+import { wait } from '@/utils/wait'
 
 export type User = {
   userId: number
@@ -24,6 +25,7 @@ export const usersRoute = createRoute({
   path: '/users',
   beforeLoad: ({ cause }) => beforeLoadLog(cause, 'main:/users'),
   loader: async (): Promise<User[]> => {
+    await wait(1000)
     const res = await fetch('https://json-mock.org/api/users')
     return res.json()
   },

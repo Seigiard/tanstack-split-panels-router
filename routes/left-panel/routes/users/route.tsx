@@ -2,6 +2,7 @@ import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
 import { leftRoot } from '@/routes/left-panel/route'
+import { wait } from '@/utils/wait'
 
 export type User = {
   id: number
@@ -27,6 +28,7 @@ export const usersRoute = createRoute({
   path: '/users',
   beforeLoad: ({ cause }) => beforeLoadLog(cause, 'left:/users'),
   loader: async (): Promise<User[]> => {
+    await wait(1000)
     const res = await fetch('https://fake.jsonmockapi.com/users?length=10')
     return res.json()
   },

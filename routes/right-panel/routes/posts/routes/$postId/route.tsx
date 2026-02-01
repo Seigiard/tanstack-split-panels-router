@@ -2,6 +2,7 @@ import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
 import { rightRoot } from '@/routes/right-panel/route'
+import { wait } from '@/utils/wait'
 
 type Post = { id: number; title: string; body: string; userId: number }
 type Comment = {
@@ -18,6 +19,7 @@ export const postDetailRoute = createRoute({
   beforeLoad: ({ cause, params }) =>
     beforeLoadLog(cause, `right:/posts/${params.postId}`),
   loader: async ({ params }): Promise<{ post: Post; comments: Comment[] }> => {
+    await wait(1000)
     const [post, comments] = await Promise.all([
       fetch(`https://jsonplaceholder.typicode.com/posts/${params.postId}`).then(
         (r) => r.json(),

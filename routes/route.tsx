@@ -10,6 +10,7 @@ import { SidebarProvider, SidebarInset } from '../components/ui/sidebar'
 import { AppSidebar } from './components/AppSidebar'
 import { LogPanel } from './components/LogPanel'
 import { PanelShell } from './components/PanelShell'
+import { RoutePending } from './components/RoutePending'
 import { homeRoute } from './home/route'
 import { HomeView } from './home/view'
 import { usersRoute } from './users/route'
@@ -60,6 +61,8 @@ const routeTree = rootRoute.addChildren([
 export const mainRouter = createRouter({
   routeTree,
   defaultPreload: 'intent',
+  defaultPendingComponent: RoutePending,
+  defaultPendingMs: 200,
 })
 
 declare module '@tanstack/react-router' {

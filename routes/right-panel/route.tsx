@@ -5,6 +5,8 @@ import {
   Outlet,
 } from '@tanstack/react-router'
 
+import { RoutePending } from '@/routes/components/RoutePending'
+
 import { postsRoute } from './routes/posts/route'
 import { postDetailRoute } from './routes/posts/routes/$postId/route'
 import { PostDetailView } from './routes/posts/routes/$postId/view'
@@ -28,5 +30,7 @@ export function createRightRouter(
   return createRouter({
     routeTree: rightPanelTree,
     history: createMemoryHistory({ initialEntries: [initialPath] }),
+    defaultPendingComponent: RoutePending,
+    defaultPendingMs: 200,
   })
 }

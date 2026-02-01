@@ -5,6 +5,8 @@ import {
   Outlet,
 } from '@tanstack/react-router'
 
+import { RoutePending } from '@/routes/components/RoutePending'
+
 import { dashIndexRoute } from './routes/dash/index'
 import { dashRoute } from './routes/dash/route'
 import { sub1Route } from './routes/dash/routes/sub1/route'
@@ -31,5 +33,7 @@ export function createLeftRouter(initialPath: string = '/dash') {
   return createRouter({
     routeTree: leftPanelTree,
     history: createMemoryHistory({ initialEntries: [initialPath] }),
+    defaultPendingComponent: RoutePending,
+    defaultPendingMs: 200,
   })
 }

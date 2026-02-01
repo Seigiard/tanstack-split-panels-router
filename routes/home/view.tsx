@@ -87,10 +87,10 @@ export function HomeView() {
                 </div>
               </td>
               <td>
-                <Todo />
+                <DoneMain to='/users' />
               </td>
               <td>
-                <Todo />
+                <DonePanel />
               </td>
             </tr>
             <tr>
