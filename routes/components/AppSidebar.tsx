@@ -19,7 +19,7 @@ export function AppSidebar() {
   const isPanelMode = search.left !== undefined || search.right !== undefined
 
   return (
-    <Sidebar collapsible='icon'>
+    <Sidebar>
       <SidebarHeader className='p-3 text-sm font-semibold'>
         <span>SplitState</span>
       </SidebarHeader>

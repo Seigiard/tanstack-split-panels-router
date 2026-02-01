@@ -2,8 +2,6 @@ import type { PanelRouter } from '../../lib/create-panel-router'
 import { RouterProvider, useSearch, useNavigate } from '@tanstack/react-router'
 import { PropsWithChildren, useLayoutEffect, useMemo, useRef } from 'react'
 
-import { Button } from '../../components/ui/button'
-import { Separator } from '../../components/ui/separator'
 import { logger } from '../../lib/logger'
 import { PanelContext, type PanelNavigators } from '../../lib/panel-context'
 import { getLeftRouter } from '../left-panel/route'
