@@ -51,7 +51,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton
                 isActive={isPanelMode}
-                render={<LinkPanels left='/dash' />}
+                render={<LinkPanels left='/' />}
               >
                 <TbColumns />
                 <span>Panels</span>

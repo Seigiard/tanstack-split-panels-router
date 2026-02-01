@@ -14,7 +14,7 @@ export function PanelShell() {
   const search = useSearch({ from: rootRoute.id })
   const navigate = useNavigate()
 
-  const leftRouter = getLeftRouter(search.left || '/dash')
+  const leftRouter = getLeftRouter(search.left || '/')
   const rightRouter = getRightRouter(search.right || '/posts')
 
   const panelNavigate = (router: PanelRouter, to: string) => {
@@ -53,7 +53,7 @@ export function PanelShell() {
         panelNavigate(rightRouter, to)
         navigate({
           to: '/',
-          search: { left: search.left || '/dash', right: to },
+          search: { left: search.left || '/', right: to },
         })
       },
       showRight: (to) => {
@@ -61,14 +61,14 @@ export function PanelShell() {
         panelNavigate(rightRouter, to)
         navigate({
           to: '/',
-          search: { left: search.left || '/dash', right: to },
+          search: { left: search.left || '/', right: to },
         })
       },
       closeRight: () => {
         logger.log('[nav:right] closed', 'navigation')
         navigate({
           to: '/',
-          search: { left: search.left || '/dash', right: undefined },
+          search: { left: search.left || '/', right: undefined },
         })
       },
       navigateMain: (to) => {
@@ -82,29 +82,19 @@ export function PanelShell() {
     [leftRouter, rightRouter, navigate, search.left, search.right],
   )
 
-  const rightVisible = search.right !== undefined
-
   return (
     <PanelContext.Provider value={navigators}>
       <div className='flex min-h-0 flex-1 overflow-hidden'>
-        <Panel title='Left Panel'>
-          <RouterProvider router={leftRouter} />
-        </Panel>
+        {search?.left && (
+          <Panel title='Left Panel'>
+            <RouterProvider router={leftRouter} />
+          </Panel>
+        )}
 
-        {rightVisible && (
-          <>
-            <Separator orientation='vertical' />
-            <Panel title='Right Panel'>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={() => navigators.closeRight()}
-              >
-                ✕
-              </Button>
-              <RouterProvider router={rightRouter} />
-            </Panel>
-          </>
+        {search?.right && (
+          <Panel title='Right Panel'>
+            <RouterProvider router={rightRouter} />
+          </Panel>
         )}
       </div>
     </PanelContext.Provider>

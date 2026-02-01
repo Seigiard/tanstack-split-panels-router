@@ -10,7 +10,7 @@ export function TodoDetailView() {
   return (
     <div className='space-y-4'>
       <LinkLeftPanel
-        to='/dash/todos'
+        to='/todos'
         className='inline-flex items-center text-sm text-muted-foreground hover:text-foreground'
       >
         &larr; Back to todos

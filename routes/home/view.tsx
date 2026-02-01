@@ -5,7 +5,7 @@ import { Link, LinkLeftPanel, LinkRightPanel } from '@/components/ui/link'
 import { homeRoute } from './route'
 
 const BADGE =
-  'inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium transition-opacity hover:opacity-80'
+  'inline-flex items-center rounded-md border px-2 py-0.5 text-sm font-medium transition-opacity hover:opacity-80'
 const DONE_STYLE = `${BADGE} border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400`
 const TODO_STYLE = `${BADGE} border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400`
 const NA_STYLE = `${BADGE} border-transparent bg-muted text-muted-foreground`
@@ -54,9 +54,12 @@ export function HomeView() {
     <div className='max-w-4xl p-8'>
       <h1 className='text-2xl font-bold'>{ctx.label}</h1>
       <p className='mt-2 text-muted-foreground'>{ctx.description}</p>
-
+      <p>
+        можем ли мы типизировать /flows/:flowId/test где нет компонента у flows,
+        чтобы нельзя было линкануть flows?
+      </p>
       <div className='mt-6 overflow-x-auto'>
-        <table className='w-full text-sm'>
+        <table className='w-full'>
           <thead>
             <tr className='border-b text-left text-muted-foreground'>
               <th className='pr-4 pb-2 font-medium'>Feature</th>
@@ -68,7 +71,7 @@ export function HomeView() {
             <tr>
               <td>
                 <div className='font-medium'>Loader (data fetching)</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   loader() in createRoute — data ready before render
                 </div>
               </td>
@@ -82,7 +85,7 @@ export function HomeView() {
             <tr>
               <td>
                 <div className='font-medium'>Pending UI</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   pendingComponent / pendingMs — skeleton while loader runs
                 </div>
               </td>
@@ -96,7 +99,7 @@ export function HomeView() {
             <tr>
               <td>
                 <div className='font-medium'>Error boundary</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   errorComponent at route level
                 </div>
               </td>
@@ -110,7 +113,7 @@ export function HomeView() {
             <tr>
               <td>
                 <div className='font-medium'>Not found</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   notFoundComponent for unknown paths
                 </div>
               </td>
@@ -124,7 +127,7 @@ export function HomeView() {
             <tr>
               <td>
                 <div className='font-medium'>Lazy components</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   route.lazy() for code splitting
                 </div>
               </td>
@@ -138,7 +141,7 @@ export function HomeView() {
             <tr>
               <td>
                 <div className='font-medium'>Deferred data</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   defer() + Await — streaming without blocking render
                 </div>
               </td>
@@ -152,7 +155,7 @@ export function HomeView() {
             <tr>
               <td>
                 <div className='font-medium'>beforeLoad hook</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   Pre-render logic: guards, redirects, context injection
                 </div>
               </td>
@@ -160,13 +163,13 @@ export function HomeView() {
                 <DoneMain to='/home' />
               </td>
               <td>
-                <DoneLeft to='/dash' />
+                <DoneLeft to='/' />
               </td>
             </tr>
             <tr>
               <td>
                 <div className='font-medium'>Route context</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   useRouteContext() — access data from beforeLoad
                 </div>
               </td>
@@ -174,13 +177,13 @@ export function HomeView() {
                 <DoneMain to='/home' />
               </td>
               <td>
-                <DoneLeft to='/dash/sub1' />
+                <DoneLeft to='/' />
               </td>
             </tr>
             <tr>
               <td>
                 <div className='font-medium'>Search params</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   validateSearch + useSearch — typed query params
                 </div>
               </td>
@@ -188,13 +191,13 @@ export function HomeView() {
                 <DoneMain to='/' />
               </td>
               <td>
-                <DoneLeft to='/dash' />
+                <DoneLeft to='/' />
               </td>
             </tr>
             <tr>
               <td>
                 <div className='font-medium'>Path params</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   $param in path, access in loader/component
                 </div>
               </td>
@@ -208,7 +211,7 @@ export function HomeView() {
             <tr>
               <td>
                 <div className='font-medium'>Nested layouts</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   Shared layout with Outlet for nested routes
                 </div>
               </td>
@@ -216,13 +219,13 @@ export function HomeView() {
                 <Todo />
               </td>
               <td>
-                <DoneLeft to='/dash' />
+                <DoneLeft to='/' />
               </td>
             </tr>
             <tr>
               <td>
                 <div className='font-medium'>Preloading</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   defaultPreload: intent — load on hover
                 </div>
               </td>
@@ -236,7 +239,7 @@ export function HomeView() {
             <tr>
               <td>
                 <div className='font-medium'>Programmatic navigation</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   useNavigate() — navigate from code
                 </div>
               </td>
@@ -244,13 +247,13 @@ export function HomeView() {
                 <Na />
               </td>
               <td>
-                <DoneLeft to='/dash' />
+                <DoneLeft to='/' />
               </td>
             </tr>
             <tr>
               <td>
                 <div className='font-medium'>Breadcrumbs</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   Auto-generated breadcrumbs from route path
                 </div>
               </td>
@@ -264,7 +267,7 @@ export function HomeView() {
             <tr>
               <td>
                 <div className='font-medium'>Type-safe links</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   Path codegen, TS validation of to=&quot;&quot;
                 </div>
               </td>
@@ -278,7 +281,7 @@ export function HomeView() {
             <tr>
               <td>
                 <div className='font-medium'>Memory router isolation</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   Panels run in separate memory routers
                 </div>
               </td>
@@ -286,13 +289,13 @@ export function HomeView() {
                 <Na />
               </td>
               <td>
-                <DoneLeft to='/dash' />
+                <DoneLeft to='/' />
               </td>
             </tr>
             <tr>
               <td>
                 <div className='font-medium'>URL sync</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   Panel state encoded in main router query params
                 </div>
               </td>
@@ -300,13 +303,13 @@ export function HomeView() {
                 <Na />
               </td>
               <td>
-                <DoneLeft to='/dash' />
+                <DoneLeft to='/' />
               </td>
             </tr>
             <tr>
               <td>
                 <div className='font-medium'>Cross-panel navigation</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   Left panel opens content in right panel
                 </div>
               </td>
@@ -314,13 +317,13 @@ export function HomeView() {
                 <Na />
               </td>
               <td>
-                <DoneLeft to='/dash' />
+                <DoneLeft to='/' />
               </td>
             </tr>
             <tr>
               <td>
                 <div className='font-medium'>Panel open/close</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   Dynamic right panel toggle
                 </div>
               </td>
@@ -328,13 +331,13 @@ export function HomeView() {
                 <Na />
               </td>
               <td>
-                <DoneLeft to='/dash' />
+                <DoneLeft to='/' />
               </td>
             </tr>
             <tr>
               <td>
                 <div className='font-medium'>Exit panel mode</div>
-                <div className='mt-0.5 text-xs text-muted-foreground'>
+                <div className='mt-0.5 text-sm text-muted-foreground'>
                   Switch from panel mode to normal navigation
                 </div>
               </td>
@@ -342,7 +345,7 @@ export function HomeView() {
                 <Na />
               </td>
               <td>
-                <DoneLeft to='/dash' />
+                <DoneLeft to='/' />
               </td>
             </tr>
           </tbody>

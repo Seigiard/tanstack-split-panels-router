@@ -7,7 +7,6 @@ export type PanelRouter = ReturnType<typeof createRouter>
 
 export function createPanelRouter(
   routeTree: AnyRoute,
-  defaultPath: string,
 ): (initialPath?: string) => PanelRouter {
   let instance: PanelRouter | null = null
 
@@ -16,7 +15,7 @@ export function createPanelRouter(
       instance = createRouter({
         routeTree,
         history: createMemoryHistory({
-          initialEntries: [initialPath ?? defaultPath],
+          initialEntries: [initialPath ?? '/'],
         }),
         defaultPendingComponent: RoutePending,
         defaultPendingMs: 200,

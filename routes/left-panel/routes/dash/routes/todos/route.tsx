@@ -1,7 +1,7 @@
 import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
-import { dashRoute } from '@/routes/left-panel/routes/dash/route'
+import { leftRoot } from '@/routes/left-panel/route'
 
 export type Todo = {
   todoId: number
@@ -11,9 +11,9 @@ export type Todo = {
 }
 
 export const todosRoute = createRoute({
-  getParentRoute: () => dashRoute,
+  getParentRoute: () => leftRoot,
   path: '/todos',
-  beforeLoad: ({ cause }) => beforeLoadLog(cause, 'left:/dash/todos'),
+  beforeLoad: ({ cause }) => beforeLoadLog(cause, 'left:/todos'),
   loader: async (): Promise<Todo[]> => {
     const res = await fetch('https://json-mock.org/api/todos')
     return res.json()

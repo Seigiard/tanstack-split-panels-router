@@ -19,4 +19,4 @@ export const rightPanelTree = rightRoot.addChildren([
   postDetailRoute,
 ])
 
-export const getRightRouter = createPanelRouter(rightPanelTree, '/posts')
+export const getRightRouter = createPanelRouter(rightPanelTree)

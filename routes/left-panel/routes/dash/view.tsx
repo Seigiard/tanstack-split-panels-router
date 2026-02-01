@@ -11,12 +11,12 @@ export function DashLayout() {
       <div className='flex flex-wrap gap-2'>
         <LinkLeftPanel
           className='text-primary underline hover:no-underline'
-          to='/dash'
+          to='/'
         >
           Dash Index
         </LinkLeftPanel>
         <LinkLeftPanel
-          to='/dash/todos'
+          to='/todos'
           className='inline-flex items-center rounded-md border border-input bg-background px-3 py-1 hover:bg-accent hover:text-accent-foreground'
         >
           Todos

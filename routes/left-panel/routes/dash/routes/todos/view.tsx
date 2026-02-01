@@ -14,7 +14,7 @@ export function TodosView() {
         {todos.map((todo) => (
           <li key={todo.todoId}>
             <LinkLeftPanel
-              to={`/dash/todos/${todo.todoId}`}
+              to={`/todos/${todo.todoId}`}
               className='block w-full rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted'
             >
               <span

@@ -1,13 +1,12 @@
 import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
-
-import { dashRoute } from './route'
+import { leftRoot } from '@/routes/left-panel/route'
 
 export const dashIndexRoute = createRoute({
-  getParentRoute: () => dashRoute,
+  getParentRoute: () => leftRoot,
   path: '/',
-  beforeLoad: ({ cause }) => beforeLoadLog(cause, 'left:/dash/'),
+  beforeLoad: ({ cause }) => beforeLoadLog(cause, 'left:/'),
   component: function DashIndex() {
     return (
       <p className='py-4 text-muted-foreground'>
