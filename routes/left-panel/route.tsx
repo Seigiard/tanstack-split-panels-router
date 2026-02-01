@@ -37,3 +37,14 @@ export function createLeftRouter(initialPath: string = '/dash') {
     defaultPendingMs: 200,
   })
 }
+
+let _leftRouter: ReturnType<typeof createLeftRouter> | null = null
+
+export function getLeftRouter(
+  initialPath: string = '/dash',
+): ReturnType<typeof createLeftRouter> {
+  if (!_leftRouter) {
+    _leftRouter = createLeftRouter(initialPath)
+  }
+  return _leftRouter
+}

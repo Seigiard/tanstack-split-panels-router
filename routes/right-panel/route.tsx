@@ -34,3 +34,14 @@ export function createRightRouter(
     defaultPendingMs: 200,
   })
 }
+
+let _rightRouter: ReturnType<typeof createRightRouter> | null = null
+
+export function getRightRouter(
+  initialPath: string = '/posts',
+): ReturnType<typeof createRightRouter> {
+  if (!_rightRouter) {
+    _rightRouter = createRightRouter(initialPath)
+  }
+  return _rightRouter
+}

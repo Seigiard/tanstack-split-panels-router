@@ -1,22 +1,20 @@
 import { RouterProvider, useSearch, useNavigate } from '@tanstack/react-router'
-import { useEffect, useMemo, useRef } from 'react'
+import { useLayoutEffect, useMemo, useRef } from 'react'
 
 import { Button } from '../../components/ui/button'
 import { Separator } from '../../components/ui/separator'
 import { logger } from '../../lib/logger'
 import { PanelContext, type PanelNavigators } from '../../lib/panel-context'
-import { createLeftRouter } from '../left-panel/route'
-import { createRightRouter } from '../right-panel/route'
+import { createLeftRouter, getLeftRouter } from '../left-panel/route'
+import { createRightRouter, getRightRouter } from '../right-panel/route'
 import { rootRoute } from '../route'
 
 export function PanelShell() {
   const search = useSearch({ from: rootRoute.id })
   const navigate = useNavigate()
 
-  const leftRouterRef = useRef(createLeftRouter(search.left || '/dash'))
-  const rightRouterRef = useRef(createRightRouter(search.right || '/posts'))
-  const leftRouter = leftRouterRef.current
-  const rightRouter = rightRouterRef.current
+  const leftRouter = getLeftRouter(search.left || '/dash')
+  const rightRouter = getRightRouter(search.right || '/posts')
 
   const panelNavigate = (
     router:
@@ -27,17 +25,17 @@ export function PanelShell() {
     ;(router.navigate as (opts: { to: string }) => void)({ to })
   }
 
-  const prevLeftRef = useRef(search.left)
-  const prevRightRef = useRef(search.right)
+  const prevLeftRef = useRef<string | undefined>(undefined)
+  const prevRightRef = useRef<string | undefined>(undefined)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (search.left && search.left !== prevLeftRef.current) {
       panelNavigate(leftRouter, search.left)
     }
     prevLeftRef.current = search.left
   }, [search.left, leftRouter])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (search.right && search.right !== prevRightRef.current) {
       panelNavigate(rightRouter, search.right)
     }
