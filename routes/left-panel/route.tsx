@@ -9,8 +9,10 @@ import { RoutePending } from '@/routes/components/RoutePending'
 
 import { dashIndexRoute } from './routes/dash/index'
 import { dashRoute } from './routes/dash/route'
-import { sub1Route } from './routes/dash/routes/sub1/route'
-import { sub2Route } from './routes/dash/routes/sub2/route'
+import { todosRoute } from './routes/dash/routes/todos/route'
+import { todoDetailRoute } from './routes/dash/routes/todos/routes/$todoId/route'
+import { TodoDetailView } from './routes/dash/routes/todos/routes/$todoId/view'
+import { TodosView } from './routes/dash/routes/todos/view'
 import { usersRoute } from './routes/users/route'
 import { userDetailRoute } from './routes/users/routes/$userId/route'
 import { UserDetailView } from './routes/users/routes/$userId/view'
@@ -22,9 +24,11 @@ export const leftRoot = createRootRoute({
 
 usersRoute.update({ component: UsersView })
 userDetailRoute.update({ component: UserDetailView })
+todosRoute.update({ component: TodosView })
+todoDetailRoute.update({ component: TodoDetailView })
 
 export const leftPanelTree = leftRoot.addChildren([
-  dashRoute.addChildren([dashIndexRoute, sub1Route, sub2Route]),
+  dashRoute.addChildren([dashIndexRoute, todosRoute, todoDetailRoute]),
   usersRoute,
   userDetailRoute,
 ])

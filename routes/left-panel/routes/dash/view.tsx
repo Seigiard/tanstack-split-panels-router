@@ -10,16 +10,10 @@ export function DashLayout() {
     <div className='space-y-4'>
       <div className='flex flex-wrap gap-2'>
         <LinkLeftPanel
-          to='/dash/sub1'
+          to='/dash/todos'
           className='inline-flex items-center rounded-md border border-input bg-background px-3 py-1 text-sm hover:bg-accent hover:text-accent-foreground'
         >
-          Sub 1
-        </LinkLeftPanel>
-        <LinkLeftPanel
-          to='/dash/sub2'
-          className='inline-flex items-center rounded-md border border-input bg-background px-3 py-1 text-sm hover:bg-accent hover:text-accent-foreground'
-        >
-          Sub 2
+          Todos
         </LinkLeftPanel>
         <LinkLeftPanel
           to='/dash'
