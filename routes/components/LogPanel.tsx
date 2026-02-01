@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { useLogEntries } from '../lib/logger'
+import { useLogEntries } from '../../lib/logger'
 
 function formatTime(date: Date): string {
   return date.toLocaleTimeString('en-US', { hour12: false })

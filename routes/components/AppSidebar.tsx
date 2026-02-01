@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { rootRoute } from "@/routes/main"
+import { rootRoute } from "@/routes/route"
 
 const NAV_ITEMS = [
   { label: "Home", icon: TbHome, to: "/home" as const, search: { left: undefined, right: undefined } },

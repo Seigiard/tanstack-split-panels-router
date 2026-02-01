@@ -1,7 +1,7 @@
 # SplitState Router — Architecture Context
 
 > For AI agents and developers working on this codebase.
-> Last updated: 2025-01-31 after layout refactor (branch: `tanstack`).
+> Last updated: 2025-02-01 after route file reorganization (branch: `tanstack`).
 
 ## What This Project Is
 
@@ -20,7 +20,7 @@ A dual-panel navigation system built on TanStack Router v1. Two independent view
 App.tsx
 └── RouterProvider(mainRouter)           ← browser history, owns URL
     └── rootRoute (AppShell)
-        ├── <nav> (Home | Settings | Open Panels)  ← always visible
+        ├── <AppSidebar> (Home | Settings | Panels)  ← always visible
         │
         ├── isPanelMode=false → <Outlet>
         │   ├── / (IndexPage)
@@ -36,8 +36,8 @@ App.tsx
         │       │       └── /sub2 (Sub2View)
         │       │
         │       └── RouterProvider(rightRouter)   ← memory history, conditional
-        │           ├── /route1 (Route1View)
-        │           └── /route2 (Route2View)
+        │           ├── /posts (PostsListView)
+        │           └── /posts/$postId (PostDetailView)
         │
         └── <LogPanel />                          ← always visible
 ```
@@ -53,38 +53,124 @@ App.tsx
 ```
 /home                                    → normal mode
 /?left=/dash                             → panel mode, right panel hidden
-/?left=/dash&right=/route1               → panel mode, right panel visible
-/?left=/dash/sub1&right=/route2          → panel mode, nested route in left
+/?left=/dash&right=/posts                → panel mode, right panel visible
+/?left=/dash/sub1&right=/posts/3         → panel mode, nested routes in both
 ```
 
 ### Right Panel Toggle
 
 - Right panel is **hidden by default** when entering panel mode (`right: undefined`)
-- "Show Agent" button in left panel calls `showRight('/route1')` to open it
+- "Show Agent" button in left panel calls `showRight('/posts')` to open it
 - Right panel has its own X close button that calls `closeRight()`
 - Visibility controlled by `search.right !== undefined`
 
 ### Persistent Elements
 
-- **Nav bar** (Home, Settings, Open Panels) — renders in root layout, visible in both modes
+- **AppSidebar** (Home, Settings, Panels) — renders in root layout, visible in both modes
 - **LogPanel** — renders in root layout below content, visible in both modes
 - `PanelShell` no longer wraps itself in `h-screen` or renders its own LogPanel
 
-## Key Files
+## File Structure
+
+### Conventions
+
+| File | Role |
+|------|------|
+| `route.tsx` | Route definition + tree assembly (createRoute, beforeLoad, loader) |
+| `view.tsx` | React component for the route |
+| `index.tsx` | Index route of parent (path `/`) |
+| `components/` | Local components scoped to this route |
+| `routes/` | Child routes |
+
+### Directory Tree
+
+```
+routes/
+├── route.tsx                          # rootRoute, routeTree, mainRouter, Register
+├── index.tsx                          # path '/' landing page (IndexPage)
+├── components/                        # shared across all routes
+│   ├── AppSidebar.tsx                 #   sidebar nav
+│   ├── PanelShell.tsx                 #   dual RouterProvider, URL↔memory sync
+│   ├── LogPanel.tsx                   #   always-visible log strip
+│   └── panel-links.tsx                #   LinkLeft/LinkRight typed buttons
+│
+├── home/
+│   ├── route.tsx                      # homeRoute
+│   └── view.tsx                       # HomeView
+│
+├── settings/
+│   ├── route.tsx                      # settingsRoute (layout)
+│   ├── view.tsx                       # SettingsLayout
+│   └── routes/
+│       └── billing/
+│           ├── route.tsx              # billingRoute
+│           └── view.tsx               # BillingView
+│
+├── left-panel/
+│   ├── route.tsx                      # leftRoot, leftPanelTree, createLeftRouter
+│   └── routes/
+│       └── dash/
+│           ├── route.tsx              # dashRoute (layout)
+│           ├── view.tsx               # DashLayout
+│           ├── index.tsx              # dashIndexRoute — "select a sub-section"
+│           └── routes/
+│               ├── sub1/
+│               │   ├── route.tsx
+│               │   └── view.tsx
+│               └── sub2/
+│                   ├── route.tsx
+│                   └── view.tsx
+│
+└── right-panel/
+    ├── route.tsx                      # rightRoot, rightPanelTree, createRightRouter
+    └── routes/
+        └── posts/
+            ├── route.tsx              # postsRoute (loader)
+            ├── view.tsx               # PostsListView
+            └── routes/
+                └── $postId/
+                    ├── route.tsx      # postDetailRoute (loader)
+                    └── view.tsx       # PostDetailView
+```
+
+### Other Key Files
 
 | File | Purpose |
 |------|---------|
-| `routes/main.tsx` | Main router: root route with `validateSearch`, AppShell with persistent nav + mode switching. Exports `rootRoute` and `mainRouter`. |
-| `routes/left-panel.tsx` | Left panel route tree. Exports `leftPanelTree` and `createLeftRouter(initialPath)`. |
-| `routes/right-panel.tsx` | Right panel route tree. Exports `rightPanelTree` and `createRightRouter(initialPath)`. |
-| `lib/panel-context.tsx` | `PanelContext`, `usePanelNav()` hook, `LeftPanelPaths`/`RightPanelPaths` types. |
-| `lib/logger.ts` | `Logger` singleton, `useLogEntries()` hook, `beforeLoadLog(cause, route)` helper. |
-| `components/LogPanel.tsx` | Always-visible log strip with auto-scroll, color-coded entries (green=lifecycle, blue=navigation). |
-| `components/panel-links.tsx` | `LinkLeft`/`LinkRight` — typed buttons for cross-panel navigation. |
-| `components/PanelShell.tsx` | Dual `RouterProvider`, URL↔memory sync, `PanelContext.Provider`, conditional right panel. |
 | `App.tsx` | Entry: `<RouterProvider router={mainRouter} />` |
+| `lib/panel-context.tsx` | `PanelContext`, `usePanelNav()` hook, `LeftPanelPaths`/`RightPanelPaths` types |
+| `lib/logger.ts` | `Logger` singleton, `useLogEntries()` hook, `beforeLoadLog(cause, route)` helper |
 | `lib/utils.ts` | `cn()` utility (clsx + tailwind-merge) |
 | `components/ui/*` | shadcn/ui components (Button, Separator, Card, Badge, etc.) |
+
+### Component Wiring
+
+**Default:** `route.tsx` imports `view.tsx` and sets `component` directly:
+
+```typescript
+// routes/settings/route.tsx
+import { SettingsLayout } from './view'
+
+export const settingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/settings',
+  component: SettingsLayout,
+})
+```
+
+**When view imports route** (for `useLoaderData`, `useRouteContext({ from: route.id })`): direct import would create a circular dependency. In this case, `route.tsx` is created without `component`, and the parent assembly file wires it via `.update()`:
+
+```typescript
+// routes/right-panel/route.tsx (assembly)
+import { postsRoute } from './routes/posts/route'
+import { PostsListView } from './routes/posts/view'
+
+postsRoute.update({ component: PostsListView })
+```
+
+Routes using `.update()`: `homeRoute`, `postsRoute`, `postDetailRoute`.
+
+**Trivial index routes** (like `routes/index.tsx`) define `component` inline.
 
 ## Critical Implementation Details (Gotchas)
 
@@ -175,23 +261,38 @@ beforeLoad: ({ cause }) => {
 },
 ```
 
+### 9. Deep imports use `@/` alias
+
+Files nested 3+ levels deep use the `@/*` tsconfig path alias instead of fragile relative paths:
+
+```typescript
+// Deep file: routes/left-panel/routes/dash/routes/sub1/route.tsx
+import { beforeLoadLog } from '@/lib/logger'
+import { dashRoute } from '@/routes/left-panel/routes/dash/route'
+```
+
 ## Patterns
+
+### Adding a New Main Route
+
+1. Create `routes/<name>/route.tsx` with `createRoute({ getParentRoute: () => rootRoute, ... })`
+2. Create `routes/<name>/view.tsx` with the React component
+3. In `routes/route.tsx`: import both, call `route.update({ component: View })`, add to `routeTree.addChildren([...])`
 
 ### Adding a New Panel Route
 
-1. Add `createRoute(...)` to the panel's route tree file
-2. Add `beforeLoad: ({ cause }) => beforeLoadLog(cause, '<panel>:<path>')` to the route
-3. Add it to the tree via `.addChildren([...])`
-4. Done — types, navigation, rendering auto-update
+1. Create `routes/<panel>/routes/<name>/route.tsx` with `createRoute`
+2. Create `routes/<panel>/routes/<name>/view.tsx` with the component
+3. In `routes/<panel>/route.tsx`: import both, call `route.update({ component })`, add to tree via `.addChildren([...])`
 
 ### Adding a New Panel
 
-1. Create `routes/<panel-name>.tsx` with route tree + `createRouter` factory
+1. Create `routes/<panel-name>/route.tsx` with root route tree + `createRouter` factory
 2. Add panel path type to `lib/panel-context.tsx`
 3. Add `navigate<Panel>` / `show<Panel>` / `close<Panel>` to `PanelNavigators` interface
-4. Add `Link<Panel>` to `components/panel-links.tsx`
-5. Add `<panel>` to `validateSearch` in `routes/main.tsx`
-6. Add router creation + sync + render to `components/PanelShell.tsx`
+4. Add `Link<Panel>` to `routes/components/panel-links.tsx`
+5. Add `<panel>` to `validateSearch` in `routes/route.tsx`
+6. Add router creation + sync + render to `routes/components/PanelShell.tsx`
 
 ### Cross-Panel Navigation
 
@@ -201,10 +302,10 @@ Components inside any panel use `usePanelNav()` to navigate other panels:
 const { navigateLeft, navigateRight, showRight, closeRight, navigateMain } = usePanelNav()
 
 // Navigate another panel (panel already visible)
-navigateRight('/route2')
+navigateRight('/posts/5')
 
 // Show hidden panel
-showRight('/route1')
+showRight('/posts')
 
 // Hide panel
 closeRight()
@@ -218,7 +319,7 @@ navigateMain('/home')
 ```bash
 bun run dev          # Dev server on port 3000
 bun run build        # Production build
-bunx tsc --noEmit    # Type check (expect breadcrumb.tsx error — pre-existing, not blocking)
+bunx tsc --noEmit    # Type check
 ```
 
 ## Known Issues

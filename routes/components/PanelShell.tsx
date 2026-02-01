@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { RouterProvider, useSearch, useNavigate } from '@tanstack/react-router'
-import { rootRoute } from '../routes/main'
-import { createLeftRouter } from '../routes/left-panel'
-import { createRightRouter } from '../routes/right-panel'
-import { PanelContext, type PanelNavigators } from '../lib/panel-context'
-import { Separator } from './ui/separator'
-import { Button } from './ui/button'
-import { logger } from '../lib/logger'
+import { rootRoute } from '../route'
+import { createLeftRouter } from '../left-panel/route'
+import { createRightRouter } from '../right-panel/route'
+import { PanelContext, type PanelNavigators } from '../../lib/panel-context'
+import { Separator } from '../../components/ui/separator'
+import { Button } from '../../components/ui/button'
+import { logger } from '../../lib/logger'
 
 export function PanelShell() {
   const search = useSearch({ from: rootRoute.id })

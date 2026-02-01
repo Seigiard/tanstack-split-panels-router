@@ -1,7 +1,7 @@
 import React from 'react'
-import type { LeftPanelPaths } from '../lib/panel-context'
-import { usePanelNav } from '../lib/panel-context'
-import { Button } from './ui/button'
+import type { LeftPanelPaths } from '../../lib/panel-context'
+import { usePanelNav } from '../../lib/panel-context'
+import { Button } from '../../components/ui/button'
 
 interface PanelLinkProps<TPaths extends string> {
   to: TPaths
