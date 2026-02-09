@@ -1,8 +1,9 @@
 import type { LeftPanelPaths } from '@/lib/panel-context'
 import { Link as TanStackLink } from '@tanstack/react-router'
-import { useContext, type MouseEvent } from 'react'
+import { useContext, useMemo, type MouseEvent } from 'react'
 
 import { PanelContext } from '@/lib/panel-context'
+import { buildPanelValue } from '@/lib/panel-url'
 import { mainRouter } from '@/routes/route'
 
 interface LinkProps {
@@ -63,21 +64,27 @@ export function LinkPanels({
 
 interface LinkLeftPanelProps {
   to: LeftPanelPaths | (string & {})
+  search?: Record<string, string>
   children: React.ReactNode
   className?: string
 }
 
 export function LinkLeftPanel({
   to,
+  search,
   children,
   className,
 }: LinkLeftPanelProps): React.JSX.Element {
   const panelNav = useContext(PanelContext)
+  const panelValue = useMemo(
+    () => (search ? buildPanelValue(to, search) : to),
+    [to, search],
+  )
 
   const href = mainRouter.buildLocation({
     to: '/',
     search: (prev: Record<string, unknown>) => ({
-      left: to,
+      left: panelValue,
       right: (prev as { right?: string }).right ?? undefined,
     }),
   }).href
@@ -86,7 +93,7 @@ export function LinkLeftPanel({
     if (e.metaKey || e.ctrlKey || e.shiftKey) return
     if (!panelNav) return
     e.preventDefault()
-    panelNav.navigateLeft(to as LeftPanelPaths)
+    panelNav.navigateLeft(panelValue)
   }
 
   return (

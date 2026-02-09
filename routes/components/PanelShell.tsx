@@ -4,6 +4,7 @@ import { PropsWithChildren, useLayoutEffect, useMemo, useRef } from 'react'
 
 import { logger } from '../../lib/logger'
 import { PanelContext, type PanelNavigators } from '../../lib/panel-context'
+import { parsePanelValue } from '../../lib/panel-url'
 import { getLeftRouter } from '../left-panel/route'
 import { getRightRouter } from '../right-panel/route'
 import { rootRoute } from '../route'
@@ -15,8 +16,17 @@ export function PanelShell() {
   const leftRouter = getLeftRouter(search.left || '/')
   const rightRouter = getRightRouter(search.right || '/posts')
 
-  const panelNavigate = (router: PanelRouter, to: string) => {
-    ;(router.navigate as (opts: { to: string }) => void)({ to })
+  const panelNavigate = (router: PanelRouter, panelValue: string) => {
+    const { pathname, searchString } = parsePanelValue(panelValue)
+    const searchParams = searchString
+      ? Object.fromEntries(new URLSearchParams(searchString))
+      : undefined
+    ;(
+      router.navigate as (opts: {
+        to: string
+        search?: Record<string, string>
+      }) => void
+    )({ to: pathname, ...(searchParams ? { search: searchParams } : {}) })
   }
 
   const prevLeftRef = useRef<string | undefined>(undefined)
