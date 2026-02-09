@@ -5,31 +5,6 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
-const SIDEBAR_WIDTH = '16rem'
-
-function SidebarProvider({
-  className,
-  style,
-  children,
-  ...props
-}: React.ComponentProps<'div'>) {
-  return (
-    <div
-      data-slot='sidebar-wrapper'
-      style={
-        {
-          '--sidebar-width': SIDEBAR_WIDTH,
-          ...style,
-        } as React.CSSProperties
-      }
-      className={cn('flex min-h-svh w-full', className)}
-      {...props}
-    >
-      {children}
-    </div>
-  )
-}
-
 function Sidebar({
   className,
   children,
@@ -39,26 +14,13 @@ function Sidebar({
     <div
       data-slot='sidebar'
       className={cn(
-        'flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground',
+        'flex flex-col bg-sidebar text-sidebar-foreground',
         className,
       )}
       {...props}
     >
       {children}
     </div>
-  )
-}
-
-function SidebarInset({ className, ...props }: React.ComponentProps<'main'>) {
-  return (
-    <main
-      data-slot='sidebar-inset'
-      className={cn(
-        'relative flex w-full flex-1 flex-col bg-background',
-        className,
-      )}
-      {...props}
-    />
   )
 }
 
@@ -171,9 +133,7 @@ export {
   SidebarContent,
   SidebarGroup,
   SidebarHeader,
-  SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarProvider,
 }

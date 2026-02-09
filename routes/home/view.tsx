@@ -58,6 +58,9 @@ export function HomeView() {
         можем ли мы типизировать /flows/:flowId/test где нет компонента у flows,
         чтобы нельзя было линкануть flows?
       </p>
+      <p>
+        query params for panel routes (encode in panel's path)
+      </p>
       <div className='mt-6 overflow-x-auto'>
         <table className='w-full'>
           <thead>

@@ -9,7 +9,14 @@
       ]
     },
     "TypeScript": {
-      "language_servers": ["oxfmt", "oxlint", "tsgo", "vtsls"],
+      "language_servers": [
+        "oxfmt",
+        "oxlint",
+        "tsgo",
+        "tailwindcss-language-server",
+        "vtsls",
+        "!typescript-language-server"
+      ],
       "format_on_save": "on",
       "formatter": [
         { "language_server": { "name": "oxfmt" } },
@@ -21,8 +28,9 @@
         "oxfmt",
         "oxlint",
         "tsgo",
+        "tailwindcss-language-server",
         "vtsls",
-        "tailwindcss-language-server"
+        "!typescript-language-server"
       ],
       "format_on_save": "on",
       "formatter": [

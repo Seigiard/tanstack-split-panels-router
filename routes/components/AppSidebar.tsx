@@ -19,7 +19,7 @@ export function AppSidebar() {
   const isPanelMode = search.left !== undefined || search.right !== undefined
 
   return (
-    <Sidebar>
+    <Sidebar className='h-screen w-48 border-r border-border'>
       <SidebarHeader className='p-3 text-sm font-semibold'>
         <span>SplitState</span>
       </SidebarHeader>

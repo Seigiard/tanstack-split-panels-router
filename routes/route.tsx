@@ -5,8 +5,6 @@ import {
   useSearch,
 } from '@tanstack/react-router'
 
-import { SidebarProvider, SidebarInset } from '../components/ui/sidebar'
-
 import { AppSidebar } from './components/AppSidebar'
 import { LogPanel } from './components/LogPanel'
 import { PanelShell } from './components/PanelShell'
@@ -26,9 +24,9 @@ export const rootRoute = createRootRoute({
     const isPanelMode = search.left !== undefined || search.right !== undefined
 
     return (
-      <SidebarProvider>
+      <div className='grid h-screen w-full grid-cols-[min-content_1fr] grid-rows-1'>
         <AppSidebar />
-        <SidebarInset className='flex h-screen flex-col'>
+        <div className='grid h-screen grid-cols-1 grid-rows-[1fr_min-content]'>
           {isPanelMode ? (
             <PanelShell />
           ) : (
@@ -37,8 +35,8 @@ export const rootRoute = createRootRoute({
             </div>
           )}
           <LogPanel />
-        </SidebarInset>
-      </SidebarProvider>
+        </div>
+      </div>
     )
   },
   validateSearch: (search: Record<string, unknown>) => ({
