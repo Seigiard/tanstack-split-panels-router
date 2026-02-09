@@ -1,6 +1,7 @@
 import type { User } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
+import { LinkLeftPanel } from '@/components/ui/link'
 import { beforeLoadLog } from '@/lib/logger'
 import { wait } from '@/utils/wait'
 
@@ -16,4 +17,32 @@ export const usersIndexRoute = createRoute({
     const data: { users: User[] } = await res.json()
     return data.users
   },
+  component: UsersView,
 })
+
+function UsersView() {
+  const users = usersIndexRoute.useLoaderData() as User[]
+
+  return (
+    <div className='space-y-1'>
+      <h3 className='mb-2 text-sm font-semibold'>Users</h3>
+      <ul className='space-y-1'>
+        {users.map((user) => (
+          <li key={user.id}>
+            <LinkLeftPanel
+              to={`/users/${user.id}`}
+              className='block w-full rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted'
+            >
+              <span className='font-medium'>
+                {user.firstName} {user.lastName}
+              </span>
+              <span className='ml-2 text-muted-foreground'>
+                {user.company.title}
+              </span>
+            </LinkLeftPanel>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}

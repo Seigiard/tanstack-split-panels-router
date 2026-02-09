@@ -77,13 +77,12 @@ App.tsx
 
 ### Conventions
 
-| File          | Role                                                               |
-| ------------- | ------------------------------------------------------------------ |
-| `route.tsx`   | Route definition + tree assembly (createRoute, beforeLoad, loader) |
-| `view.tsx`    | React component for the route                                      |
-| `index.tsx`   | Index route of parent (path `/`)                                   |
-| `components/` | Local components scoped to this route                              |
-| `routes/`     | Child routes                                                       |
+| File          | Role                                                                          |
+| ------------- | ----------------------------------------------------------------------------- |
+| `route.tsx`   | Route definition + component (createRoute with component, beforeLoad, loader) |
+| `index.tsx`   | Index route of parent (path `/`) + its component                              |
+| `components/` | Local components scoped to this route                                         |
+| `routes/`     | Child routes                                                                  |
 
 ### Directory Tree
 
@@ -98,49 +97,43 @@ routes/
 │   └── panel-links.tsx                #   LinkLeft/LinkRight typed buttons
 │
 ├── home/
-│   ├── route.tsx                      # homeRoute
-│   └── view.tsx                       # HomeView
+│   └── route.tsx                      # homeRoute + HomeView
 │
 ├── users/
-│   ├── route.tsx                      # usersRoute (loader: json-mock.org)
-│   ├── view.tsx                       # UsersView
+│   ├── route.tsx                      # usersRoute (layout, Outlet)
+│   ├── index.tsx                      # usersIndexRoute (loader) + UsersView
 │   └── routes/
 │       └── $userId/
-│           ├── route.tsx              # userDetailRoute (loader)
-│           └── view.tsx               # UserDetailView
+│           └── route.tsx              # userDetailRoute (loader) + UserDetailView
 │
 ├── left-panel/
 │   ├── route.tsx                      # leftRoot, leftPanelTree, createLeftRouter
 │   └── routes/
-│       ├── dash/
-│       │   ├── route.tsx              # dashRoute (layout)
-│       │   ├── view.tsx               # DashLayout
-│       │   ├── index.tsx              # dashIndexRoute — "select a sub-section"
+│       ├── categories/
+│       │   ├── route.tsx              # categoriesRoute (layout, Outlet)
+│       │   ├── index.tsx              # categoriesIndexRoute (loader) + CategoriesView
 │       │   └── routes/
-│       │       ├── sub1/
-│       │       │   ├── route.tsx
-│       │       │   └── view.tsx
-│       │       └── sub2/
-│       │           ├── route.tsx
-│       │           └── view.tsx
+│       │       └── $category/
+│       │           ├── route.tsx      # categoryProductsRoute (layout, Outlet)
+│       │           ├── index.tsx      # categoryProductsIndexRoute (loader) + CategoryProductsView
+│       │           └── routes/
+│       │               └── $productId/
+│       │                   └── route.tsx  # productDetailRoute (loader) + ProductDetailView
 │       └── users/
-│           ├── route.tsx              # usersRoute (loader: fake.jsonmockapi.com)
-│           ├── view.tsx               # UsersView
+│           ├── route.tsx              # usersRoute (layout, Outlet)
+│           ├── index.tsx              # usersIndexRoute (loader) + UsersView
 │           └── routes/
 │               └── $userId/
-│                   ├── route.tsx      # userDetailRoute (loader)
-│                   └── view.tsx       # UserDetailView
+│                   └── route.tsx      # userDetailRoute (loader) + UserDetailView
 │
 └── right-panel/
     ├── route.tsx                      # rightRoot, rightPanelTree, createRightRouter
     └── routes/
         └── posts/
-            ├── route.tsx              # postsRoute (loader)
-            ├── view.tsx               # PostsListView
+            ├── route.tsx              # postsRoute (loader) + PostsListView
             └── routes/
                 └── $postId/
-                    ├── route.tsx      # postDetailRoute (loader)
-                    └── view.tsx       # PostDetailView
+                    └── route.tsx      # postDetailRoute (loader) + PostDetailView
 ```
 
 ### Other Key Files
@@ -155,21 +148,21 @@ routes/
 
 ### Component Wiring
 
-**Default:** `route.tsx` imports `view.tsx` and sets `component` directly in `createRoute()`.
-
-**When view imports route** (for `useLoaderData`, `useRouteContext({ from: route.id })`): direct import would create a circular dependency. In this case, `route.tsx` is created without `component`, and the parent assembly file wires it via `.update()`:
+Each route file defines both the route and its component in a single file. The component function is declared below `createRoute()` — function hoisting makes it available as a reference, and the route const is initialized by the time the component renders:
 
 ```typescript
-// routes/route.tsx (assembly)
-import { usersRoute } from './users/route'
-import { UsersView } from './users/view'
+export const myRoute = createRoute({
+  component: MyView,
+  loader: async () => { ... },
+})
 
-usersRoute.update({ component: UsersView })
+function MyView() {
+  const data = myRoute.useLoaderData()
+  return <div>...</div>
+}
 ```
 
-Routes using `.update()`: `homeRoute`, `usersRoute`, `userDetailRoute` (main + left panel), `postsRoute`, `postDetailRoute`.
-
-**Trivial index routes** (like `routes/index.tsx`) define `component` inline.
+Layout routes that only render `<Outlet />` define `component` inline.
 
 ## Critical Implementation Details (Gotchas)
 
@@ -275,15 +268,14 @@ import { dashRoute } from '@/routes/left-panel/routes/dash/route'
 
 ### Adding a New Main Route
 
-1. Create `routes/<name>/route.tsx` with `createRoute({ getParentRoute: () => rootRoute, ... })`
-2. Create `routes/<name>/view.tsx` with the React component
-3. In `routes/route.tsx`: import both, call `route.update({ component: View })`, add to `routeTree.addChildren([...])`
+1. Create `routes/<name>/route.tsx` with `createRoute({ getParentRoute: () => rootRoute, component: MyView, ... })`
+2. Define the component function in the same file below the route
+3. In `routes/route.tsx`: import the route and add to `routeTree.addChildren([...])`
 
 ### Adding a New Panel Route
 
-1. Create `routes/<panel>/routes/<name>/route.tsx` with `createRoute`
-2. Create `routes/<panel>/routes/<name>/view.tsx` with the component
-3. In `routes/<panel>/route.tsx`: import both, call `route.update({ component })`, add to tree via `.addChildren([...])`
+1. Create `routes/<panel>/routes/<name>/route.tsx` with `createRoute` and component
+2. In `routes/<panel>/route.tsx`: import the route and add to tree via `.addChildren([...])`
 
 ### Adding a New Panel
 

@@ -8,14 +8,9 @@ import { categoriesRoute } from './routes/categories/route'
 import { categoryProductsIndexRoute } from './routes/categories/routes/$category/index'
 import { categoryProductsRoute } from './routes/categories/routes/$category/route'
 import { productDetailRoute } from './routes/categories/routes/$category/routes/$productId/route'
-import { ProductDetailView } from './routes/categories/routes/$category/routes/$productId/view'
-import { CategoryProductsView } from './routes/categories/routes/$category/view'
-import { CategoriesView } from './routes/categories/view'
 import { usersIndexRoute } from './routes/users/index'
 import { usersRoute } from './routes/users/route'
 import { userDetailRoute } from './routes/users/routes/$userId/route'
-import { UserDetailView } from './routes/users/routes/$userId/view'
-import { UsersView } from './routes/users/view'
 
 export const leftRoot = createRootRoute({
   component: () => <Outlet />,
@@ -33,12 +28,6 @@ const leftIndexRoute = createRoute({
     )
   },
 })
-
-categoriesIndexRoute.update({ component: CategoriesView })
-categoryProductsIndexRoute.update({ component: CategoryProductsView })
-productDetailRoute.update({ component: ProductDetailView })
-usersIndexRoute.update({ component: UsersView })
-userDetailRoute.update({ component: UserDetailView })
 
 export const leftPanelTree = leftRoot.addChildren([
   leftIndexRoute,

@@ -10,12 +10,9 @@ import { LogPanel } from './components/LogPanel'
 import { PanelShell } from './components/PanelShell'
 import { RoutePending } from './components/RoutePending'
 import { homeRoute } from './home/route'
-import { HomeView } from './home/view'
 import { usersIndexRoute } from './users/index'
 import { usersRoute } from './users/route'
 import { userDetailRoute } from './users/routes/$userId/route'
-import { UserDetailView } from './users/routes/$userId/view'
-import { UsersView } from './users/view'
 
 import { indexRoute } from './index'
 
@@ -45,10 +42,6 @@ export const rootRoute = createRootRoute({
     right: typeof search.right === 'string' ? search.right : undefined,
   }),
 })
-
-homeRoute.update({ component: HomeView })
-usersIndexRoute.update({ component: UsersView })
-userDetailRoute.update({ component: UserDetailView })
 
 const routeTree = rootRoute.addChildren([
   indexRoute,

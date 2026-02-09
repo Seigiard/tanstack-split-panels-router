@@ -19,7 +19,7 @@ export function PanelShell() {
   const navigate = useNavigate()
 
   const leftRouter = getLeftRouter(search.left || '/')
-  const rightRouter = getRightRouter(search.right || '/posts')
+  const rightRouter = getRightRouter(search.right || '/')
 
   const panelNavigate = (router: PanelRouter, panelValue: string) => {
     const { pathname, searchString } = parsePanelValue(panelValue)
@@ -133,7 +133,7 @@ export function PanelShell() {
         ) : (
           <CollapsedPanel
             icon={<TbLayoutSidebarRightExpand />}
-            onClick={() => navigators.showRight('/posts')}
+            onClick={() => navigators.showRight('/')}
           />
         )}
       </div>

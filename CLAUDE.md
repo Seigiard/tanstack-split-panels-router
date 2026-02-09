@@ -29,19 +29,16 @@ bun run fix          # Format (oxfmt) + lint fix (oxlint)
 
 ## File Structure Conventions
 
-| File          | Role                                                               |
-| ------------- | ------------------------------------------------------------------ |
-| `route.tsx`   | Route definition + tree assembly (createRoute, beforeLoad, loader) |
-| `view.tsx`    | React component for the route                                      |
-| `index.tsx`   | Index route of parent (path `/`)                                   |
-| `components/` | Local components scoped to this route                              |
-| `routes/`     | Child routes                                                       |
+| File          | Role                                                                          |
+| ------------- | ----------------------------------------------------------------------------- |
+| `route.tsx`   | Route definition + component (createRoute with component, beforeLoad, loader) |
+| `index.tsx`   | Index route of parent (path `/`) + its component                              |
+| `components/` | Local components scoped to this route                                         |
+| `routes/`     | Child routes                                                                  |
 
-By default, `route.tsx` imports `view.tsx` and sets `component` directly in `createRoute()`.
+Each route file defines both the route and its component in a single file. The component function is declared below `createRoute()` — function hoisting makes it available as a reference, and the route const is initialized by the time the component renders.
 
-When `view.tsx` imports its own `route.tsx` (for `useLoaderData`/`useRouteContext({ from: route.id })`), this would create a circular dependency. In that case, the parent assembly file wires component via `.update({ component })`. Currently applies to: `homeRoute`, `usersRoute`, `userDetailRoute` (main + left panel), `postsRoute`, `postDetailRoute`.
-
-Trivial index routes define `component` inline.
+Layout routes that only render `<Outlet />` define `component` inline.
 
 ## Import Conventions
 
@@ -60,12 +57,12 @@ components/ui/       # shadcn/ui primitives (don't modify)
 
 ## Adding Routes
 
-**Main route:** create `routes/<name>/route.tsx` + `view.tsx`, wire in `routes/route.tsx`
+**Main route:** create `routes/<name>/route.tsx` (route + component in one file), add to tree in `routes/route.tsx`
 
-**Panel route:** create under `routes/<panel>/routes/<name>/`, wire in `routes/<panel>/route.tsx`
+**Panel route:** create under `routes/<panel>/routes/<name>/route.tsx`, add to tree in `routes/<panel>/route.tsx`
 
 See "Patterns" section in `docs/context/splitstate-router.md` for full steps.
 
 ## Feature Tracking
 
-After implementing a TanStack Router feature, update the status table in `routes/home/view.tsx` — change `<Todo />` to the matching Done badge (`<DoneMain>`, `<DoneLeft>`, `<DoneRight>`).
+After implementing a TanStack Router feature, update the status table in `routes/home/route.tsx` — change `<Todo />` to the matching Done badge (`<DoneMain>`, `<DoneLeft>`, `<DoneRight>`).
