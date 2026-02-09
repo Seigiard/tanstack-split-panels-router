@@ -2,10 +2,10 @@ import type { User } from '@/lib/api-types'
 
 import { Link } from '@/components/ui/link'
 
-import { usersRoute } from './route'
+import { usersIndexRoute } from './index'
 
 export function UsersView() {
-  const users = usersRoute.useLoaderData() as User[]
+  const users = usersIndexRoute.useLoaderData() as User[]
 
   return (
     <div className='max-w-4xl p-8'>

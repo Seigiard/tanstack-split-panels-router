@@ -11,6 +11,7 @@ import { PanelShell } from './components/PanelShell'
 import { RoutePending } from './components/RoutePending'
 import { homeRoute } from './home/route'
 import { HomeView } from './home/view'
+import { usersIndexRoute } from './users/index'
 import { usersRoute } from './users/route'
 import { userDetailRoute } from './users/routes/$userId/route'
 import { UserDetailView } from './users/routes/$userId/view'
@@ -46,14 +47,13 @@ export const rootRoute = createRootRoute({
 })
 
 homeRoute.update({ component: HomeView })
-usersRoute.update({ component: UsersView })
+usersIndexRoute.update({ component: UsersView })
 userDetailRoute.update({ component: UserDetailView })
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
   homeRoute,
-  usersRoute,
-  userDetailRoute,
+  usersRoute.addChildren([usersIndexRoute, userDetailRoute]),
 ])
 
 export const mainRouter = createRouter({

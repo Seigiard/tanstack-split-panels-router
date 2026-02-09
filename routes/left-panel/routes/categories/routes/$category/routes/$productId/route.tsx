@@ -2,11 +2,11 @@ import type { Product } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
-import { leftRoot } from '@/routes/left-panel/route'
+import { categoryProductsRoute } from '@/routes/left-panel/routes/categories/routes/$category/route'
 
 export const productDetailRoute = createRoute({
-  getParentRoute: () => leftRoot,
-  path: '/categories/$category/$productId',
+  getParentRoute: () => categoryProductsRoute,
+  path: '/$productId',
   staticData: {
     breadcrumb: ({ loaderData }) => (loaderData as Product | undefined)?.title,
   },

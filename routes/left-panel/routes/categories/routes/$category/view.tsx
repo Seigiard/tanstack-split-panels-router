@@ -5,15 +5,16 @@ import { buildPanelValue } from '@/lib/panel-url'
 import { Breadcrumbs } from '@/routes/components/Breadcrumbs'
 
 import {
-  categoryProductsRoute,
+  categoryProductsIndexRoute,
   type CategoryProductsData,
   type CategorySearch,
-} from './route'
+} from './index'
 
 export function CategoryProductsView() {
-  const data = categoryProductsRoute.useLoaderData() as CategoryProductsData
-  const search = categoryProductsRoute.useSearch() as CategorySearch
-  const { category } = categoryProductsRoute.useParams() as {
+  const data =
+    categoryProductsIndexRoute.useLoaderData() as CategoryProductsData
+  const search = categoryProductsIndexRoute.useSearch() as CategorySearch
+  const { category } = categoryProductsIndexRoute.useParams() as {
     category: string
   }
   const { navigateLeft } = usePanelNav()

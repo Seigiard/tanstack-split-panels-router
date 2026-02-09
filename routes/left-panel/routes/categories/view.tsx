@@ -2,10 +2,10 @@ import type { Category } from '@/lib/api-types'
 
 import { LinkLeftPanel } from '@/components/ui/link'
 
-import { categoriesRoute } from './route'
+import { categoriesIndexRoute } from './index'
 
 export function CategoriesView() {
-  const categories = categoriesRoute.useLoaderData() as Category[]
+  const categories = categoriesIndexRoute.useLoaderData() as Category[]
 
   return (
     <div className='space-y-1'>

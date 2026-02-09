@@ -2,10 +2,10 @@ import type { User } from '@/lib/api-types'
 
 import { LinkLeftPanel } from '@/components/ui/link'
 
-import { usersRoute } from './route'
+import { usersIndexRoute } from './index'
 
 export function UsersView() {
-  const users = usersRoute.useLoaderData() as User[]
+  const users = usersIndexRoute.useLoaderData() as User[]
 
   return (
     <div className='space-y-1'>

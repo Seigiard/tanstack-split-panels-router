@@ -2,12 +2,12 @@ import type { User } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
-import { leftRoot } from '@/routes/left-panel/route'
+import { usersRoute } from '@/routes/left-panel/routes/users/route'
 import { wait } from '@/utils/wait'
 
 export const userDetailRoute = createRoute({
-  getParentRoute: () => leftRoot,
-  path: '/users/$userId',
+  getParentRoute: () => usersRoute,
+  path: '/$userId',
   staticData: {
     breadcrumb: ({ loaderData }) => {
       const user = loaderData as User | undefined

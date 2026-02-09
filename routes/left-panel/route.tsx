@@ -3,12 +3,15 @@ import { createRootRoute, createRoute, Outlet } from '@tanstack/react-router'
 import { createPanelRouter } from '@/lib/create-panel-router'
 import { beforeLoadLog } from '@/lib/logger'
 
+import { categoriesIndexRoute } from './routes/categories/index'
 import { categoriesRoute } from './routes/categories/route'
+import { categoryProductsIndexRoute } from './routes/categories/routes/$category/index'
 import { categoryProductsRoute } from './routes/categories/routes/$category/route'
 import { productDetailRoute } from './routes/categories/routes/$category/routes/$productId/route'
 import { ProductDetailView } from './routes/categories/routes/$category/routes/$productId/view'
 import { CategoryProductsView } from './routes/categories/routes/$category/view'
 import { CategoriesView } from './routes/categories/view'
+import { usersIndexRoute } from './routes/users/index'
 import { usersRoute } from './routes/users/route'
 import { userDetailRoute } from './routes/users/routes/$userId/route'
 import { UserDetailView } from './routes/users/routes/$userId/view'
@@ -31,19 +34,22 @@ const leftIndexRoute = createRoute({
   },
 })
 
-categoriesRoute.update({ component: CategoriesView })
-categoryProductsRoute.update({ component: CategoryProductsView })
+categoriesIndexRoute.update({ component: CategoriesView })
+categoryProductsIndexRoute.update({ component: CategoryProductsView })
 productDetailRoute.update({ component: ProductDetailView })
-usersRoute.update({ component: UsersView })
+usersIndexRoute.update({ component: UsersView })
 userDetailRoute.update({ component: UserDetailView })
 
 export const leftPanelTree = leftRoot.addChildren([
   leftIndexRoute,
-  categoriesRoute,
-  categoryProductsRoute,
-  productDetailRoute,
-  usersRoute,
-  userDetailRoute,
+  categoriesRoute.addChildren([
+    categoriesIndexRoute,
+    categoryProductsRoute.addChildren([
+      categoryProductsIndexRoute,
+      productDetailRoute,
+    ]),
+  ]),
+  usersRoute.addChildren([usersIndexRoute, userDetailRoute]),
 ])
 
 export const getLeftRouter = createPanelRouter(leftPanelTree)
