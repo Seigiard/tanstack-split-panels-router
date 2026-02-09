@@ -8,6 +8,7 @@ import { wait } from '@/utils/wait'
 export const usersRoute = createRoute({
   getParentRoute: () => leftRoot,
   path: '/users',
+  staticData: { breadcrumb: 'Users' },
   beforeLoad: ({ cause }) => beforeLoadLog(cause, 'left:/users'),
   loader: async (): Promise<User[]> => {
     await wait(1000)

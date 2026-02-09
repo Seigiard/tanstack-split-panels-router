@@ -1,6 +1,6 @@
 import type { User } from '@/lib/api-types'
 
-import { LinkLeftPanel } from '@/components/ui/link'
+import { Breadcrumbs } from '@/routes/components/Breadcrumbs'
 
 import { userDetailRoute } from './route'
 
@@ -9,12 +9,7 @@ export function UserDetailView() {
 
   return (
     <div className='space-y-4'>
-      <LinkLeftPanel
-        to='/users'
-        className='inline-flex items-center text-sm text-muted-foreground hover:text-foreground'
-      >
-        &larr; Back to users
-      </LinkLeftPanel>
+      <Breadcrumbs />
 
       <div className='flex items-start gap-3'>
         <img

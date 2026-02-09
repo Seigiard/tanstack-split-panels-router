@@ -1,24 +1,15 @@
 import type { Product } from '@/lib/api-types'
 
-import { LinkLeftPanel } from '@/components/ui/link'
+import { Breadcrumbs } from '@/routes/components/Breadcrumbs'
 
 import { productDetailRoute } from './route'
 
 export function ProductDetailView() {
   const product = productDetailRoute.useLoaderData() as Product
-  const { category } = productDetailRoute.useParams() as {
-    category: string
-    productId: string
-  }
 
   return (
     <div className='space-y-4'>
-      <LinkLeftPanel
-        to={`/categories/${category}`}
-        className='inline-flex items-center text-sm text-muted-foreground hover:text-foreground'
-      >
-        &larr; Back to {category.replace(/-/g, ' ')}
-      </LinkLeftPanel>
+      <Breadcrumbs />
 
       <div className='flex gap-3'>
         <img

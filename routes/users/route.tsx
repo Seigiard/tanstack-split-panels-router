@@ -10,6 +10,7 @@ export type { User }
 export const usersRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/users',
+  staticData: { breadcrumb: 'Users' },
   beforeLoad: ({ cause }) => beforeLoadLog(cause, 'main:/users'),
   loader: async (): Promise<User[]> => {
     await wait(1000)

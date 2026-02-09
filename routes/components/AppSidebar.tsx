@@ -54,7 +54,7 @@ export function AppSidebar() {
                 render={<LinkPanels left='/categories' />}
               >
                 <TbColumns />
-                <span>Panels</span>
+                <span>Products</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

@@ -19,6 +19,12 @@ export type CategoryProductsData = {
 export const categoryProductsRoute = createRoute({
   getParentRoute: () => leftRoot,
   path: '/categories/$category',
+  staticData: {
+    breadcrumb: ({ params }) =>
+      params.category
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, (c) => c.toUpperCase()),
+  },
   validateSearch: (search: Record<string, unknown>): CategorySearch => ({
     skip: Number(search.skip) || 0,
     limit: Number(search.limit) || 10,

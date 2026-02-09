@@ -8,6 +8,12 @@ import { wait } from '@/utils/wait'
 export const userDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/users/$userId',
+  staticData: {
+    breadcrumb: ({ loaderData }) => {
+      const user = loaderData as User | undefined
+      return user ? `${user.firstName} ${user.lastName}` : undefined
+    },
+  },
   beforeLoad: ({ cause, params }) =>
     beforeLoadLog(cause, `main:/users/${params.userId}`),
   loader: async ({ params }): Promise<User> => {

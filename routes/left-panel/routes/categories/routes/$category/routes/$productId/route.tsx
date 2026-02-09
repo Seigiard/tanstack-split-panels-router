@@ -7,6 +7,9 @@ import { leftRoot } from '@/routes/left-panel/route'
 export const productDetailRoute = createRoute({
   getParentRoute: () => leftRoot,
   path: '/categories/$category/$productId',
+  staticData: {
+    breadcrumb: ({ loaderData }) => (loaderData as Product | undefined)?.title,
+  },
   beforeLoad: ({ cause, params }) =>
     beforeLoadLog(
       cause,

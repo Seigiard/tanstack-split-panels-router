@@ -14,7 +14,10 @@ declare module '@tanstack/react-router' {
   interface StaticDataRouteOption {
     breadcrumb?:
       | string
-      | ((match: { params: Record<string, string>; loaderData: unknown }) => string)
+      | ((match: {
+          params: Record<string, string>
+          loaderData: unknown
+        }) => string)
   }
 }
 ```
@@ -38,20 +41,20 @@ Single `<Breadcrumbs />` component in `routes/components/Breadcrumbs.tsx`:
 
 ### Left Panel
 
-| Route | Path | `staticData.breadcrumb` |
-|---|---|---|
-| `categoriesRoute` | `/categories` | `'Categories'` |
-| `categoryProductsRoute` | `/categories/$category` | `({ params }) => capitalize(params.category)` |
-| `productDetailRoute` | `/categories/$category/$productId` | `({ loaderData }) => (loaderData as Product).title` |
-| `usersRoute` | `/users` | `'Users'` |
-| `userDetailRoute` | `/users/$userId` | `({ loaderData }) => firstName + ' ' + lastName` |
+| Route                   | Path                               | `staticData.breadcrumb`                             |
+| ----------------------- | ---------------------------------- | --------------------------------------------------- |
+| `categoriesRoute`       | `/categories`                      | `'Categories'`                                      |
+| `categoryProductsRoute` | `/categories/$category`            | `({ params }) => capitalize(params.category)`       |
+| `productDetailRoute`    | `/categories/$category/$productId` | `({ loaderData }) => (loaderData as Product).title` |
+| `usersRoute`            | `/users`                           | `'Users'`                                           |
+| `userDetailRoute`       | `/users/$userId`                   | `({ loaderData }) => firstName + ' ' + lastName`    |
 
 ### Main Router
 
-| Route | Path | `staticData.breadcrumb` |
-|---|---|---|
-| `homeRoute` | `/home` | `'Home'` |
-| `usersRoute` | `/users` | `'Users'` |
+| Route             | Path             | `staticData.breadcrumb`                          |
+| ----------------- | ---------------- | ------------------------------------------------ |
+| `homeRoute`       | `/home`          | `'Home'`                                         |
+| `usersRoute`      | `/users`         | `'Users'`                                        |
 | `userDetailRoute` | `/users/$userId` | `({ loaderData }) => firstName + ' ' + lastName` |
 
 ## View Placement

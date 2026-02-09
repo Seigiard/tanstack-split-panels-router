@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { LinkLeftPanel } from '@/components/ui/link'
 import { usePanelNav } from '@/lib/panel-context'
 import { buildPanelValue } from '@/lib/panel-url'
+import { Breadcrumbs } from '@/routes/components/Breadcrumbs'
 
 import {
   categoryProductsRoute,
@@ -34,17 +35,7 @@ export function CategoryProductsView() {
 
   return (
     <div className='space-y-3'>
-      <div className='flex items-center gap-2'>
-        <LinkLeftPanel
-          to='/categories'
-          className='text-sm text-muted-foreground hover:text-foreground'
-        >
-          &larr;
-        </LinkLeftPanel>
-        <h3 className='text-sm font-semibold capitalize'>
-          {category.replace(/-/g, ' ')}
-        </h3>
-      </div>
+      <Breadcrumbs />
 
       <div className='text-xs text-muted-foreground'>
         {data.total > 0
