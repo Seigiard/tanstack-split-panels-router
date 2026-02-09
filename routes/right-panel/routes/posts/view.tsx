@@ -1,8 +1,8 @@
+import type { Post } from '@/lib/api-types'
+
 import { LinkRightPanel } from '@/components/ui/link'
 
 import { postsRoute } from './route'
-
-type Post = { id: number; title: string; body: string; userId: number }
 
 export function PostsListView() {
   const posts = postsRoute.useLoaderData() as Post[]

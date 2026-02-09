@@ -1,4 +1,4 @@
-import type { User } from './route'
+import type { User } from '@/lib/api-types'
 
 import { LinkLeftPanel } from '@/components/ui/link'
 
@@ -21,7 +21,7 @@ export function UsersView() {
                 {user.firstName} {user.lastName}
               </span>
               <span className='ml-2 text-muted-foreground'>
-                {user.company.jobTitle}
+                {user.company.title}
               </span>
             </LinkLeftPanel>
           </li>

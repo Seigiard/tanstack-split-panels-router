@@ -1,15 +1,8 @@
+import type { Comment, Post } from '@/lib/api-types'
+
 import { LinkRightPanel } from '@/components/ui/link'
 
 import { postDetailRoute } from './route'
-
-type Post = { id: number; title: string; body: string; userId: number }
-type Comment = {
-  id: number
-  postId: number
-  name: string
-  email: string
-  body: string
-}
 
 export function PostDetailView() {
   const { post, comments } = postDetailRoute.useLoaderData() as {
@@ -22,7 +15,7 @@ export function PostDetailView() {
         to='/posts'
         className='inline-flex items-center text-sm text-muted-foreground hover:text-foreground'
       >
-        ← Back to posts
+        &larr; Back to posts
       </LinkRightPanel>
       <div>
         <h3 className='text-sm font-semibold'>{post.title}</h3>
@@ -35,7 +28,7 @@ export function PostDetailView() {
         <ul className='space-y-3'>
           {comments.map((c) => (
             <li key={c.id} className='rounded border border-border p-2 text-sm'>
-              <span className='font-medium'>{c.name}</span>
+              <span className='font-medium'>{c.user.fullName}</span>
               <p className='mt-0.5 text-muted-foreground'>{c.body}</p>
             </li>
           ))}

@@ -1,4 +1,4 @@
-import type { User } from '@/routes/left-panel/routes/users/route'
+import type { User } from '@/lib/api-types'
 
 import { LinkLeftPanel } from '@/components/ui/link'
 
@@ -16,11 +16,18 @@ export function UserDetailView() {
         &larr; Back to users
       </LinkLeftPanel>
 
-      <div>
-        <h3 className='text-sm font-semibold'>
-          {user.firstName} {user.lastName}
-        </h3>
-        <p className='mt-1 text-sm text-muted-foreground'>{user.email}</p>
+      <div className='flex items-start gap-3'>
+        <img
+          src={user.image}
+          alt={`${user.firstName} ${user.lastName}`}
+          className='h-12 w-12 rounded-full'
+        />
+        <div>
+          <h3 className='text-sm font-semibold'>
+            {user.firstName} {user.lastName}
+          </h3>
+          <p className='mt-0.5 text-sm text-muted-foreground'>{user.email}</p>
+        </div>
       </div>
 
       <div className='space-y-2 text-sm'>
@@ -30,7 +37,7 @@ export function UserDetailView() {
         </div>
         <div>
           <span className='font-medium'>Role:</span>{' '}
-          <span className='text-muted-foreground'>{user.company.jobTitle}</span>
+          <span className='text-muted-foreground'>{user.company.title}</span>
         </div>
         <div>
           <span className='font-medium'>Phone:</span>{' '}

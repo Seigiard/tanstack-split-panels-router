@@ -1,4 +1,4 @@
-import type { User } from './route'
+import type { User } from '@/lib/api-types'
 
 import { Link } from '@/components/ui/link'
 
@@ -13,8 +13,8 @@ export function UsersView() {
       <div className='grid gap-3'>
         {users.map((user) => (
           <Link
-            key={user.userId}
-            to={`/users/${user.userId}`}
+            key={user.id}
+            to={`/users/${user.id}`}
             className='flex items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-muted/50'
           >
             <div>

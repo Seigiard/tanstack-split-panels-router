@@ -1,4 +1,4 @@
-import type { User } from '@/routes/users/route'
+import type { User } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
@@ -12,7 +12,7 @@ export const userDetailRoute = createRoute({
     beforeLoadLog(cause, `main:/users/${params.userId}`),
   loader: async ({ params }): Promise<User> => {
     await wait(1000)
-    const res = await fetch(`https://json-mock.org/api/users/${params.userId}`)
+    const res = await fetch(`https://dummyjson.com/users/${params.userId}`)
     return res.json()
   },
 })

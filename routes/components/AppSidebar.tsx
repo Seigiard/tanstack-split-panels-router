@@ -51,7 +51,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton
                 isActive={isPanelMode}
-                render={<LinkPanels left='/' />}
+                render={<LinkPanels left='/categories' />}
               >
                 <TbColumns />
                 <span>Panels</span>
