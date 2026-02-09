@@ -3,14 +3,11 @@ import { createRootRoute, createRoute, Outlet } from '@tanstack/react-router'
 import { createPanelRouter } from '@/lib/create-panel-router'
 import { beforeLoadLog } from '@/lib/logger'
 
-import { categoriesIndexRoute } from './routes/categories/index'
-import { categoriesRoute } from './routes/categories/route'
-import { categoryProductsIndexRoute } from './routes/categories/routes/$category/index'
-import { categoryProductsRoute } from './routes/categories/routes/$category/route'
-import { productDetailRoute } from './routes/categories/routes/$category/routes/$productId/route'
-import { usersIndexRoute } from './routes/users/index'
-import { usersRoute } from './routes/users/route'
-import { userDetailRoute } from './routes/users/routes/$userId/route'
+import { productDetailRoute } from './categories/$category/$productId'
+import { categoryProductsIndexRoute } from './categories/$category/index'
+import { categoryProductsRoute } from './categories/$category/route'
+import { categoriesIndexRoute } from './categories/index'
+import { categoriesRoute } from './categories/route'
 
 export const leftRoot = createRootRoute({
   component: () => <Outlet />,
@@ -38,7 +35,6 @@ export const leftPanelTree = leftRoot.addChildren([
       productDetailRoute,
     ]),
   ]),
-  usersRoute.addChildren([usersIndexRoute, userDetailRoute]),
 ])
 
 export const getLeftRouter = createPanelRouter(leftPanelTree)

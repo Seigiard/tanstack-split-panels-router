@@ -10,8 +10,8 @@ import {
 import { logger } from '../../lib/logger'
 import { PanelContext, type PanelNavigators } from '../../lib/panel-context'
 import { parsePanelValue } from '../../lib/panel-url'
-import { getLeftRouter } from '../left-panel/route'
-import { getRightRouter } from '../right-panel/route'
+import { getLeftRouter } from '../left-panel'
+import { getRightRouter } from '../right-panel'
 import { rootRoute } from '../route'
 
 export function PanelShell() {

@@ -3,7 +3,7 @@ import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
 import { Breadcrumbs } from '@/routes/components/Breadcrumbs'
-import { categoryProductsRoute } from '@/routes/left-panel/routes/categories/routes/$category/route'
+import { categoryProductsRoute } from '@/routes/left-panel/categories/$category/route'
 
 export const productDetailRoute = createRoute({
   getParentRoute: () => categoryProductsRoute,

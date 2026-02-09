@@ -1,6 +1,6 @@
 import { createRoute, Outlet } from '@tanstack/react-router'
 
-import { leftRoot } from '@/routes/left-panel/route'
+import { leftRoot } from '@/routes/left-panel'
 
 export const categoriesRoute = createRoute({
   getParentRoute: () => leftRoot,

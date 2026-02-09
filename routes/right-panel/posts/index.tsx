@@ -3,7 +3,7 @@ import { createRoute } from '@tanstack/react-router'
 
 import { LinkRightPanel } from '@/components/ui/link'
 import { beforeLoadLog } from '@/lib/logger'
-import { rightRoot } from '@/routes/right-panel/route'
+import { rightRoot } from '@/routes/right-panel'
 import { wait } from '@/utils/wait'
 
 export const postsRoute = createRoute({

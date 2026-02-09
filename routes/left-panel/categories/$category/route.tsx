@@ -1,6 +1,6 @@
 import { createRoute, Outlet } from '@tanstack/react-router'
 
-import { categoriesRoute } from '@/routes/left-panel/routes/categories/route'
+import { categoriesRoute } from '@/routes/left-panel/categories/route'
 
 export const categoryProductsRoute = createRoute({
   getParentRoute: () => categoriesRoute,

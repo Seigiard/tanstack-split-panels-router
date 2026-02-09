@@ -29,16 +29,18 @@ bun run fix          # Format (oxfmt) + lint fix (oxlint)
 
 ## File Structure Conventions
 
-| File          | Role                                                                          |
-| ------------- | ----------------------------------------------------------------------------- |
-| `route.tsx`   | Route definition + component (createRoute with component, beforeLoad, loader) |
-| `index.tsx`   | Index route of parent (path `/`) + its component                              |
-| `components/` | Local components scoped to this route                                         |
-| `routes/`     | Child routes                                                                  |
+| File          | Role                                                                     |
+| ------------- | ------------------------------------------------------------------------ |
+| `index.tsx`   | Route definition + component (default file for a route directory)        |
+| `route.tsx`   | Parent layout route (used when directory also has `index.tsx` for child) |
+| `components/` | Local components scoped to this route                                    |
+| `<dir>/`      | Child routes as sibling directories (no `routes/` intermediary)          |
 
 Each route file defines both the route and its component in a single file. The component function is declared below `createRoute()` — function hoisting makes it available as a reference, and the route const is initialized by the time the component renders.
 
 Layout routes that only render `<Outlet />` define `component` inline.
+
+File structure must mirror the route tree: sibling routes live at the same directory level, nested routes in subdirectories.
 
 ## Import Conventions
 
@@ -57,12 +59,14 @@ components/ui/       # shadcn/ui primitives (don't modify)
 
 ## Adding Routes
 
-**Main route:** create `routes/<name>/route.tsx` (route + component in one file), add to tree in `routes/route.tsx`
+**Leaf route:** create `routes/<name>/index.tsx` (route + component), add to tree in assembly file
 
-**Panel route:** create under `routes/<panel>/routes/<name>/route.tsx`, add to tree in `routes/<panel>/route.tsx`
+**Layout route (with children):** create `routes/<name>/route.tsx` (layout with Outlet) + `routes/<name>/index.tsx` (index child), add to tree in assembly file
+
+**Sibling routes:** place at the same directory level (e.g. `routes/posts/` and `routes/$postId/`)
 
 See "Patterns" section in `docs/context/splitstate-router.md` for full steps.
 
 ## Feature Tracking
 
-After implementing a TanStack Router feature, update the status table in `routes/home/route.tsx` — change `<Todo />` to the matching Done badge (`<DoneMain>`, `<DoneLeft>`, `<DoneRight>`).
+After implementing a TanStack Router feature, update the status table in `routes/home/index.tsx` — change `<Todo />` to the matching Done badge (`<DoneMain>`, `<DoneLeft>`, `<DoneRight>`).

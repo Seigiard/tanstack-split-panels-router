@@ -77,12 +77,12 @@ App.tsx
 
 ### Conventions
 
-| File          | Role                                                                          |
-| ------------- | ----------------------------------------------------------------------------- |
-| `route.tsx`   | Route definition + component (createRoute with component, beforeLoad, loader) |
-| `index.tsx`   | Index route of parent (path `/`) + its component                              |
-| `components/` | Local components scoped to this route                                         |
-| `routes/`     | Child routes                                                                  |
+| File          | Role                                                                     |
+| ------------- | ------------------------------------------------------------------------ |
+| `index.tsx`   | Route definition + component (default file for a route directory)        |
+| `route.tsx`   | Parent layout route (used when directory also has `index.tsx` for child) |
+| `components/` | Local components scoped to this route                                    |
+| `<dir>/`      | Child routes as sibling directories (no `routes/` intermediary)          |
 
 ### Directory Tree
 
@@ -97,43 +97,36 @@ routes/
 │   └── panel-links.tsx                #   LinkLeft/LinkRight typed buttons
 │
 ├── home/
-│   └── route.tsx                      # homeRoute + HomeView
+│   └── index.tsx                      # homeRoute + HomeView
 │
 ├── users/
 │   ├── route.tsx                      # usersRoute (layout, Outlet)
 │   ├── index.tsx                      # usersIndexRoute (loader) + UsersView
-│   └── routes/
-│       └── $userId/
-│           └── route.tsx              # userDetailRoute (loader) + UserDetailView
+│   └── $userId/
+│       └── index.tsx                  # userDetailRoute (loader) + UserDetailView
 │
 ├── left-panel/
-│   ├── route.tsx                      # leftRoot, leftPanelTree, createLeftRouter
-│   └── routes/
-│       ├── categories/
-│       │   ├── route.tsx              # categoriesRoute (layout, Outlet)
-│       │   ├── index.tsx              # categoriesIndexRoute (loader) + CategoriesView
-│       │   └── routes/
-│       │       └── $category/
-│       │           ├── route.tsx      # categoryProductsRoute (layout, Outlet)
-│       │           ├── index.tsx      # categoryProductsIndexRoute (loader) + CategoryProductsView
-│       │           └── routes/
-│       │               └── $productId/
-│       │                   └── route.tsx  # productDetailRoute (loader) + ProductDetailView
-│       └── users/
-│           ├── route.tsx              # usersRoute (layout, Outlet)
-│           ├── index.tsx              # usersIndexRoute (loader) + UsersView
-│           └── routes/
-│               └── $userId/
-│                   └── route.tsx      # userDetailRoute (loader) + UserDetailView
+│   ├── index.tsx                      # leftRoot, leftPanelTree, getLeftRouter
+│   ├── categories/
+│   │   ├── route.tsx                  # categoriesRoute (layout, Outlet)
+│   │   ├── index.tsx                  # categoriesIndexRoute (loader) + CategoriesView
+│   │   └── $category/
+│   │       ├── route.tsx              # categoryProductsRoute (layout, Outlet)
+│   │       ├── index.tsx              # categoryProductsIndexRoute (loader) + CategoryProductsView
+│   │       └── $productId/
+│   │           └── index.tsx          # productDetailRoute (loader) + ProductDetailView
+│   └── users/
+│       ├── route.tsx                  # usersRoute (layout, Outlet)
+│       ├── index.tsx                  # usersIndexRoute (loader) + UsersView
+│       └── $userId/
+│           └── index.tsx              # userDetailRoute (loader) + UserDetailView
 │
 └── right-panel/
-    ├── route.tsx                      # rightRoot, rightPanelTree, createRightRouter
-    └── routes/
-        └── posts/
-            ├── route.tsx              # postsRoute (loader) + PostsListView
-            └── routes/
-                └── $postId/
-                    └── route.tsx      # postDetailRoute (loader) + PostDetailView
+    ├── index.tsx                      # rightRoot, rightPanelTree, getRightRouter
+    ├── posts/
+    │   └── index.tsx                  # postsRoute (loader) + PostsListView
+    └── $postId/
+        └── index.tsx                  # postDetailRoute (loader) + PostDetailView
 ```
 
 ### Other Key Files
@@ -268,14 +261,15 @@ import { dashRoute } from '@/routes/left-panel/routes/dash/route'
 
 ### Adding a New Main Route
 
-1. Create `routes/<name>/route.tsx` with `createRoute({ getParentRoute: () => rootRoute, component: MyView, ... })`
+1. Create `routes/<name>/index.tsx` with `createRoute({ getParentRoute: () => rootRoute, component: MyView, ... })`
 2. Define the component function in the same file below the route
 3. In `routes/route.tsx`: import the route and add to `routeTree.addChildren([...])`
 
 ### Adding a New Panel Route
 
-1. Create `routes/<panel>/routes/<name>/route.tsx` with `createRoute` and component
+1. Create `routes/<panel>/routes/<name>/index.tsx` with `createRoute` and component
 2. In `routes/<panel>/route.tsx`: import the route and add to tree via `.addChildren([...])`
+3. Sibling routes go at the same directory level (not nested under each other)
 
 ### Adding a New Panel
 

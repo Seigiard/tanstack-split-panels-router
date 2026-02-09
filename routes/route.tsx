@@ -9,10 +9,10 @@ import { AppSidebar } from './components/AppSidebar'
 import { LogPanel } from './components/LogPanel'
 import { PanelShell } from './components/PanelShell'
 import { RoutePending } from './components/RoutePending'
-import { homeRoute } from './home/route'
+import { homeRoute } from './home'
+import { userDetailRoute } from './users/$userId'
 import { usersIndexRoute } from './users/index'
 import { usersRoute } from './users/route'
-import { userDetailRoute } from './users/routes/$userId/route'
 
 import { indexRoute } from './index'
 

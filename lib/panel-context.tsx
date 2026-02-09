@@ -1,5 +1,5 @@
-import type { leftPanelTree } from '../routes/left-panel/route'
-import type { rightPanelTree } from '../routes/right-panel/route'
+import type { leftPanelTree } from '../routes/left-panel'
+import type { rightPanelTree } from '../routes/right-panel'
 import type { RoutePaths } from '@tanstack/router-core'
 import { createContext, useContext } from 'react'
 
