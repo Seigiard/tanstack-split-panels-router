@@ -1,6 +1,11 @@
 import type { PanelRouter } from '../../lib/create-panel-router'
 import { RouterProvider, useSearch, useNavigate } from '@tanstack/react-router'
-import { PropsWithChildren, useLayoutEffect, useMemo, useRef } from 'react'
+import { type PropsWithChildren, useLayoutEffect, useMemo, useRef } from 'react'
+import {
+  TbX,
+  TbLayoutSidebarLeftExpand,
+  TbLayoutSidebarRightExpand,
+} from 'react-icons/tb'
 
 import { logger } from '../../lib/logger'
 import { PanelContext, type PanelNavigators } from '../../lib/panel-context'
@@ -64,6 +69,21 @@ export function PanelShell() {
           search: { left: search.left || '/', right: to },
         })
       },
+      showLeft: (to) => {
+        logger.log('[nav:left] show → ' + to, 'navigation')
+        panelNavigate(leftRouter, to as string)
+        navigate({
+          to: '/',
+          search: { left: to as string, right: search.right },
+        })
+      },
+      closeLeft: () => {
+        logger.log('[nav:left] closed', 'navigation')
+        navigate({
+          to: '/',
+          search: { left: undefined, right: search.right },
+        })
+      },
       showRight: (to) => {
         logger.log('[nav:right] show → ' + to, 'navigation')
         panelNavigate(rightRouter, to)
@@ -86,6 +106,8 @@ export function PanelShell() {
           search: { left: undefined, right: undefined },
         })
       },
+      isLeftOpen: search.left !== undefined,
+      isRightOpen: search.right !== undefined,
     }),
     [leftRouter, rightRouter, navigate, search.left, search.right],
   )
@@ -93,31 +115,72 @@ export function PanelShell() {
   return (
     <PanelContext.Provider value={navigators}>
       <div className='flex min-h-0 flex-1 overflow-hidden'>
-        {search?.left && (
-          <Panel title='Left Panel'>
+        {search?.left ? (
+          <Panel title='Left Panel' onClose={navigators.closeLeft}>
             <RouterProvider router={leftRouter} />
           </Panel>
+        ) : (
+          <CollapsedPanel
+            icon={<TbLayoutSidebarLeftExpand />}
+            onClick={() => navigators.showLeft('/categories')}
+          />
         )}
 
-        {search?.right && (
-          <Panel title='Right Panel'>
+        {search?.right ? (
+          <Panel title='Right Panel' onClose={navigators.closeRight}>
             <RouterProvider router={rightRouter} />
           </Panel>
+        ) : (
+          <CollapsedPanel
+            icon={<TbLayoutSidebarRightExpand />}
+            onClick={() => navigators.showRight('/posts')}
+          />
         )}
       </div>
     </PanelContext.Provider>
   )
 }
 
-function Panel({ children, title }: PropsWithChildren<{ title: string }>) {
+function Panel({
+  children,
+  title,
+  onClose,
+}: PropsWithChildren<{ title: string; onClose: () => void }>) {
   return (
     <div className='grid min-w-0 flex-1 grid-rows-[min-content_1fr] gap-2 bg-accent p-2'>
-      <h2 className='text-[10px] font-bold tracking-widest text-muted-foreground uppercase'>
-        {title}
-      </h2>
+      <div className='flex items-center justify-between'>
+        <h2 className='text-[10px] font-bold tracking-widest text-muted-foreground uppercase'>
+          {title}
+        </h2>
+        <button
+          onClick={onClose}
+          className='rounded p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
+        >
+          <TbX className='h-3.5 w-3.5' />
+        </button>
+      </div>
       <div className='h-full overflow-y-auto rounded-xl bg-white p-4 shadow-sm'>
         {children}
       </div>
+    </div>
+  )
+}
+
+function CollapsedPanel({
+  icon,
+  onClick,
+}: {
+  icon: React.ReactNode
+  onClick: () => void
+}) {
+  return (
+    <div className='flex items-start bg-accent p-2'>
+      <button
+        onClick={onClick}
+        className='rounded p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
+      >
+        {icon}
+      </button>
     </div>
   )
 }

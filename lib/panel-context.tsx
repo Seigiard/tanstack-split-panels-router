@@ -9,9 +9,13 @@ export type RightPanelPaths = RoutePaths<typeof rightPanelTree>
 export interface PanelNavigators {
   navigateLeft: (to: LeftPanelPaths | (string & {})) => void
   navigateRight: (to: string) => void
+  showLeft: (to: LeftPanelPaths | (string & {})) => void
+  closeLeft: () => void
   showRight: (to: string) => void
   closeRight: () => void
   navigateMain: (to: string) => void
+  isLeftOpen: boolean
+  isRightOpen: boolean
 }
 
 export const PanelContext = createContext<PanelNavigators | null>(null)
