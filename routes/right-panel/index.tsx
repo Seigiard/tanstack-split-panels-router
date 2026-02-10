@@ -2,8 +2,8 @@ import { createRootRoute, Outlet } from '@tanstack/react-router'
 
 import { createPanelRouter } from '@/lib/create-panel-router'
 
-import { postDetailRoute } from './$postId'
-import { postsRoute } from './posts'
+import { postDetailRoute } from './routes/$postId'
+import { postsRoute } from './routes/posts'
 
 export const rightRoot = createRootRoute({
   component: () => <Outlet />,

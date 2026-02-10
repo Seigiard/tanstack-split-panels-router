@@ -29,7 +29,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton
                 isActive={!isPanelMode && location.pathname.startsWith('/home')}
-                render={<Link to='/home' />}
+                render={<Link to='/' />}
               >
                 <TbHome />
                 <span>Home</span>

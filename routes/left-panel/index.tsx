@@ -3,11 +3,11 @@ import { createRootRoute, createRoute, Outlet } from '@tanstack/react-router'
 import { createPanelRouter } from '@/lib/create-panel-router'
 import { beforeLoadLog } from '@/lib/logger'
 
-import { productDetailRoute } from './categories/$category/$productId'
-import { categoryProductsIndexRoute } from './categories/$category/index'
-import { categoryProductsRoute } from './categories/$category/route'
-import { categoriesIndexRoute } from './categories/index'
-import { categoriesRoute } from './categories/route'
+import { categoryProductsIndexRoute } from './routes/categories/$category/index'
+import { categoryProductsRoute } from './routes/categories/$category/route'
+import { productDetailRoute } from './routes/categories/$category/routes/$productId'
+import { categoriesIndexRoute } from './routes/categories/index'
+import { categoriesRoute } from './routes/categories/route'
 
 export const leftRoot = createRootRoute({
   component: () => <Outlet />,

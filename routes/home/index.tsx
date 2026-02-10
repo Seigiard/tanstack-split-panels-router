@@ -7,7 +7,7 @@ import { rootRoute } from '../route'
 
 export const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/home',
+  path: '/',
   staticData: { breadcrumb: 'Home' },
   beforeLoad: ({ cause }) => {
     beforeLoadLog(cause, 'main:/home')
@@ -95,7 +95,7 @@ function HomeView() {
                 <DoneMain to='/users' />
               </td>
               <td>
-                <DoneRight to='/' />
+                <DoneRight to='/?left=%2Fcategories' />
               </td>
             </tr>
             <tr>
