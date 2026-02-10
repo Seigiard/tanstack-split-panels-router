@@ -6,13 +6,14 @@ import { userDetailRoute } from './routes/$userId'
 
 import { usersIndexRoute } from '.'
 
-const usersRoute = createRoute({
+export const usersRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/users',
   staticData: { breadcrumb: 'Users' },
   component: () => <Outlet />,
 })
 
-usersRoute.addChildren([usersIndexRoute, userDetailRoute])
-
-export { usersRoute }
+export const usersRouteTree = usersRoute.addChildren([
+  usersIndexRoute,
+  userDetailRoute,
+])

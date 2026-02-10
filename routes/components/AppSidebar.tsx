@@ -28,7 +28,7 @@ export function AppSidebar() {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                isActive={!isPanelMode && location.pathname.startsWith('/home')}
+                isActive={!isPanelMode && location.pathname === '/'}
                 render={<Link to='/' />}
               >
                 <TbHome />

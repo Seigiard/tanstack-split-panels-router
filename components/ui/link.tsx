@@ -1,37 +1,20 @@
 import type { LeftPanelPaths } from '@/lib/panel-context'
-import { Link as TanStackLink } from '@tanstack/react-router'
+import {
+  Link as TanStackLink,
+  type LinkComponent,
+} from '@tanstack/react-router'
 import { useContext, useMemo, type MouseEvent } from 'react'
 
 import { PanelContext } from '@/lib/panel-context'
 import { buildPanelValue } from '@/lib/panel-url'
 import { mainRouter } from '@/routes/route'
 
-interface LinkProps {
-  to?: string
-  children?: React.ReactNode
-  className?: string
-}
-
-export function Link({
-  to,
-  children,
-  className,
-}: LinkProps): React.JSX.Element {
-  return (
-    <TanStackLink
-      to={(to ?? '/') as '/'}
-      search={
-        { left: undefined, right: undefined } as {
-          left: string | undefined
-          right: string | undefined
-        }
-      }
-      className={className}
-    >
-      {children}
-    </TanStackLink>
-  )
-}
+export const Link: LinkComponent<'a'> = (props) => (
+  <TanStackLink
+    {...(props as any)}
+    search={{ left: undefined, right: undefined }}
+  />
+)
 
 interface LinkPanelsProps {
   left: LeftPanelPaths

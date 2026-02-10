@@ -36,7 +36,7 @@ function Na() {
 function DoneMain({ to }: { to?: string }) {
   if (!to) return <span className={DONE_STYLE}>Done</span>
   return (
-    <Link to={to} className={DONE_STYLE}>
+    <Link to={to as '/'} className={DONE_STYLE}>
       Done
     </Link>
   )
@@ -69,11 +69,6 @@ function HomeView() {
     <div className='max-w-4xl p-8'>
       <h1 className='text-2xl font-bold'>{ctx.label}</h1>
       <p className='mt-2 text-muted-foreground'>{ctx.description}</p>
-      <p>
-        можем ли мы типизировать /flows/:flowId/test где нет компонента у flows,
-        чтобы нельзя было линкануть flows?
-      </p>
-      <p>query params for panel routes (encode in panel's path)</p>
       <div className='mt-6 overflow-x-auto'>
         <table className='w-full'>
           <thead>

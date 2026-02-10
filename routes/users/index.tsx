@@ -32,7 +32,8 @@ function UsersView() {
         {users.map((user) => (
           <Link
             key={user.id}
-            to={`/users/${user.id}`}
+            to='/users/$userId'
+            params={{ userId: String(user.id) }}
             className='flex items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-muted/50'
           >
             <div>
