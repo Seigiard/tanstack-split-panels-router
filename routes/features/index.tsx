@@ -130,6 +130,23 @@ const categoriesIndexRoute = createRoute({
     panelDemo: { type: 'left', to: '/categories' },
   },
   {
+    title: 'useMatches & Breadcrumbs',
+    description:
+      'useMatches returns the full chain of matched routes. Combined with staticData.breadcrumb, it builds automatic breadcrumb navigation that works in both main and panel contexts.',
+    code: `const matches = useMatches()
+
+const crumbs = matches
+  .filter((m) => m.staticData.breadcrumb)
+  .map((m) => ({
+    path: m.pathname,
+    label: typeof m.staticData.breadcrumb === 'function'
+      ? m.staticData.breadcrumb({ params: m.params })
+      : m.staticData.breadcrumb,
+  }))`,
+    mainDemo: '/users/1',
+    panelDemo: { type: 'left', to: '/categories/beauty' },
+  },
+  {
     title: 'Type-Safe Links',
     description:
       'Panel links validate the to path and params at compile time, just like standard TanStack Router links.',
@@ -173,7 +190,7 @@ left.close()`,
 nav.navigate(\`/categories/\${category}\`, {
   search: { skip: '0', limit: '10' },
 })`,
-    panelDemo: { type: 'left', to: '/categories' },
+    panelDemo: { type: 'left', to: '/categories/beauty' },
   },
 ]
 

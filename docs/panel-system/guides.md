@@ -5,6 +5,9 @@ Step-by-step guides for common tasks and usage patterns.
 ## Table of Contents
 
 - [Adding a New Panel](#adding-a-new-panel)
+- [Nested Layouts in Panels](#nested-layouts-in-panels)
+- [beforeLoad in Panel Routes](#beforeload-in-panel-routes)
+- [Handling Loading States](#handling-loading-states)
 - [Per-Panel Navigation](#per-panel-navigation)
 - [Multi-Panel Navigation](#multi-panel-navigation)
 - [Panel-Aware Components](#panel-aware-components)
@@ -161,6 +164,181 @@ function Sidebar() {
     </nav>
   )
 }
+```
+
+---
+
+## Nested Layouts in Panels
+
+Panel route trees support nested layouts the same way TanStack Router does — layout routes render `<Outlet />` and child routes render inside them.
+
+### Creating a Layout Route
+
+A layout route defines shared UI (wrapper, header, sidebar) for a group of child routes:
+
+```tsx
+// routes/categories/route.tsx — layout
+import { createRoute, Outlet } from '@tanstack/react-router'
+
+export const categoriesRoute = createRoute({
+  getParentRoute: () => leftRoot,
+  path: '/categories',
+  staticData: { breadcrumb: 'Categories' },
+  component: () => <Outlet />,
+})
+```
+
+The layout route itself renders nothing but `<Outlet />`. Child routes fill the outlet:
+
+```tsx
+// routes/categories/index.tsx — child
+export const categoriesIndexRoute = createRoute({
+  getParentRoute: () => categoriesRoute,
+  path: '/',
+  loader: async () => {
+    /* ... */
+  },
+  component: CategoriesView,
+})
+```
+
+### Multi-Level Nesting
+
+Routes can nest several levels deep. Each level adds its own layout:
+
+```
+leftRoot
+  └── /categories          → <Outlet />
+        ├── /              → CategoriesView (list)
+        └── /$category     → <Outlet />
+              ├── /        → CategoryProductsView (products)
+              └── /$productId → ProductDetailView
+```
+
+The route tree mirrors this structure:
+
+```tsx
+const leftPanelTree = leftRoot.addChildren([
+  categoriesRoute.addChildren([
+    categoriesIndexRoute,
+    categoryProductsRoute.addChildren([
+      categoryProductsIndexRoute,
+      productDetailRoute,
+    ]),
+  ]),
+])
+```
+
+Each layout route can wrap shared UI around its children — headers, sidebars, breadcrumbs — and `<Outlet />` renders the active child.
+
+---
+
+## beforeLoad in Panel Routes
+
+`beforeLoad` runs before the route's loader and component. It's used for guards, redirects, and injecting context. Works identically in panel routes and main routes.
+
+### Injecting Route Context
+
+Return an object from `beforeLoad` to make it available via `useRouteContext()`:
+
+```tsx
+export const categoriesIndexRoute = createRoute({
+  getParentRoute: () => categoriesRoute,
+  path: '/',
+  beforeLoad: ({ cause }) => {
+    beforeLoadLog(cause, 'left:/categories')
+    return {
+      label: 'Categories',
+      description: 'Browse product categories',
+    }
+  },
+  component: CategoriesView,
+})
+
+function CategoriesView() {
+  const ctx = categoriesIndexRoute.useRouteContext()
+  // ctx.label === 'Categories'
+}
+```
+
+### Access to Params and Search
+
+`beforeLoad` receives the same context as `loader` — params, search, cause:
+
+```tsx
+beforeLoad: ({ cause, params, search }) => {
+  beforeLoadLog(cause, `left:/categories/${params.category}`)
+  return { category: params.category }
+},
+```
+
+### Guards and Redirects
+
+Use `beforeLoad` to prevent access or redirect:
+
+```tsx
+beforeLoad: ({ context }) => {
+  if (!context.auth.isLoggedIn) {
+    throw redirect({ to: '/login' })
+  }
+},
+```
+
+This works the same in panels — the redirect happens within the panel's memory router.
+
+---
+
+## Handling Loading States
+
+Panel routers support pending components that show while loaders are running — the same `pendingComponent` / `pendingMs` pattern from TanStack Router.
+
+### Global Pending Component
+
+Set a default pending component when creating the panel. It applies to all routes in the panel:
+
+```tsx
+export const leftPanel = createPanel({
+  name: 'left',
+  tree: leftPanelTree,
+  defaultPath: '/categories',
+  pendingComponent: RoutePending,
+})
+```
+
+The `pendingComponent` is passed to the panel's internal `createRouter` and works as `defaultPendingComponent`.
+
+### How It Works
+
+When a panel route has a slow loader, the panel shows the pending component automatically:
+
+```tsx
+// This loader takes 1 second — pending component shows after pendingMs
+export const postsRoute = createRoute({
+  getParentRoute: () => rightRoot,
+  path: '/',
+  loader: async () => {
+    await wait(1000)
+    const res = await fetch('https://dummyjson.com/posts?limit=30')
+    return res.json()
+  },
+})
+```
+
+The `pendingMs` threshold (default 200ms) is configured on the router level, not per-route. Short loaders won't flash the pending component.
+
+### Route-Level Pending Component
+
+Individual routes can override the default:
+
+```tsx
+export const heavyRoute = createRoute({
+  getParentRoute: () => leftRoot,
+  path: '/heavy',
+  pendingComponent: () => <div>Loading heavy data...</div>,
+  loader: async () => {
+    /* slow fetch */
+  },
+})
 ```
 
 ---

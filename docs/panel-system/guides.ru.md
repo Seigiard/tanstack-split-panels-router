@@ -5,6 +5,9 @@
 ## Содержание
 
 - [Добавление новой панели](#добавление-новой-панели)
+- [Вложенные макеты в панелях](#вложенные-макеты-в-панелях)
+- [beforeLoad в панельных маршрутах](#beforeload-в-панельных-маршрутах)
+- [Обработка состояний загрузки](#обработка-состояний-загрузки)
 - [Навигация внутри панели](#навигация-внутри-панели)
 - [Мультипанельная навигация](#мультипанельная-навигация)
 - [Панель-зависимые компоненты](#панель-зависимые-компоненты)
@@ -161,6 +164,181 @@ function Sidebar() {
     </nav>
   )
 }
+```
+
+---
+
+## Вложенные макеты в панелях
+
+Деревья маршрутов панелей поддерживают вложенные макеты так же, как TanStack Router — макетные маршруты рендерят `<Outlet />`, а дочерние маршруты отображаются внутри.
+
+### Создание макетного маршрута
+
+Макетный маршрут определяет общий UI (обёртку, заголовок, сайдбар) для группы дочерних маршрутов:
+
+```tsx
+// routes/categories/route.tsx — макет
+import { createRoute, Outlet } from '@tanstack/react-router'
+
+export const categoriesRoute = createRoute({
+  getParentRoute: () => leftRoot,
+  path: '/categories',
+  staticData: { breadcrumb: 'Categories' },
+  component: () => <Outlet />,
+})
+```
+
+Макетный маршрут рендерит только `<Outlet />`. Дочерние маршруты заполняют его:
+
+```tsx
+// routes/categories/index.tsx — дочерний
+export const categoriesIndexRoute = createRoute({
+  getParentRoute: () => categoriesRoute,
+  path: '/',
+  loader: async () => {
+    /* ... */
+  },
+  component: CategoriesView,
+})
+```
+
+### Многоуровневая вложенность
+
+Маршруты могут быть вложены на несколько уровней. Каждый уровень добавляет свой макет:
+
+```
+leftRoot
+  └── /categories          → <Outlet />
+        ├── /              → CategoriesView (список)
+        └── /$category     → <Outlet />
+              ├── /        → CategoryProductsView (товары)
+              └── /$productId → ProductDetailView
+```
+
+Дерево маршрутов отражает эту структуру:
+
+```tsx
+const leftPanelTree = leftRoot.addChildren([
+  categoriesRoute.addChildren([
+    categoriesIndexRoute,
+    categoryProductsRoute.addChildren([
+      categoryProductsIndexRoute,
+      productDetailRoute,
+    ]),
+  ]),
+])
+```
+
+Каждый макетный маршрут может оборачивать общий UI вокруг дочерних — заголовки, сайдбары, хлебные крошки — а `<Outlet />` рендерит активный дочерний маршрут.
+
+---
+
+## beforeLoad в панельных маршрутах
+
+`beforeLoad` выполняется до loader и компонента маршрута. Используется для гардов, редиректов и инъекции контекста. Работает одинаково в панельных и основных маршрутах.
+
+### Инъекция контекста маршрута
+
+Верните объект из `beforeLoad`, чтобы он стал доступен через `useRouteContext()`:
+
+```tsx
+export const categoriesIndexRoute = createRoute({
+  getParentRoute: () => categoriesRoute,
+  path: '/',
+  beforeLoad: ({ cause }) => {
+    beforeLoadLog(cause, 'left:/categories')
+    return {
+      label: 'Categories',
+      description: 'Browse product categories',
+    }
+  },
+  component: CategoriesView,
+})
+
+function CategoriesView() {
+  const ctx = categoriesIndexRoute.useRouteContext()
+  // ctx.label === 'Categories'
+}
+```
+
+### Доступ к параметрам и search
+
+`beforeLoad` получает тот же контекст, что и `loader` — params, search, cause:
+
+```tsx
+beforeLoad: ({ cause, params, search }) => {
+  beforeLoadLog(cause, `left:/categories/${params.category}`)
+  return { category: params.category }
+},
+```
+
+### Гарды и редиректы
+
+Используйте `beforeLoad` для защиты доступа или редиректа:
+
+```tsx
+beforeLoad: ({ context }) => {
+  if (!context.auth.isLoggedIn) {
+    throw redirect({ to: '/login' })
+  }
+},
+```
+
+Это работает так же в панелях — редирект происходит внутри memory-роутера панели.
+
+---
+
+## Обработка состояний загрузки
+
+Панельные роутеры поддерживают pending-компоненты, которые показываются во время работы загрузчиков — тот же паттерн `pendingComponent` / `pendingMs` из TanStack Router.
+
+### Глобальный pending-компонент
+
+Задайте pending-компонент по умолчанию при создании панели. Он применяется ко всем маршрутам панели:
+
+```tsx
+export const leftPanel = createPanel({
+  name: 'left',
+  tree: leftPanelTree,
+  defaultPath: '/categories',
+  pendingComponent: RoutePending,
+})
+```
+
+`pendingComponent` передаётся во внутренний `createRouter` панели и работает как `defaultPendingComponent`.
+
+### Как это работает
+
+Когда загрузчик панельного маршрута медленный, панель автоматически показывает pending-компонент:
+
+```tsx
+// Этот загрузчик занимает 1 секунду — pending-компонент показывается после pendingMs
+export const postsRoute = createRoute({
+  getParentRoute: () => rightRoot,
+  path: '/',
+  loader: async () => {
+    await wait(1000)
+    const res = await fetch('https://dummyjson.com/posts?limit=30')
+    return res.json()
+  },
+})
+```
+
+Порог `pendingMs` (по умолчанию 200мс) настраивается на уровне роутера, а не отдельного маршрута. Быстрые загрузчики не будут мигать pending-компонентом.
+
+### Pending-компонент на уровне маршрута
+
+Отдельные маршруты могут переопределить значение по умолчанию:
+
+```tsx
+export const heavyRoute = createRoute({
+  getParentRoute: () => leftRoot,
+  path: '/heavy',
+  pendingComponent: () => <div>Loading heavy data...</div>,
+  loader: async () => {
+    /* slow fetch */
+  },
+})
 ```
 
 ---
