@@ -36,8 +36,7 @@ export function AppSidebar() {
                     to='/docs/$docId'
                     params={{ docId }}
                     aria-current={
-                      !isPanelMode &&
-                      location.pathname === `/docs/${docId}`
+                      !isPanelMode && location.pathname === `/docs/${docId}`
                         ? 'page'
                         : undefined
                     }
@@ -49,24 +48,7 @@ export function AppSidebar() {
             </ul>
           </li>
           <li>
-            <panels.MainLink
-              to='/users'
-              aria-current={
-                !isPanelMode && location.pathname.startsWith('/users')
-                  ? 'page'
-                  : undefined
-              }
-            >
-              Users
-            </panels.MainLink>
-          </li>
-          <li>
-            <panels.Link
-              left='/categories'
-              aria-current={isPanelMode ? 'page' : undefined}
-            >
-              Products
-            </panels.Link>
+            <panels.Link left='/categories'>Example</panels.Link>
           </li>
         </ul>
       </nav>

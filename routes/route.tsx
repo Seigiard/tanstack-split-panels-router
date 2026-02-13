@@ -6,18 +6,13 @@ import { AppShell } from './components/AppShell'
 import { RoutePending } from './components/RoutePending'
 import { docsRouteTree } from './docs/route'
 import { homeRoute } from './home'
-import { usersRouteTree } from './users/route'
 
 export const rootRoute = createRootRoute({
   component: AppShell,
   validateSearch: panels.validateSearch,
 })
 
-const routeTree = rootRoute.addChildren([
-  homeRoute,
-  docsRouteTree,
-  usersRouteTree,
-])
+const routeTree = rootRoute.addChildren([homeRoute, docsRouteTree])
 
 export const mainRouter = createRouter({
   routeTree,
