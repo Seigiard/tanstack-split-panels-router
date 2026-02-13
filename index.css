@@ -12,16 +12,17 @@ body {
 }
 
 .layout-simple > footer:last-of-type {
-  overflow-y: auto;
-  font-family:
-    ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas,
-    'DejaVu Sans Mono', monospace;
-  align-items: start;
-  justify-content: start;
+  display: block;
   height: 100%;
-  padding: 1rem 2rem;
-  box-sizing: border-box;
-  flex-direction: column;
+  position: relative;
+}
+.layout-simple > footer:last-of-type pre {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  color: black;
+  text-align: left;
+  border-radius: 0;
 }
 
 /* Panel system */
@@ -129,32 +130,6 @@ body {
   }
 }
 
-/* Home page stats grid */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.stat-card {
-  border: 1px solid var(--bg-muted, #e4e4e7);
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  text-align: center;
-}
-
-.stat-card .stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #059669;
-}
-
-.stat-card .stat-label {
-  font-size: 0.875rem;
-  color: var(--text-muted, #71717a);
-}
-
 /* Quick start numbered list */
 .quick-start {
   list-style: none;
@@ -253,4 +228,6 @@ a:hover > .feature-heading-anchor {
 
 .app-main {
   overflow-y: auto;
+  padding: 1rem 0;
+  margin: 0;
 }

@@ -11,10 +11,6 @@ export const homeRoute = createRoute({
   staticData: { breadcrumb: 'Home' },
   beforeLoad: ({ cause }) => {
     beforeLoadLog(cause, 'main:/home')
-    return {
-      label: '[context] Home Page',
-      description: '[context] Main landing page',
-    }
   },
   component: HomeView,
 })
@@ -57,27 +53,20 @@ left.navigate('/categories')`,
   },
 ]
 
-function HighlightsSection() {
+function HomeView() {
+  const ctx = useRouteContext({ from: homeRoute.id })
+
   return (
-    <div>
-      <section>
-        <h2>Your TanStack Router code — now in panels</h2>
+    <>
+      <hgroup>
+        <h1>SplitState Router</h1>
         <p>
           Standard routing patterns work out of the box in multi-panel mode. No
           rewrites, no wrappers — just panels.
         </p>
-        <div className='stats-grid'>
-          {STATS.map((stat) => (
-            <div key={stat.label} className='stat-card'>
-              <div className='stat-value'>{stat.value}</div>
-              <div className='stat-label'>{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
+      </hgroup>
       <section>
-        <h3>Quick Start</h3>
+        <h2>Your TanStack Router code — now in panels</h2>
         <ol className='quick-start'>
           {QUICK_START_STEPS.map((step, i) => (
             <li key={i}>
@@ -91,24 +80,6 @@ function HighlightsSection() {
           ))}
         </ol>
       </section>
-
-      <p>
-        <panels.MainLink to='/features'>
-          See all panel features in action &rarr;
-        </panels.MainLink>
-      </p>
-    </div>
-  )
-}
-
-function HomeView() {
-  const ctx = useRouteContext({ from: homeRoute.id })
-
-  return (
-    <div style={{ maxWidth: '56rem', padding: '2rem' }}>
-      <h1>{ctx.label}</h1>
-      <p>{ctx.description}</p>
-      <HighlightsSection />
-    </div>
+    </>
   )
 }

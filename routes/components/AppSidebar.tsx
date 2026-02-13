@@ -1,5 +1,4 @@
 import { useLocation } from '@tanstack/react-router'
-import { TbHome, TbListCheck, TbUsers, TbColumns } from 'react-icons/tb'
 
 import { panels } from '@/lib/panels'
 
@@ -18,8 +17,7 @@ export function AppSidebar() {
                 !isPanelMode && location.pathname === '/' ? 'page' : undefined
               }
             >
-              <TbHome />
-              <span>Home</span>
+              Home
             </panels.MainLink>
           </li>
           <li>
@@ -31,8 +29,7 @@ export function AppSidebar() {
                   : undefined
               }
             >
-              <TbListCheck />
-              <span>Features</span>
+              Features
             </panels.MainLink>
           </li>
           <li>
@@ -44,8 +41,7 @@ export function AppSidebar() {
                   : undefined
               }
             >
-              <TbUsers />
-              <span>Users</span>
+              Users
             </panels.MainLink>
           </li>
           <li>
@@ -53,8 +49,7 @@ export function AppSidebar() {
               left='/categories'
               aria-current={isPanelMode ? 'page' : undefined}
             >
-              <TbColumns />
-              <span>Products</span>
+              Products
             </panels.Link>
           </li>
         </ul>

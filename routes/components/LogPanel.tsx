@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 
 import { useLogEntries } from '../../lib/logger'
 
@@ -26,17 +26,14 @@ export function LogPanel() {
 function Logs() {
   const entries = useLogEntries()
 
-  if (entries.length === 0) {
-    return <p>No log entries yet.</p>
-  }
+  const log =
+    entries.length === 0
+      ? 'No log entries yet.'
+      : entries
+          .map(
+            (entry, i) => `[${formatTime(entry.timestamp)}] ${entry.message}`,
+          )
+          .join('\n')
 
-  return (
-    <>
-      {entries.map((entry, i) => (
-        <p key={i}>
-          [{formatTime(entry.timestamp)}] {entry.message}
-        </p>
-      ))}
-    </>
-  )
+  return <pre>{log}</pre>
 }
