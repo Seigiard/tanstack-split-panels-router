@@ -30,7 +30,7 @@ class Logger {
 export const logger = new Logger()
 
 export function beforeLoadLog(cause: string, route: string): void {
-  if (cause === 'enter') {
+  if (cause === 'enter' || cause === 'stay') {
     logger.log(`[route:${route}] entered`, 'lifecycle')
   }
 }

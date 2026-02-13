@@ -10,6 +10,9 @@ body {
   max-height: 100vh;
   grid-template-rows: min-content 1fr minmax(10rem, 25svh);
 }
+.layout-simple > aside a.active {
+  font-weight: 700;
+}
 
 .layout-simple > footer:last-of-type {
   display: block;
@@ -190,40 +193,6 @@ body {
   padding: 0.5rem;
   font-size: 0.875rem;
   margin-bottom: 0.75rem;
-}
-
-/* Demo link style for features page */
-.demo-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  border: 1px solid var(--bg-muted, #e4e4e7);
-  border-radius: 0.375rem;
-  padding: 0.25rem 0.625rem;
-  font-size: 0.875rem;
-  text-decoration: none;
-  color: inherit;
-}
-
-.demo-link:hover {
-  background: var(--bg-subtle, #f4f4f5);
-}
-
-/* Feature section anchor heading */
-.feature-heading {
-  display: inline;
-}
-
-.feature-heading-anchor {
-  margin-left: 0.375rem;
-  color: var(--text-muted, #71717a);
-  opacity: 0;
-  transition: opacity 0.15s;
-  text-decoration: none;
-}
-
-a:hover > .feature-heading-anchor {
-  opacity: 1;
 }
 
 .app-main {

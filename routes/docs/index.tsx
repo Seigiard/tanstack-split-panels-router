@@ -6,6 +6,6 @@ export const docsIndexRoute = createRoute({
   getParentRoute: () => docsRoute,
   path: '/',
   beforeLoad: () => {
-    throw redirect({ to: '/docs/$docId', params: { docId: 'features' } })
+    throw redirect({ to: '/docs/$docId', params: { docId: '01-quickstart' } })
   },
 })

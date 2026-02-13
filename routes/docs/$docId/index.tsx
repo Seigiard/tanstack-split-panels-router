@@ -1,19 +1,13 @@
 import { createRoute, redirect } from '@tanstack/react-router'
 
+import { beforeLoadLog, logger } from '@/lib/logger'
+
 import { docsRoute } from '../route'
 
 const docs = import.meta.glob('/docs/*.md', {
   eager: true,
   import: 'default',
 }) as Record<string, string>
-
-const VALID_DOCS = [
-  'quickstart',
-  'features',
-  'architecture',
-  'guides',
-  'api-reference',
-]
 
 function resolveDoc(docId: string): string | undefined {
   return docs[`/docs/${docId}.md`]
@@ -26,10 +20,11 @@ export const docPageRoute = createRoute({
     breadcrumb: ({ params }: { params: Record<string, string> }) =>
       params.docId,
   },
-  beforeLoad: ({ params }) => {
-    if (!VALID_DOCS.includes(params.docId)) {
-      throw redirect({ to: '/docs/$docId', params: { docId: 'features' } })
+  beforeLoad: ({ cause, params }) => {
+    if (!resolveDoc(params.docId)) {
+      throw redirect({ to: '/docs/$docId', params: { docId: '01-quickstart' } })
     }
+    beforeLoadLog(cause, `/docs/${params.docId}`)
   },
   component: DocPageView,
 })
