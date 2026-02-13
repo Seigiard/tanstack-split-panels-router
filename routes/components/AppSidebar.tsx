@@ -1,5 +1,5 @@
 import { useLocation } from '@tanstack/react-router'
-import { TbHome, TbUsers, TbColumns } from 'react-icons/tb'
+import { TbHome, TbListCheck, TbUsers, TbColumns } from 'react-icons/tb'
 
 import { Link } from '@/components/ui/link'
 import {
@@ -32,6 +32,18 @@ export function AppSidebar() {
               >
                 <TbHome />
                 <span>Home</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                isActive={
+                  !isPanelMode && location.pathname.startsWith('/features')
+                }
+                render={<Link to='/features' />}
+              >
+                <TbListCheck />
+                <span>Features</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
 
