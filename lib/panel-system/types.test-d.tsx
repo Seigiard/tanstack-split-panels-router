@@ -52,7 +52,7 @@ import { rightPanel } from '@/routes/right-panel'
 // ─── MainLink: valid main router paths ──────────────────────────
 ;<panels.MainLink to='/' />
 ;<panels.MainLink to='/users' />
-;<panels.MainLink to='/features' />
+;<panels.MainLink to='/docs/$docId' params={{ docId: 'features' }} />
 
 // ─── MainLink: dynamic paths require params ─────────────────────
 ;<panels.MainLink to='/users/$userId' params={{ userId: '1' }} />

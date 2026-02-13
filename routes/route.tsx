@@ -4,7 +4,7 @@ import { panels } from '@/lib/panels'
 
 import { AppShell } from './components/AppShell'
 import { RoutePending } from './components/RoutePending'
-import { featuresRoute } from './features'
+import { docsRouteTree } from './docs/route'
 import { homeRoute } from './home'
 import { usersRouteTree } from './users/route'
 
@@ -15,7 +15,7 @@ export const rootRoute = createRootRoute({
 
 const routeTree = rootRoute.addChildren([
   homeRoute,
-  featuresRoute,
+  docsRouteTree,
   usersRouteTree,
 ])
 

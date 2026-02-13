@@ -21,16 +21,73 @@ export function AppSidebar() {
             </panels.MainLink>
           </li>
           <li>
-            <panels.MainLink
-              to='/features'
-              aria-current={
-                !isPanelMode && location.pathname.startsWith('/features')
-                  ? 'page'
-                  : undefined
-              }
-            >
-              Features
-            </panels.MainLink>
+            <ul>
+              <li>
+                <panels.MainLink
+                  to='/docs/$docId'
+                  params={{ docId: 'quickstart' }}
+                  aria-current={
+                    !isPanelMode && location.pathname === '/docs/quickstart'
+                      ? 'page'
+                      : undefined
+                  }
+                >
+                  Quick Start
+                </panels.MainLink>
+              </li>
+              <li>
+                <panels.MainLink
+                  to='/docs/$docId'
+                  params={{ docId: 'features' }}
+                  aria-current={
+                    !isPanelMode && location.pathname === '/docs/features'
+                      ? 'page'
+                      : undefined
+                  }
+                >
+                  Features
+                </panels.MainLink>
+              </li>
+              <li>
+                <panels.MainLink
+                  to='/docs/$docId'
+                  params={{ docId: 'architecture' }}
+                  aria-current={
+                    !isPanelMode && location.pathname === '/docs/architecture'
+                      ? 'page'
+                      : undefined
+                  }
+                >
+                  Architecture
+                </panels.MainLink>
+              </li>
+              <li>
+                <panels.MainLink
+                  to='/docs/$docId'
+                  params={{ docId: 'guides' }}
+                  aria-current={
+                    !isPanelMode && location.pathname === '/docs/guides'
+                      ? 'page'
+                      : undefined
+                  }
+                >
+                  Guides
+                </panels.MainLink>
+              </li>
+              <li>
+                <panels.MainLink
+                  to='/docs/$docId'
+                  params={{ docId: 'api-reference' }}
+                  aria-current={
+                    !isPanelMode && location.pathname === '/docs/api-reference'
+                      ? 'page'
+                      : undefined
+                  }
+                >
+                  API Reference
+                </panels.MainLink>
+              </li>
+            </ul>
           </li>
           <li>
             <panels.MainLink
