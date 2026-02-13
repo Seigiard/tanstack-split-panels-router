@@ -1,6 +1,7 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 
-import { createPanelRouter } from '@/lib/create-panel-router'
+import { createPanel } from '@/lib/panel-system'
+import { RoutePending } from '@/routes/components/RoutePending'
 
 import { postDetailRoute } from './routes/$postId'
 import { postsRoute } from './routes/posts'
@@ -14,4 +15,11 @@ export const rightPanelTree = rightRoot.addChildren([
   postDetailRoute,
 ])
 
-export const getRightRouter = createPanelRouter(rightPanelTree)
+export const rightPanel = createPanel({
+  name: 'right',
+  tree: rightPanelTree,
+  defaultPath: '/',
+  pendingComponent: RoutePending,
+})
+
+export const getRightRouter = rightPanel.getRouter

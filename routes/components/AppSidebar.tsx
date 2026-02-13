@@ -1,7 +1,7 @@
-import { useLocation, useSearch } from '@tanstack/react-router'
+import { useLocation } from '@tanstack/react-router'
 import { TbHome, TbUsers, TbColumns } from 'react-icons/tb'
 
-import { Link, LinkPanels } from '@/components/ui/link'
+import { Link } from '@/components/ui/link'
 import {
   Sidebar,
   SidebarContent,
@@ -11,12 +11,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { rootRoute } from '@/routes/route'
+import { panels } from '@/lib/panels'
 
 export function AppSidebar() {
   const location = useLocation()
-  const search = useSearch({ from: rootRoute.id })
-  const isPanelMode = search.left !== undefined || search.right !== undefined
+  const { isPanelMode } = panels.usePanel()
 
   return (
     <Sidebar className='h-screen w-48 border-r border-border'>
@@ -51,7 +50,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton
                 isActive={isPanelMode}
-                render={<LinkPanels left='/categories' />}
+                render={<panels.Link left='/categories' />}
               >
                 <TbColumns />
                 <span>Products</span>

@@ -1,7 +1,7 @@
 import '@/lib/breadcrumb'
 
 import { Link, useMatches } from '@tanstack/react-router'
-import { Fragment, useContext, type MouseEvent } from 'react'
+import { Fragment, type MouseEvent } from 'react'
 
 import {
   Breadcrumb,
@@ -10,14 +10,20 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
-import { PanelContext } from '@/lib/panel-context'
+import { panels } from '@/lib/panels'
 import { mainRouter } from '@/routes/route'
 
 type Crumb = { path: string; label: string }
 
 export function Breadcrumbs() {
   const matches = useMatches()
-  const panelNav = useContext(PanelContext)
+  let currentPanel: { name: string; navigate: (to: string) => void } | null =
+    null
+  try {
+    currentPanel = panels.useCurrentPanel()
+  } catch {
+    // Not inside a panel — use main router links
+  }
 
   const crumbs: Crumb[] = []
   for (const match of matches) {
@@ -53,8 +59,13 @@ export function Breadcrumbs() {
               <BreadcrumbItem>
                 {isLast ? (
                   <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                ) : panelNav ? (
-                  <PanelCrumbLink path={crumb.path} label={crumb.label} />
+                ) : currentPanel ? (
+                  <PanelCrumbLink
+                    path={crumb.path}
+                    label={crumb.label}
+                    panelName={currentPanel.name}
+                    navigate={currentPanel.navigate}
+                  />
                 ) : (
                   <Link
                     to={crumb.path as '/'}
@@ -73,22 +84,29 @@ export function Breadcrumbs() {
   )
 }
 
-function PanelCrumbLink({ path, label }: { path: string; label: string }) {
-  const panelNav = useContext(PanelContext)
-
+function PanelCrumbLink({
+  path,
+  label,
+  panelName,
+  navigate,
+}: {
+  path: string
+  label: string
+  panelName: string
+  navigate: (to: string) => void
+}) {
   const href = mainRouter.buildLocation({
     to: '/',
     search: (prev: Record<string, unknown>) => ({
-      left: path,
-      right: (prev as { right?: string }).right ?? undefined,
+      ...(prev as Record<string, string | undefined>),
+      [panelName]: path,
     }),
   }).href
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey) return
-    if (!panelNav) return
     e.preventDefault()
-    panelNav.navigateLeft(path)
+    navigate(path)
   }
 
   return (

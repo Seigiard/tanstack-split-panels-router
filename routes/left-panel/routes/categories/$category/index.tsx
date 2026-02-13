@@ -2,11 +2,9 @@ import type { Product } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
-import { LinkLeftPanel } from '@/components/ui/link'
 import { beforeLoadLog } from '@/lib/logger'
-import { usePanelNav } from '@/lib/panel-context'
-import { buildPanelValue } from '@/lib/panel-url'
 import { Breadcrumbs } from '@/routes/components/Breadcrumbs'
+import { leftPanel } from '@/routes/left-panel'
 
 import { categoryProductsRoute } from './route'
 
@@ -53,16 +51,16 @@ function CategoryProductsView() {
   const { category } = categoryProductsIndexRoute.useParams() as {
     category: string
   }
-  const { navigateLeft } = usePanelNav()
+  const nav = leftPanel.useNav()
 
   const navigateWithSearch = (overrides: Partial<CategorySearch>) => {
     const merged = { ...search, ...overrides }
-    navigateLeft(
-      buildPanelValue(`/categories/${category}`, {
+    nav.navigate(`/categories/${category}`, {
+      search: {
         skip: String(merged.skip),
         limit: String(merged.limit),
-      }),
-    )
+      },
+    })
   }
 
   const hasNext = search.skip + search.limit < data.total
@@ -83,15 +81,16 @@ function CategoryProductsView() {
       <ul className='space-y-1'>
         {data.products.map((product) => (
           <li key={product.id}>
-            <LinkLeftPanel
-              to={`/categories/${category}/${product.id}`}
+            <leftPanel.Link
+              to='/categories/$category/$productId'
+              params={{ category, productId: String(product.id) }}
               className='flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted'
             >
               <span className='truncate'>{product.title}</span>
               <span className='ml-2 shrink-0 text-muted-foreground'>
                 ${product.price}
               </span>
-            </LinkLeftPanel>
+            </leftPanel.Link>
           </li>
         ))}
       </ul>

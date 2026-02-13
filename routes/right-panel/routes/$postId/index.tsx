@@ -1,9 +1,8 @@
 import type { Comment, Post } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
-import { LinkRightPanel } from '@/components/ui/link'
 import { beforeLoadLog } from '@/lib/logger'
-import { rightRoot } from '@/routes/right-panel'
+import { rightPanel, rightRoot } from '@/routes/right-panel'
 import { wait } from '@/utils/wait'
 
 export const postDetailRoute = createRoute({
@@ -33,12 +32,12 @@ function PostDetailView() {
   }
   return (
     <div className='space-y-4'>
-      <LinkRightPanel
+      <rightPanel.Link
         to='/'
         className='inline-flex items-center text-sm text-muted-foreground hover:text-foreground'
       >
         &larr; Back to posts
-      </LinkRightPanel>
+      </rightPanel.Link>
       <div>
         <h3 className='text-sm font-semibold'>{post.title}</h3>
         <p className='mt-1 text-sm text-muted-foreground'>{post.body}</p>

@@ -1,8 +1,10 @@
 import { createRoute, useRouteContext } from '@tanstack/react-router'
 
-import { Link, LinkLeftPanel, LinkRightPanel } from '@/components/ui/link'
+import { Link } from '@/components/ui/link'
 
 import { beforeLoadLog } from '../../lib/logger'
+import { leftPanel } from '../left-panel'
+import { rightPanel } from '../right-panel'
 import { rootRoute } from '../route'
 
 export const homeRoute = createRoute({
@@ -44,17 +46,17 @@ function DoneMain({ to }: { to?: string }) {
 
 function DoneLeft({ to }: { to: string }) {
   return (
-    <LinkLeftPanel to={to} className={DONE_STYLE}>
+    <leftPanel.Link to={to as '/'} className={DONE_STYLE}>
       Done
-    </LinkLeftPanel>
+    </leftPanel.Link>
   )
 }
 
 function DoneRight({ to }: { to: string }) {
   return (
-    <LinkRightPanel to={to} className={DONE_STYLE}>
+    <rightPanel.Link to={to as '/'} className={DONE_STYLE}>
       Done
-    </LinkRightPanel>
+    </rightPanel.Link>
   )
 }
 

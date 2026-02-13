@@ -1,8 +1,8 @@
 import type { Category } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
-import { LinkLeftPanel } from '@/components/ui/link'
 import { beforeLoadLog } from '@/lib/logger'
+import { leftPanel } from '@/routes/left-panel'
 
 import { categoriesRoute } from './route'
 
@@ -26,12 +26,13 @@ function CategoriesView() {
       <ul className='space-y-1'>
         {categories.map((cat) => (
           <li key={cat.slug}>
-            <LinkLeftPanel
-              to={`/categories/${cat.slug}`}
+            <leftPanel.Link
+              to='/categories/$category'
+              params={{ category: cat.slug }}
               className='block w-full rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted'
             >
               {cat.name}
-            </LinkLeftPanel>
+            </leftPanel.Link>
           </li>
         ))}
       </ul>

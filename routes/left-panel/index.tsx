@@ -1,7 +1,8 @@
 import { createRootRoute, createRoute, Outlet } from '@tanstack/react-router'
 
-import { createPanelRouter } from '@/lib/create-panel-router'
 import { beforeLoadLog } from '@/lib/logger'
+import { createPanel } from '@/lib/panel-system'
+import { RoutePending } from '@/routes/components/RoutePending'
 
 import { categoryProductsIndexRoute } from './routes/categories/$category/index'
 import { categoryProductsRoute } from './routes/categories/$category/route'
@@ -37,4 +38,11 @@ export const leftPanelTree = leftRoot.addChildren([
   ]),
 ])
 
-export const getLeftRouter = createPanelRouter(leftPanelTree)
+export const leftPanel = createPanel({
+  name: 'left',
+  tree: leftPanelTree,
+  defaultPath: '/categories',
+  pendingComponent: RoutePending,
+})
+
+export const getLeftRouter = leftPanel.getRouter

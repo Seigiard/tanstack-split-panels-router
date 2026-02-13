@@ -1,9 +1,8 @@
 import type { Post } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
-import { LinkRightPanel } from '@/components/ui/link'
 import { beforeLoadLog } from '@/lib/logger'
-import { rightRoot } from '@/routes/right-panel'
+import { rightPanel, rightRoot } from '@/routes/right-panel'
 import { wait } from '@/utils/wait'
 
 export const postsRoute = createRoute({
@@ -27,13 +26,14 @@ function PostsListView() {
       <ul className='space-y-1'>
         {posts.map((post) => (
           <li key={post.id}>
-            <LinkRightPanel
-              to={`/${post.id}`}
+            <rightPanel.Link
+              to='/$postId'
+              params={{ postId: String(post.id) }}
               className='block w-full rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted'
             >
               <span className='mr-1.5 text-muted-foreground'>{post.id}.</span>
               {post.title}
-            </LinkRightPanel>
+            </rightPanel.Link>
           </li>
         ))}
       </ul>
