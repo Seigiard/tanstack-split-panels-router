@@ -33,20 +33,20 @@ function createTestRouter(
     component: IndexComponent,
   })
 
-  const users = createRoute({
+  const docs = createRoute({
     getParentRoute: () => root,
-    path: '/users',
+    path: '/docs',
     component: () => <Outlet />,
   })
 
-  const userDetail = createRoute({
-    getParentRoute: () => users,
-    path: '/$userId',
-    component: () => <div data-testid='user-detail'>User Detail</div>,
+  const docPage = createRoute({
+    getParentRoute: () => docs,
+    path: '/$docId',
+    component: () => <div data-testid='doc-page'>Doc Page</div>,
   })
 
   return createRouter({
-    routeTree: root.addChildren([index, users.addChildren([userDetail])]),
+    routeTree: root.addChildren([index, docs.addChildren([docPage])]),
     history: createMemoryHistory({ initialEntries: [initialPath] }),
   })
 }
@@ -71,15 +71,17 @@ describe('MainLink', () => {
   test('resolves href from to prop', async () => {
     // #given
     const router = createTestRouter(() => (
-      <MainLink to='/users'>Go to users</MainLink>
+      <MainLink to='/docs/$docId' params={{ docId: 'features' }}>
+        Go to docs
+      </MainLink>
     ))
 
     // #when
     render(<RouterProvider router={router} />)
 
     // #then
-    const link = await screen.findByText('Go to users')
-    expect(link).toHaveAttribute('href', '/users')
+    const link = await screen.findByText('Go to docs')
+    expect(link).toHaveAttribute('href', '/docs/features')
   })
 
   test('clears panel search params from href', async () => {
@@ -133,8 +135,8 @@ describe('MainLink', () => {
   test('resolves params in href', async () => {
     // #given
     const router = createTestRouter(() => (
-      <MainLink to='/users/$userId' params={{ userId: '42' }}>
-        User 42
+      <MainLink to='/docs/$docId' params={{ docId: 'guides' }}>
+        Guides
       </MainLink>
     ))
 
@@ -142,7 +144,7 @@ describe('MainLink', () => {
     render(<RouterProvider router={router} />)
 
     // #then
-    const link = await screen.findByText('User 42')
-    expect(link).toHaveAttribute('href', '/users/42')
+    const link = await screen.findByText('Guides')
+    expect(link).toHaveAttribute('href', '/docs/guides')
   })
 })

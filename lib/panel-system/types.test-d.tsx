@@ -51,11 +51,10 @@ import { rightPanel } from '@/routes/right-panel'
 
 // ─── MainLink: valid main router paths ──────────────────────────
 ;<panels.MainLink to='/' />
-;<panels.MainLink to='/users' />
 ;<panels.MainLink to='/docs/$docId' params={{ docId: 'features' }} />
 
 // ─── MainLink: dynamic paths require params ─────────────────────
-;<panels.MainLink to='/users/$userId' params={{ userId: '1' }} />
+;<panels.MainLink to='/docs/$docId' params={{ docId: 'architecture' }} />
 
 // ─── MainLink: standard Link props ──────────────────────────────
 ;<panels.MainLink to='/' className='foo' />
@@ -63,10 +62,10 @@ import { rightPanel } from '@/routes/right-panel'
 ;<panels.MainLink to='/'>Children</panels.MainLink>
 
 // ─── MainLink: search is NOT required (always cleared) ──────────
-;<panels.MainLink to='/users' />
+;<panels.MainLink to='/docs/$docId' params={{ docId: 'guides' }} />
 
 // @ts-expect-error — unknown main route path
 ;<panels.MainLink to='/nonexistent' />
 
-// @ts-expect-error — wrong param name for /users/$userId
-;<panels.MainLink to='/users/$userId' params={{ wrongParam: '1' }} />
+// @ts-expect-error — wrong param name for /docs/$docId
+;<panels.MainLink to='/docs/$docId' params={{ wrongParam: '1' }} />
