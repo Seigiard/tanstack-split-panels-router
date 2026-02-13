@@ -21,19 +21,5 @@
       ["index", "index-type"]
     ]
   },
-  "experimentalTailwindcss": {
-    "stylesheet": "./index.css",
-    "attributes": ["class", "className"],
-    "functions": ["cn", "tv", "twMerge", "clsx"]
-  },
-  "ignorePatterns": [
-    "**/.next/**",
-    "**/node_modules/**",
-    "**/storybook-static/**",
-    "**/out/**",
-    "**/build/**",
-    "**/*.d.ts",
-    "**/prismicio-types.d.ts",
-    "**/next-env.d.ts"
-  ]
+  "ignorePatterns": ["**/node_modules/**", "**/dist/**", "**/*.d.ts"]
 }

@@ -17,9 +17,9 @@ export function LogPanel() {
   }, [entries.length])
 
   return (
-    <div ref={scrollRef} className='log-panel'>
+    <footer ref={scrollRef} className='log-panel'>
       <Logs />
-    </div>
+    </footer>
   )
 }
 

@@ -19,17 +19,14 @@ function AppShellInner() {
 
   return (
     <>
+      <header>
+        <h1>SplitState</h1>
+      </header>
       <AppSidebar />
       <main className='app-main'>
-        {isPanelMode ? (
-          <PanelLayout />
-        ) : (
-          <div className='content-area'>
-            <Outlet />
-          </div>
-        )}
-        <LogPanel />
+        {isPanelMode ? <PanelLayout /> : <Outlet />}
       </main>
+      <LogPanel />
     </>
   )
 }
