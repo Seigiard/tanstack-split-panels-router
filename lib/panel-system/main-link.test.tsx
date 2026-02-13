@@ -7,14 +7,11 @@ import {
   RouterProvider,
 } from '@tanstack/react-router'
 import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, describe, expect, test } from 'vitest'
 
-vi.mock('@/routes/route', () => ({
-  mainRouter: undefined,
-  rootRoute: undefined,
-}))
+import { createMainLink } from './system-link'
 
-import { Link } from '@/components/ui/link'
+const PANEL_NAMES = ['left', 'right']
 
 function createTestRouter(
   IndexComponent: () => React.ReactNode,
@@ -54,35 +51,48 @@ function createTestRouter(
   })
 }
 
+const MainLink = createMainLink(PANEL_NAMES)
+
 afterEach(cleanup)
 
-describe('Link', () => {
+describe('MainLink', () => {
   test('renders an anchor element', async () => {
-    const router = createTestRouter(() => <Link to='/'>Home</Link>)
+    // #given
+    const router = createTestRouter(() => <MainLink to='/'>Home</MainLink>)
 
+    // #when
     render(<RouterProvider router={router} />)
 
+    // #then
     const link = await screen.findByText('Home')
     expect(link.tagName).toBe('A')
   })
 
   test('resolves href from to prop', async () => {
-    const router = createTestRouter(() => <Link to='/users'>Go to users</Link>)
+    // #given
+    const router = createTestRouter(() => (
+      <MainLink to='/users'>Go to users</MainLink>
+    ))
 
+    // #when
     render(<RouterProvider router={router} />)
 
+    // #then
     const link = await screen.findByText('Go to users')
     expect(link).toHaveAttribute('href', '/users')
   })
 
   test('clears panel search params from href', async () => {
+    // #given
     const router = createTestRouter(
-      () => <Link to='/'>Home</Link>,
+      () => <MainLink to='/'>Home</MainLink>,
       '/?left=%2Fcategories&right=%2F1',
     )
 
+    // #when
     render(<RouterProvider router={router} />)
 
+    // #then
     const link = await screen.findByText('Home')
     const href = link.getAttribute('href')!
     expect(href).not.toContain('left=')
@@ -90,39 +100,48 @@ describe('Link', () => {
   })
 
   test('passes className to the anchor', async () => {
+    // #given
     const router = createTestRouter(() => (
-      <Link to='/' className='my-link'>
+      <MainLink to='/' className='my-link'>
         Styled
-      </Link>
+      </MainLink>
     ))
 
+    // #when
     render(<RouterProvider router={router} />)
 
+    // #then
     const link = await screen.findByText('Styled')
     expect(link).toHaveClass('my-link')
   })
 
   test('renders children', async () => {
+    // #given
     const router = createTestRouter(() => (
-      <Link to='/'>
+      <MainLink to='/'>
         <span data-testid='child'>Inside link</span>
-      </Link>
+      </MainLink>
     ))
 
+    // #when
     render(<RouterProvider router={router} />)
 
+    // #then
     expect(await screen.findByTestId('child')).toBeInTheDocument()
   })
 
   test('resolves params in href', async () => {
+    // #given
     const router = createTestRouter(() => (
-      <Link to='/users/$userId' params={{ userId: '42' }}>
+      <MainLink to='/users/$userId' params={{ userId: '42' }}>
         User 42
-      </Link>
+      </MainLink>
     ))
 
+    // #when
     render(<RouterProvider router={router} />)
 
+    // #then
     const link = await screen.findByText('User 42')
     expect(link).toHaveAttribute('href', '/users/42')
   })

@@ -1,6 +1,5 @@
 import { createRoute } from '@tanstack/react-router'
 
-import { Link } from '@/components/ui/link'
 import { panels } from '@/lib/panels'
 
 import { leftPanel } from '../left-panel'
@@ -237,9 +236,9 @@ function FeatureSection({ feature }: { feature: Feature }) {
       </pre>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
         {feature.mainDemo && (
-          <Link to={feature.mainDemo as '/'} className='demo-link'>
+          <panels.MainLink to={feature.mainDemo as '/'} className='demo-link'>
             TanStack demo &rarr;
-          </Link>
+          </panels.MainLink>
         )}
         {feature.panelDemo && <PanelDemoLink demo={feature.panelDemo} />}
       </div>

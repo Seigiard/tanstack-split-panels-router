@@ -1,8 +1,8 @@
 import type { User } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
-import { Link } from '@/components/ui/link'
 import { beforeLoadLog } from '@/lib/logger'
+import { panels } from '@/lib/panels'
 import { wait } from '@/utils/wait'
 
 import { usersRoute } from './route'
@@ -26,27 +26,29 @@ function UsersView() {
   const users = usersIndexRoute.useLoaderData() as User[]
 
   return (
-    <div style={{ maxWidth: '56rem', padding: '2rem' }}>
+    <>
       <h2>Users</h2>
-      <div className='user-list'>
+      <ul>
         {users.map((user) => (
-          <Link
-            key={user.id}
-            to='/users/$userId'
-            params={{ userId: String(user.id) }}
-          >
-            <div>
-              <strong>
-                {user.firstName} {user.lastName}
-              </strong>
-              <div>{user.email}</div>
-            </div>
-            <div>
-              {user.address.city}, {user.address.state}
-            </div>
-          </Link>
+          <li>
+            <dl>
+              <dt>
+                <panels.MainLink
+                  key={user.id}
+                  to='/users/$userId'
+                  params={{ userId: String(user.id) }}
+                >
+                  {user.firstName} {user.lastName}
+                </panels.MainLink>{' '}
+                {user.email}
+              </dt>
+              <dd>
+                {user.address.city}, {user.address.state}
+              </dd>
+            </dl>
+          </li>
         ))}
-      </div>
-    </div>
+      </ul>
+    </>
   )
 }

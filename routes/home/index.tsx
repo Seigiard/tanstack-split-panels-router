@@ -1,6 +1,6 @@
 import { createRoute, useRouteContext } from '@tanstack/react-router'
 
-import { Link } from '@/components/ui/link'
+import { panels } from '@/lib/panels'
 
 import { beforeLoadLog } from '../../lib/logger'
 import { rootRoute } from '../route'
@@ -93,7 +93,9 @@ function HighlightsSection() {
       </section>
 
       <p>
-        <Link to='/features'>See all panel features in action &rarr;</Link>
+        <panels.MainLink to='/features'>
+          See all panel features in action &rarr;
+        </panels.MainLink>
       </p>
     </div>
   )

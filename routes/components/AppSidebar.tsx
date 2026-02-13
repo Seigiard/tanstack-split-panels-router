@@ -1,7 +1,6 @@
 import { useLocation } from '@tanstack/react-router'
 import { TbHome, TbListCheck, TbUsers, TbColumns } from 'react-icons/tb'
 
-import { Link } from '@/components/ui/link'
 import { panels } from '@/lib/panels'
 
 export function AppSidebar() {
@@ -10,11 +9,10 @@ export function AppSidebar() {
 
   return (
     <aside data-expandable='☰ Quick navigation'>
-      <div className='app-sidebar-brand'>SplitState</div>
       <nav>
         <ul>
           <li>
-            <Link
+            <panels.MainLink
               to='/'
               aria-current={
                 !isPanelMode && location.pathname === '/' ? 'page' : undefined
@@ -22,10 +20,10 @@ export function AppSidebar() {
             >
               <TbHome />
               <span>Home</span>
-            </Link>
+            </panels.MainLink>
           </li>
           <li>
-            <Link
+            <panels.MainLink
               to='/features'
               aria-current={
                 !isPanelMode && location.pathname.startsWith('/features')
@@ -35,10 +33,10 @@ export function AppSidebar() {
             >
               <TbListCheck />
               <span>Features</span>
-            </Link>
+            </panels.MainLink>
           </li>
           <li>
-            <Link
+            <panels.MainLink
               to='/users'
               aria-current={
                 !isPanelMode && location.pathname.startsWith('/users')
@@ -48,7 +46,7 @@ export function AppSidebar() {
             >
               <TbUsers />
               <span>Users</span>
-            </Link>
+            </panels.MainLink>
           </li>
           <li>
             <panels.Link

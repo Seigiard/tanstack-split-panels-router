@@ -1,3 +1,4 @@
+import { panels } from '@/lib/panels'
 import { leftPanel } from '@/routes/left-panel'
 import { rightPanel } from '@/routes/right-panel'
 
@@ -47,3 +48,25 @@ import { rightPanel } from '@/routes/right-panel'
 
 // @ts-expect-error — missing required params for right panel
 ;<rightPanel.Link to='/$postId' />
+
+// ─── MainLink: valid main router paths ──────────────────────────
+;<panels.MainLink to='/' />
+;<panels.MainLink to='/users' />
+;<panels.MainLink to='/features' />
+
+// ─── MainLink: dynamic paths require params ─────────────────────
+;<panels.MainLink to='/users/$userId' params={{ userId: '1' }} />
+
+// ─── MainLink: standard Link props ──────────────────────────────
+;<panels.MainLink to='/' className='foo' />
+;<panels.MainLink to='/' preload='intent' />
+;<panels.MainLink to='/'>Children</panels.MainLink>
+
+// ─── MainLink: search is NOT required (always cleared) ──────────
+;<panels.MainLink to='/users' />
+
+// @ts-expect-error — unknown main route path
+;<panels.MainLink to='/nonexistent' />
+
+// @ts-expect-error — wrong param name for /users/$userId
+;<panels.MainLink to='/users/$userId' params={{ wrongParam: '1' }} />

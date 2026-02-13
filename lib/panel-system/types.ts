@@ -1,4 +1,4 @@
-import type { AnyRoute } from '@tanstack/react-router'
+import type { AnyRoute, LinkComponent } from '@tanstack/react-router'
 import type { RoutePaths } from '@tanstack/router-core'
 
 // ─── Path param extraction ────────────────────────────────────────
@@ -127,11 +127,7 @@ export interface PanelIdentity {
 export interface PanelSystem<TPanels extends PanelMap> {
   Provider: React.ComponentType<{ children: React.ReactNode }>
   Link: React.ComponentType<SystemLinkProps<TPanels>>
-  MainLink: React.ComponentType<{
-    to: string
-    children?: React.ReactNode
-    className?: string
-  }>
+  MainLink: LinkComponent<'a'>
   usePanel: () => UsePanelReturn<TPanels>
   useCurrentPanel: () => PanelIdentity
   validateSearch: (

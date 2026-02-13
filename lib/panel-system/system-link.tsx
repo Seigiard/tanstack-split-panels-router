@@ -1,5 +1,8 @@
 import type { PanelLinkTarget, PanelMap, SystemLinkProps } from './types'
-import { Link as TanStackLink } from '@tanstack/react-router'
+import {
+  Link as TanStackLink,
+  type LinkComponent,
+} from '@tanstack/react-router'
 import { useContext, useMemo, type MouseEvent } from 'react'
 
 import { buildPanelValue, resolvePath } from './panel-utils'
@@ -74,35 +77,15 @@ export function createSystemLink<TPanels extends PanelMap>(
 
 // ─── MainLink factory ─────────────────────────────────────────────
 
-export function createMainLink(panelNames: string[]): React.ComponentType<{
-  to: string
-  children?: React.ReactNode
-  className?: string
-}> {
-  function MainLink({
-    to,
-    children,
-    className,
-  }: {
-    to: string
-    children?: React.ReactNode
-    className?: string
-  }) {
-    const clearSearch: Record<string, string | undefined> = {}
-    for (const key of panelNames) {
-      clearSearch[key] = undefined
-    }
-
-    return (
-      <TanStackLink
-        to={to as '/'}
-        search={clearSearch as unknown as Record<string, string>}
-        className={className}
-      >
-        {children}
-      </TanStackLink>
-    )
+export function createMainLink(panelNames: string[]): LinkComponent<'a'> {
+  const clearSearch: Record<string, undefined> = {}
+  for (const key of panelNames) {
+    clearSearch[key] = undefined
   }
+
+  const MainLink: LinkComponent<'a'> = (props) => (
+    <TanStackLink {...(props as any)} search={clearSearch} />
+  )
 
   return MainLink
 }
