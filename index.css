@@ -8,6 +8,7 @@ body {
 :root body .layout-simple:has(*) {
   height: 100vh;
   max-height: 100vh;
+  padding: 0;
   grid-template-rows: min-content 1fr minmax(10rem, 25svh);
 }
 .layout-simple > aside a.active {
@@ -28,25 +29,38 @@ body {
   border-radius: 0;
 }
 
+.app-main {
+  overflow-y: auto;
+  padding: 1rem 0;
+  margin: 0;
+}
+.app-main:has(.panel-container) {
+  padding: 0;
+  min-height: 0;
+}
 /* Panel system */
 .panel-container {
   display: flex;
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  height: 100%;
 }
 
 .panel {
-  flex: 1;
   min-width: 0;
   display: grid;
   grid-template-rows: min-content 1fr;
   gap: 0.5rem;
-  padding: 0.5rem;
-  background: var(--bg-subtle, #f4f4f5);
+  margin: 0;
+  border-right: 1px solid var(--bg-accent);
+}
+.panel-expanded {
+  flex: 1;
 }
 
 .panel-header {
+  padding: 0 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -57,15 +71,16 @@ body {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-muted, #71717a);
+  color: var(--muted, #71717a);
   margin: 0;
 }
 
 .panel-header button {
+  margin-top: 1rem;
   padding: 0.125rem;
   border: none;
   background: none;
-  color: var(--text-muted, #71717a);
+  color: var(--muted, #71717a);
   cursor: pointer;
   border-radius: 0.25rem;
   display: flex;
@@ -74,38 +89,12 @@ body {
 
 .panel-header button:hover {
   background: var(--bg-muted, #e4e4e7);
-  color: var(--text-default, #18181b);
+  color: var(--default, #18181b);
 }
 
 .panel-body {
   overflow-y: auto;
-  border-radius: 0.75rem;
-  background: white;
-  padding: 1rem;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
-}
-
-.panel-collapsed {
-  display: flex;
-  align-items: flex-start;
-  padding: 0.5rem;
-  background: var(--bg-subtle, #f4f4f5);
-}
-
-.panel-collapsed button {
-  padding: 0.25rem;
-  border: none;
-  background: none;
-  color: var(--text-muted, #71717a);
-  cursor: pointer;
-  border-radius: 0.25rem;
-  display: flex;
-  line-height: 1;
-}
-
-.panel-collapsed button:hover {
-  background: var(--bg-muted, #e4e4e7);
-  color: var(--text-default, #18181b);
+  padding: 0 1rem;
 }
 
 /* Route pending / spinner */
@@ -193,10 +182,4 @@ body {
   padding: 0.5rem;
   font-size: 0.875rem;
   margin-bottom: 0.75rem;
-}
-
-.app-main {
-  overflow-y: auto;
-  padding: 1rem 0;
-  margin: 0;
 }

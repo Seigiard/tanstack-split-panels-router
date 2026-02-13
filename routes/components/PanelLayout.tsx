@@ -19,11 +19,13 @@ export function PanelLayout() {
           <leftPanel.Outlet />
         </Panel>
       ) : (
-        <div className='panel-collapsed'>
-          <button onClick={() => left.navigate('/categories')}>
-            <TbLayoutSidebarLeftExpand />
-          </button>
-        </div>
+        <section className='panel panel-collapsed'>
+          <div className='panel-header'>
+            <button onClick={() => left.navigate('/categories')}>
+              <TbLayoutSidebarLeftExpand />
+            </button>
+          </div>
+        </section>
       )}
 
       {right.isOpen ? (
@@ -31,11 +33,13 @@ export function PanelLayout() {
           <rightPanel.Outlet />
         </Panel>
       ) : (
-        <div className='panel-collapsed'>
-          <button onClick={() => right.navigate('/')}>
-            <TbLayoutSidebarRightExpand />
-          </button>
-        </div>
+        <section className='panel panel-collapsed'>
+          <div className='panel-header'>
+            <button onClick={() => right.navigate('/')}>
+              <TbLayoutSidebarRightExpand />
+            </button>
+          </div>
+        </section>
       )}
     </div>
   )
@@ -47,7 +51,7 @@ function Panel({
   onClose,
 }: PropsWithChildren<{ title: string; onClose: () => void }>) {
   return (
-    <section className='panel'>
+    <section className='panel panel-expanded'>
       <div className='panel-header'>
         <h2>{title}</h2>
         <button onClick={onClose}>
