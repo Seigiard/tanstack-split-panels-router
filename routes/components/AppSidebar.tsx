@@ -2,15 +2,6 @@ import { useLocation } from '@tanstack/react-router'
 import { TbHome, TbListCheck, TbUsers, TbColumns } from 'react-icons/tb'
 
 import { Link } from '@/components/ui/link'
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui/sidebar'
 import { panels } from '@/lib/panels'
 
 export function AppSidebar() {
@@ -18,59 +9,58 @@ export function AppSidebar() {
   const { isPanelMode } = panels.usePanel()
 
   return (
-    <Sidebar className='h-screen w-48 border-r border-border'>
-      <SidebarHeader className='p-3 text-sm font-semibold'>
-        <span>SplitState</span>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                isActive={!isPanelMode && location.pathname === '/'}
-                render={<Link to='/' />}
-              >
-                <TbHome />
-                <span>Home</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                isActive={
-                  !isPanelMode && location.pathname.startsWith('/features')
-                }
-                render={<Link to='/features' />}
-              >
-                <TbListCheck />
-                <span>Features</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                isActive={
-                  !isPanelMode && location.pathname.startsWith('/users')
-                }
-                render={<Link to='/users' />}
-              >
-                <TbUsers />
-                <span>Users</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                isActive={isPanelMode}
-                render={<panels.Link left='/categories' />}
-              >
-                <TbColumns />
-                <span>Products</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+    <aside data-expandable='☰ Quick navigation'>
+      <div className='app-sidebar-brand'>SplitState</div>
+      <nav>
+        <ul>
+          <li>
+            <Link
+              to='/'
+              aria-current={
+                !isPanelMode && location.pathname === '/' ? 'page' : undefined
+              }
+            >
+              <TbHome />
+              <span>Home</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to='/features'
+              aria-current={
+                !isPanelMode && location.pathname.startsWith('/features')
+                  ? 'page'
+                  : undefined
+              }
+            >
+              <TbListCheck />
+              <span>Features</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to='/users'
+              aria-current={
+                !isPanelMode && location.pathname.startsWith('/users')
+                  ? 'page'
+                  : undefined
+              }
+            >
+              <TbUsers />
+              <span>Users</span>
+            </Link>
+          </li>
+          <li>
+            <panels.Link
+              left='/categories'
+              aria-current={isPanelMode ? 'page' : undefined}
+            >
+              <TbColumns />
+              <span>Products</span>
+            </panels.Link>
+          </li>
+        </ul>
+      </nav>
+    </aside>
   )
 }

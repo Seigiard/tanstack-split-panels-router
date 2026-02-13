@@ -17,10 +17,7 @@ export function LogPanel() {
   }, [entries.length])
 
   return (
-    <div
-      ref={scrollRef}
-      className='h-[30svh] shrink-0 space-y-0.5 overflow-y-auto border-t border-border bg-muted/30 px-4 py-2'
-    >
+    <div ref={scrollRef} className='log-panel'>
       <Logs />
     </div>
   )
@@ -30,17 +27,13 @@ function Logs() {
   const entries = useLogEntries()
 
   if (entries.length === 0) {
-    return (
-      <p className='font-mono text-sm text-muted-foreground'>
-        No log entries yet.
-      </p>
-    )
+    return <p>No log entries yet.</p>
   }
 
   return (
     <>
       {entries.map((entry, i) => (
-        <p key={i} className={'font-mono text-sm text-muted-foreground'}>
+        <p key={i}>
           [{formatTime(entry.timestamp)}] {entry.message}
         </p>
       ))}

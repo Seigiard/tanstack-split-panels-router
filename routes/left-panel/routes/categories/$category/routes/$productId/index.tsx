@@ -29,28 +29,24 @@ function ProductDetailView() {
   const product = productDetailRoute.useLoaderData() as Product
 
   return (
-    <div className='space-y-4'>
+    <div>
       <Breadcrumbs />
 
-      <div className='flex gap-3'>
+      <div style={{ display: 'flex', gap: '0.75rem' }}>
         <img
           src={product.thumbnail}
           alt={product.title}
-          className='h-20 w-20 shrink-0 rounded object-cover'
+          className='product-thumb'
         />
         <div>
-          <h3 className='text-sm font-semibold'>{product.title}</h3>
-          {product.brand && (
-            <p className='text-xs text-muted-foreground'>{product.brand}</p>
-          )}
-          <p className='mt-1 text-sm font-medium'>${product.price}</p>
-          <div className='mt-0.5 text-xs text-muted-foreground'>
-            Rating: {product.rating}/5
-          </div>
+          <h3>{product.title}</h3>
+          {product.brand && <p>{product.brand}</p>}
+          <p>${product.price}</p>
+          <p>Rating: {product.rating}/5</p>
         </div>
       </div>
 
-      <p className='text-sm text-muted-foreground'>{product.description}</p>
+      <p>{product.description}</p>
     </div>
   )
 }

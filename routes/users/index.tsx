@@ -26,23 +26,22 @@ function UsersView() {
   const users = usersIndexRoute.useLoaderData() as User[]
 
   return (
-    <div className='max-w-4xl p-8'>
-      <h2 className='mb-4 text-xl font-bold'>Users</h2>
-      <div className='grid gap-3'>
+    <div style={{ maxWidth: '56rem', padding: '2rem' }}>
+      <h2>Users</h2>
+      <div className='user-list'>
         {users.map((user) => (
           <Link
             key={user.id}
             to='/users/$userId'
             params={{ userId: String(user.id) }}
-            className='flex items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-muted/50'
           >
             <div>
-              <div className='font-medium'>
+              <strong>
                 {user.firstName} {user.lastName}
-              </div>
-              <div className='text-sm text-muted-foreground'>{user.email}</div>
+              </strong>
+              <div>{user.email}</div>
             </div>
-            <div className='text-sm text-muted-foreground'>
+            <div>
               {user.address.city}, {user.address.state}
             </div>
           </Link>

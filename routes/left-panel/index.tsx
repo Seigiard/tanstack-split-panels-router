@@ -19,11 +19,7 @@ const leftIndexRoute = createRoute({
   path: '/',
   beforeLoad: ({ cause }) => beforeLoadLog(cause, 'left:/'),
   component: function LeftIndex() {
-    return (
-      <p className='py-4 text-muted-foreground'>
-        Select a section from the sidebar
-      </p>
-    )
+    return <p>Select a section from the sidebar</p>
   },
 })
 

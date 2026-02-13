@@ -21,15 +21,14 @@ function CategoriesView() {
   const categories = categoriesIndexRoute.useLoaderData() as Category[]
 
   return (
-    <div className='space-y-1'>
-      <h3 className='mb-2 text-sm font-semibold'>Categories</h3>
-      <ul className='space-y-1'>
+    <div>
+      <h3>Categories</h3>
+      <ul>
         {categories.map((cat) => (
           <li key={cat.slug}>
             <leftPanel.Link
               to='/categories/$category'
               params={{ category: cat.slug }}
-              className='block w-full rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted'
             >
               {cat.name}
             </leftPanel.Link>

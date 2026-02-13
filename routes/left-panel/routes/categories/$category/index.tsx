@@ -1,7 +1,6 @@
 import type { Product } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
-import { Button } from '@/components/ui/button'
 import { beforeLoadLog } from '@/lib/logger'
 import { Breadcrumbs } from '@/routes/components/Breadcrumbs'
 import { leftPanel } from '@/routes/left-panel'
@@ -69,37 +68,31 @@ function CategoryProductsView() {
   const showingTo = Math.min(search.skip + search.limit, data.total)
 
   return (
-    <div className='space-y-3'>
+    <div>
       <Breadcrumbs />
 
-      <div className='text-xs text-muted-foreground'>
+      <p>
         {data.total > 0
           ? `Showing ${showingFrom}–${showingTo} of ${data.total}`
           : 'No products found'}
-      </div>
+      </p>
 
-      <ul className='space-y-1'>
+      <ul>
         {data.products.map((product) => (
           <li key={product.id}>
             <leftPanel.Link
               to='/categories/$category/$productId'
               params={{ category, productId: String(product.id) }}
-              className='flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted'
             >
-              <span className='truncate'>{product.title}</span>
-              <span className='ml-2 shrink-0 text-muted-foreground'>
-                ${product.price}
-              </span>
+              {product.title} — ${product.price}
             </leftPanel.Link>
           </li>
         ))}
       </ul>
 
       {data.total > search.limit && (
-        <div className='flex items-center justify-between'>
-          <Button
-            variant='outline'
-            size='sm'
+        <div className='pagination'>
+          <button
             disabled={!hasPrev}
             onClick={() =>
               navigateWithSearch({
@@ -108,21 +101,19 @@ function CategoryProductsView() {
             }
           >
             Prev
-          </Button>
-          <span className='text-xs text-muted-foreground'>
+          </button>
+          <span>
             Page {Math.floor(search.skip / search.limit) + 1} of{' '}
             {Math.ceil(data.total / search.limit)}
           </span>
-          <Button
-            variant='outline'
-            size='sm'
+          <button
             disabled={!hasNext}
             onClick={() =>
               navigateWithSearch({ skip: search.skip + search.limit })
             }
           >
             Next
-          </Button>
+          </button>
         </div>
       )}
     </div>

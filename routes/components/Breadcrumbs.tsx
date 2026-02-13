@@ -3,13 +3,6 @@ import '@/lib/breadcrumb'
 import { Link, useMatches } from '@tanstack/react-router'
 import { Fragment, type MouseEvent } from 'react'
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
 import { panels } from '@/lib/panels'
 import { mainRouter } from '@/routes/route'
 
@@ -49,16 +42,15 @@ export function Breadcrumbs() {
   if (crumbs.length <= 1) return null
 
   return (
-    <Breadcrumb className='mb-3'>
-      <BreadcrumbList>
+    <nav>
+      <ol>
         {crumbs.map((crumb, i) => {
           const isLast = i === crumbs.length - 1
           return (
             <Fragment key={crumb.path}>
-              {i > 0 && <BreadcrumbSeparator />}
-              <BreadcrumbItem>
+              <li>
                 {isLast ? (
-                  <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                  crumb.label
                 ) : currentPanel ? (
                   <PanelCrumbLink
                     path={crumb.path}
@@ -70,17 +62,16 @@ export function Breadcrumbs() {
                   <Link
                     to={crumb.path as '/'}
                     search={{ left: undefined, right: undefined }}
-                    className='transition-colors hover:text-foreground'
                   >
                     {crumb.label}
                   </Link>
                 )}
-              </BreadcrumbItem>
+              </li>
             </Fragment>
           )
         })}
-      </BreadcrumbList>
-    </Breadcrumb>
+      </ol>
+    </nav>
   )
 }
 
@@ -110,11 +101,7 @@ function PanelCrumbLink({
   }
 
   return (
-    <a
-      href={href}
-      onClick={handleClick}
-      className='transition-colors hover:text-foreground'
-    >
+    <a href={href} onClick={handleClick}>
       {label}
     </a>
   )

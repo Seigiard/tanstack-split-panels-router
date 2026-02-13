@@ -21,18 +21,13 @@ export const postsRoute = createRoute({
 function PostsListView() {
   const posts = postsRoute.useLoaderData() as Post[]
   return (
-    <div className='space-y-1'>
-      <h3 className='mb-2 text-sm font-semibold'>Posts</h3>
-      <ul className='space-y-1'>
+    <div>
+      <h3>Posts</h3>
+      <ul>
         {posts.map((post) => (
           <li key={post.id}>
-            <rightPanel.Link
-              to='/$postId'
-              params={{ postId: String(post.id) }}
-              className='block w-full rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted'
-            >
-              <span className='mr-1.5 text-muted-foreground'>{post.id}.</span>
-              {post.title}
+            <rightPanel.Link to='/$postId' params={{ postId: String(post.id) }}>
+              {post.id}. {post.title}
             </rightPanel.Link>
           </li>
         ))}

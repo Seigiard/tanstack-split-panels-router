@@ -196,16 +196,13 @@ nav.navigate(\`/categories/\${category}\`, {
 
 // ─── Components ──────────────────────────────────────────
 
-const DEMO_LINK =
-  'inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-sm transition-colors hover:bg-muted'
-
 function PanelDemoLink({ demo }: { demo: PanelDemo }) {
   if (demo.type === 'both') {
     return (
       <panels.Link
         left={{ to: demo.left }}
         right={{ to: demo.right }}
-        className={DEMO_LINK}
+        className='demo-link'
       >
         Panel demo &rarr;
       </panels.Link>
@@ -214,7 +211,7 @@ function PanelDemoLink({ demo }: { demo: PanelDemo }) {
 
   const PLink = demo.type === 'left' ? leftPanel.Link : rightPanel.Link
   return (
-    <PLink to={demo.to as '/'} className={DEMO_LINK}>
+    <PLink to={demo.to as '/'} className='demo-link'>
       Panel demo &rarr;
     </PLink>
   )
@@ -227,22 +224,20 @@ function toSlug(title: string): string {
 function FeatureSection({ feature }: { feature: Feature }) {
   const slug = toSlug(feature.title)
   return (
-    <section id={slug} className='scroll-mt-8 space-y-3'>
-      <a href={`#${slug}`} className='group'>
-        <h2 className='text-lg font-semibold'>
+    <section id={slug}>
+      <a href={`#${slug}`}>
+        <h2 className='feature-heading'>
           {feature.title}
-          <span className='ml-1.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100'>
-            #
-          </span>
+          <span className='feature-heading-anchor'>#</span>
         </h2>
       </a>
-      <p className='text-sm text-muted-foreground'>{feature.description}</p>
-      <pre className='overflow-x-auto rounded-lg border bg-muted px-4 py-3 font-mono text-sm leading-relaxed'>
-        {feature.code}
+      <p>{feature.description}</p>
+      <pre>
+        <code>{feature.code}</code>
       </pre>
-      <div className='flex flex-wrap gap-2'>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
         {feature.mainDemo && (
-          <Link to={feature.mainDemo as '/'} className={DEMO_LINK}>
+          <Link to={feature.mainDemo as '/'} className='demo-link'>
             TanStack demo &rarr;
           </Link>
         )}
@@ -254,14 +249,12 @@ function FeatureSection({ feature }: { feature: Feature }) {
 
 function FeaturesView() {
   return (
-    <div className='max-w-3xl space-y-10 p-8'>
-      <div>
-        <h1 className='text-2xl font-bold'>Features</h1>
-        <p className='mt-2 text-muted-foreground'>
-          Standard TanStack Router patterns that work out of the box in
-          multi-panel mode.
-        </p>
-      </div>
+    <div style={{ maxWidth: '48rem', padding: '2rem' }}>
+      <h1>Features</h1>
+      <p>
+        Standard TanStack Router patterns that work out of the box in
+        multi-panel mode.
+      </p>
       {FEATURES.map((f) => (
         <FeatureSection key={f.title} feature={f} />
       ))}
