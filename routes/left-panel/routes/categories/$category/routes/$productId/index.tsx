@@ -2,6 +2,7 @@ import type { Product } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
+import { usePanelLoaderData } from '@/lib/panel-system'
 import { Breadcrumbs } from '@/routes/components/Breadcrumbs'
 import { categoryProductsRoute } from '@/routes/left-panel/routes/categories/$category/route'
 
@@ -26,7 +27,7 @@ export const productDetailRoute = createRoute({
 })
 
 function ProductDetailView() {
-  const product = productDetailRoute.useLoaderData() as Product
+  const product = usePanelLoaderData({ from: productDetailRoute })
 
   return (
     <div>

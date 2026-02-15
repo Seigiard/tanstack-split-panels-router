@@ -17,6 +17,12 @@ Complete reference for all exported functions, types, components, and hooks.
   - [usePanel](#usepanel)
   - [useCurrentPanel](#usecurrentpanel)
   - [Panel.useNav](#panelusenav)
+- [Panel Route Hooks](#panel-route-hooks)
+  - [usePanelRouteContext](#usepanelroutecontext)
+  - [usePanelLoaderData](#usepanelloaderdata)
+  - [usePanelParams](#usepanelparams)
+  - [usePanelSearch](#usepanelsearch)
+  - [usePanelMatch](#usepanelmatch)
 - [Utilities](#utilities)
   - [validateSearch](#validatesearch)
   - [parsePanelValue](#parsepanelvalue)
@@ -532,6 +538,235 @@ function CategorySidebar() {
         Close Panel
       </button>
     </div>
+  )
+}
+```
+
+---
+
+## Panel Route Hooks
+
+Type-safe wrappers for TanStack Router hooks that work inside panel routes.
+
+**Why these exist:** TanStack Router's global `Register` interface only supports one registered router (the main one). Hooks like `useRouteContext({ from })` constrain the `from` parameter to route IDs in the registered router's tree. Panel routes live in separate route trees, so their IDs aren't recognized — causing TypeScript errors. These wrappers extract types directly from the route object, bypassing the global registry.
+
+All panel route hooks:
+
+- Must be called inside a panel component (below `<Panel.Outlet />`)
+- Accept a route object created with `createRoute()`
+- Return the same data as the underlying TanStack hook
+- Are fully type-safe without `as` casts
+
+```tsx
+import {
+  usePanelRouteContext,
+  usePanelLoaderData,
+  usePanelParams,
+  usePanelSearch,
+  usePanelMatch,
+} from '@/lib/panel-system'
+```
+
+---
+
+### usePanelRouteContext
+
+Returns the route context (data injected by `beforeLoad`).
+
+```tsx
+function usePanelRouteContext<TRoute, TSelected>(opts: {
+  from: TRoute
+  select?: (ctx: TRoute['types']['allContext']) => TSelected
+}): TRoute['types']['allContext'] | TSelected
+```
+
+**Options:**
+
+| Name     | Type                         | Description                                    |
+| -------- | ---------------------------- | ---------------------------------------------- |
+| `from`   | `TRoute`                     | Route created with `createRoute()`             |
+| `select` | `(ctx) => TSelected` (opt.)  | Derive a value from context for memoized reads |
+
+**Returns:** The route's `allContext` type, or `TSelected` if `select` is provided.
+
+**Example:**
+
+```tsx
+const categoriesIndexRoute = createRoute({
+  beforeLoad: () => ({
+    title: 'Categories',
+  }),
+  // ...
+})
+
+function CategoriesView() {
+  const ctx = usePanelRouteContext({ from: categoriesIndexRoute })
+  // ctx.title is typed as string
+  return <h3>{ctx.title}</h3>
+}
+```
+
+---
+
+### usePanelLoaderData
+
+Returns the route's loader data.
+
+```tsx
+function usePanelLoaderData<TRoute, TSelected>(opts: {
+  from: TRoute
+  select?: (data: TRoute['types']['loaderData']) => TSelected
+  structuralSharing?: boolean
+}): TRoute['types']['loaderData'] | TSelected
+```
+
+**Options:**
+
+| Name                 | Type                          | Description                                    |
+| -------------------- | ----------------------------- | ---------------------------------------------- |
+| `from`               | `TRoute`                      | Route created with `createRoute()`             |
+| `select`             | `(data) => TSelected` (opt.)  | Derive a value from loader data                |
+| `structuralSharing`  | `boolean` (opt.)              | Enable structural sharing for stable refs      |
+
+**Returns:** The resolved return type of the route's `loader`, or `TSelected` if `select` is provided.
+
+**Example:**
+
+```tsx
+const postsRoute = createRoute({
+  loader: async (): Promise<Post[]> => {
+    const res = await fetch('/api/posts')
+    return res.json()
+  },
+  // ...
+})
+
+function PostsList() {
+  const posts = usePanelLoaderData({ from: postsRoute })
+  // posts is typed as Post[]
+  return (
+    <ul>
+      {posts.map((post) => (
+        <li key={post.id}>{post.title}</li>
+      ))}
+    </ul>
+  )
+}
+```
+
+---
+
+### usePanelParams
+
+Returns the route's path parameters.
+
+```tsx
+function usePanelParams<TRoute, TSelected>(opts: {
+  from: TRoute
+  select?: (params: TRoute['types']['allParams']) => TSelected
+  structuralSharing?: boolean
+}): TRoute['types']['allParams'] | TSelected
+```
+
+**Options:**
+
+| Name                 | Type                            | Description                            |
+| -------------------- | ------------------------------- | -------------------------------------- |
+| `from`               | `TRoute`                        | Route created with `createRoute()`     |
+| `select`             | `(params) => TSelected` (opt.)  | Derive a value from params             |
+| `structuralSharing`  | `boolean` (opt.)                | Enable structural sharing              |
+
+**Returns:** Object with path parameter values (keys match `$param` segments), or `TSelected` if `select` is provided.
+
+**Example:**
+
+```tsx
+const productRoute = createRoute({
+  path: '/categories/$category/$productId',
+  // ...
+})
+
+function ProductView() {
+  const { category, productId } = usePanelParams({ from: productRoute })
+  // category: string, productId: string
+}
+```
+
+---
+
+### usePanelSearch
+
+Returns the route's validated search parameters.
+
+```tsx
+function usePanelSearch<TRoute, TSelected>(opts: {
+  from: TRoute
+  select?: (search: TRoute['types']['fullSearchSchema']) => TSelected
+  structuralSharing?: boolean
+}): TRoute['types']['fullSearchSchema'] | TSelected
+```
+
+**Options:**
+
+| Name                 | Type                            | Description                            |
+| -------------------- | ------------------------------- | -------------------------------------- |
+| `from`               | `TRoute`                        | Route created with `createRoute()`     |
+| `select`             | `(search) => TSelected` (opt.)  | Derive a value from search schema      |
+| `structuralSharing`  | `boolean` (opt.)                | Enable structural sharing              |
+
+**Returns:** The validated search schema (as defined by `validateSearch`), or `TSelected` if `select` is provided.
+
+**Example:**
+
+```tsx
+const categoryRoute = createRoute({
+  validateSearch: (search: Record<string, unknown>) => ({
+    skip: Number(search.skip) || 0,
+    limit: Number(search.limit) || 10,
+  }),
+  // ...
+})
+
+function CategoryView() {
+  const search = usePanelSearch({ from: categoryRoute })
+  // search.skip: number, search.limit: number
+}
+```
+
+---
+
+### usePanelMatch
+
+Returns the full route match object.
+
+```tsx
+function usePanelMatch<TRoute, TSelected>(opts: {
+  from: TRoute
+  select?: (match: MakeRouteMatchFromRoute<TRoute>) => TSelected
+  structuralSharing?: boolean
+}): MakeRouteMatchFromRoute<TRoute> | TSelected
+```
+
+**Options:**
+
+| Name                 | Type                            | Description                            |
+| -------------------- | ------------------------------- | -------------------------------------- |
+| `from`               | `TRoute`                        | Route created with `createRoute()`     |
+| `select`             | `(match) => TSelected` (opt.)   | Derive a value from the match          |
+| `structuralSharing`  | `boolean` (opt.)                | Enable structural sharing              |
+
+**Returns:** `MakeRouteMatchFromRoute<TRoute>` — full match including `params`, `search`, `loaderData` (optional), `context`, `status`, etc. Or `TSelected` if `select` is provided.
+
+**Example:**
+
+```tsx
+function DebugView() {
+  const match = usePanelMatch({ from: myRoute })
+  return (
+    <pre>
+      Status: {match.status}
+      Params: {JSON.stringify(match.params)}
+    </pre>
   )
 }
 ```

@@ -2,6 +2,7 @@ import type { Comment, Post } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
+import { usePanelLoaderData } from '@/lib/panel-system'
 import { rightPanel, rightRoot } from '@/routes/right-panel'
 import { wait } from '@/utils/wait'
 
@@ -26,10 +27,7 @@ export const postDetailRoute = createRoute({
 })
 
 function PostDetailView() {
-  const { post, comments } = postDetailRoute.useLoaderData() as {
-    post: Post
-    comments: Comment[]
-  }
+  const { post, comments } = usePanelLoaderData({ from: postDetailRoute })
   return (
     <div>
       <p>

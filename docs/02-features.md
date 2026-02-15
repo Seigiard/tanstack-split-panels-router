@@ -167,3 +167,21 @@ nav.navigate(`/categories/${category}`, {
   search: { skip: '0', limit: '10' },
 })
 ```
+
+## Panel Route Hooks
+
+Type-safe access to route data inside panel components — context, loader data, params, search — without `as` casts. These wrappers bypass TanStack Router's single-registry type constraint.
+
+```tsx
+import {
+  usePanelRouteContext,
+  usePanelLoaderData,
+  usePanelParams,
+  usePanelSearch,
+} from '@/lib/panel-system'
+
+const ctx = usePanelRouteContext({ from: categoriesIndexRoute })
+const data = usePanelLoaderData({ from: postsRoute })
+const { category } = usePanelParams({ from: categoryRoute })
+const search = usePanelSearch({ from: categoryRoute })
+```

@@ -239,9 +239,11 @@ Each layout route can wrap shared UI around its children — headers, sidebars, 
 
 ### Injecting Route Context
 
-Return an object from `beforeLoad` to make it available via `useRouteContext()`:
+Return an object from `beforeLoad` to make it available via `usePanelRouteContext()`:
 
 ```tsx
+import { usePanelRouteContext } from '@/lib/panel-system'
+
 export const categoriesIndexRoute = createRoute({
   getParentRoute: () => categoriesRoute,
   path: '/',
@@ -256,7 +258,7 @@ export const categoriesIndexRoute = createRoute({
 })
 
 function CategoriesView() {
-  const ctx = categoriesIndexRoute.useRouteContext()
+  const ctx = usePanelRouteContext({ from: categoriesIndexRoute })
   // ctx.label === 'Categories'
 }
 ```
@@ -766,7 +768,8 @@ function Breadcrumbs() {
 Each panel can have its own search parameters:
 
 ```tsx
-// Panel route with search validation
+import { usePanelSearch } from '@/lib/panel-system'
+
 const categoriesRoute = createRoute({
   getParentRoute: () => leftRoot,
   path: '/categories',
@@ -779,7 +782,7 @@ const categoriesRoute = createRoute({
 })
 
 function CategoriesView() {
-  const search = useSearch({ from: categoriesRoute.id })
+  const search = usePanelSearch({ from: categoriesRoute })
   // search.skip, search.limit, search.sort are typed and validated
 
   return (
@@ -836,10 +839,10 @@ Full URL: `/?left=/categories?skip=10&limit=20&right=/posts/5?sort=desc`
 ### Reading Search Params in Panel
 
 ```tsx
-import { useSearch } from '@tanstack/react-router'
+import { usePanelSearch } from '@/lib/panel-system'
 
 function CategoryFilters() {
-  const search = useSearch({ from: categoriesRoute.id })
+  const search = usePanelSearch({ from: categoriesRoute })
 
   return (
     <div>
@@ -856,7 +859,7 @@ function CategoryFilters() {
 ```tsx
 function SortControls() {
   const { navigate } = leftPanel.useNav()
-  const search = useSearch({ from: categoriesRoute.id })
+  const search = usePanelSearch({ from: categoriesRoute })
 
   const updateSort = (newSort: string) => {
     navigate('/categories', {

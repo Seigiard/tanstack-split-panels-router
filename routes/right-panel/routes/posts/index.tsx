@@ -2,6 +2,7 @@ import type { Post } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
+import { usePanelLoaderData } from '@/lib/panel-system'
 import { rightPanel, rightRoot } from '@/routes/right-panel'
 import { wait } from '@/utils/wait'
 
@@ -19,7 +20,7 @@ export const postsRoute = createRoute({
 })
 
 function PostsListView() {
-  const posts = postsRoute.useLoaderData() as Post[]
+  const posts = usePanelLoaderData({ from: postsRoute })
   return (
     <div>
       <h3>Posts</h3>

@@ -2,6 +2,11 @@ import type { Product } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
+import {
+  usePanelLoaderData,
+  usePanelParams,
+  usePanelSearch,
+} from '@/lib/panel-system'
 import { Breadcrumbs } from '@/routes/components/Breadcrumbs'
 import { leftPanel } from '@/routes/left-panel'
 
@@ -44,12 +49,9 @@ export const categoryProductsIndexRoute = createRoute({
 })
 
 function CategoryProductsView() {
-  const data =
-    categoryProductsIndexRoute.useLoaderData() as CategoryProductsData
-  const search = categoryProductsIndexRoute.useSearch() as CategorySearch
-  const { category } = categoryProductsIndexRoute.useParams() as {
-    category: string
-  }
+  const data = usePanelLoaderData({ from: categoryProductsIndexRoute })
+  const search = usePanelSearch({ from: categoryProductsIndexRoute })
+  const { category } = usePanelParams({ from: categoryProductsIndexRoute })
   const nav = leftPanel.useNav()
 
   const navigateWithSearch = (overrides: Partial<CategorySearch>) => {

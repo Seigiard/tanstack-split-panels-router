@@ -2,6 +2,7 @@ import type { Category } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
 
 import { beforeLoadLog } from '@/lib/logger'
+import { usePanelLoaderData, usePanelRouteContext } from '@/lib/panel-system'
 import { leftPanel } from '@/routes/left-panel'
 
 import { categoriesRoute } from './route'
@@ -9,7 +10,12 @@ import { categoriesRoute } from './route'
 export const categoriesIndexRoute = createRoute({
   getParentRoute: () => categoriesRoute,
   path: '/',
-  beforeLoad: ({ cause }) => beforeLoadLog(cause, 'left:/categories'),
+  beforeLoad: ({ cause }) => {
+    beforeLoadLog(cause, 'left:/categories')
+    return {
+      title: 'Categories (injected from beforeLoad)',
+    }
+  },
   loader: async (): Promise<Category[]> => {
     const res = await fetch('https://dummyjson.com/products/categories')
     return res.json()
@@ -18,11 +24,12 @@ export const categoriesIndexRoute = createRoute({
 })
 
 function CategoriesView() {
-  const categories = categoriesIndexRoute.useLoaderData() as Category[]
+  const ctx = usePanelRouteContext({ from: categoriesIndexRoute })
+  const categories = usePanelLoaderData({ from: categoriesIndexRoute })
 
   return (
-    <div>
-      <h3>Categories</h3>
+    <>
+      <h3>{ctx.title}</h3>
       <ul>
         {categories.map((cat) => (
           <li key={cat.slug}>
@@ -35,6 +42,6 @@ function CategoriesView() {
           </li>
         ))}
       </ul>
-    </div>
+    </>
   )
 }
