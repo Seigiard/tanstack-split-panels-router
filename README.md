@@ -2,6 +2,8 @@
 
 A generic, type-safe React library for building dual-router navigation systems on TanStack Router v1. Enables independent viewports with memory history while synchronizing state through URL search parameters.
 
+[Live Example on StackBlitz](https://stackblitz.com/~/github.com/Seigiard/tanstack-split-panels-router)
+
 ## What It Does
 
 The panel system library allows you to run multiple independent TanStack Router instances (panels) alongside your main router. Each panel has its own navigation state and memory history, while the main router owns the browser URL. Panel state is encoded in query parameters (`?left=/categories&right=/posts/1`), enabling bookmarkable, shareable URLs for complex multi-viewport UIs.
