@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef } from 'react'
+import { ComponentPropsWithoutRef, useEffect, useRef } from 'react'
 
 import { useLogEntries } from '../../lib/logger'
 
@@ -6,7 +6,7 @@ function formatTime(date: Date): string {
   return date.toLocaleTimeString('en-US', { hour12: false })
 }
 
-export function LogPanel() {
+export function LogPanel(props: ComponentPropsWithoutRef<'footer'>) {
   const entries = useLogEntries()
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -17,7 +17,7 @@ export function LogPanel() {
   }, [entries.length])
 
   return (
-    <footer ref={scrollRef} className='log-panel'>
+    <footer ref={scrollRef} {...props}>
       <Logs />
     </footer>
   )

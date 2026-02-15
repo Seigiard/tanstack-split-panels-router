@@ -4,10 +4,42 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TanStack Router Split State</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.5" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/github.min.css"
+      media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/github-dark.min.css"
+      media="(prefers-color-scheme: dark)"
+    />
     <link rel="stylesheet" href="/index.css" />
   </head>
   <body>
     <div id="root" class="layout-simple"></div>
+
+    <!-- dark-mode-toggle -->
+    <dark-mode-toggle permanent style="position: absolute; top: 0; border: 0; left: 1rem"></dark-mode-toggle>
+    <script type="module" src="https://unpkg.com/dark-mode-toggle"></script>
+    <script>
+      const toggle = document.querySelector("dark-mode-toggle");
+
+      // Set or remove the mode classes the first time:
+      if (toggle.mode === "dark") {
+        document.documentElement.classList.add("holiday-css-dark");
+      } else if (toggle.mode === "light") {
+        document.documentElement.classList.add("holiday-css-light");
+      }
+
+      // Listen for toggle changes (which includes `prefers-color-scheme`
+      // changes) and toggle the `dark` class accordingly:
+      toggle.addEventListener("colorschemechange", () => {
+        document.documentElement.classList.toggle("holiday-css-dark", toggle.mode === "dark");
+        document.documentElement.classList.toggle("holiday-css-light", toggle.mode === "light");
+      });
+    </script>
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>

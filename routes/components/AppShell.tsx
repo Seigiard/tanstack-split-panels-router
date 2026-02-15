@@ -2,7 +2,7 @@ import { Outlet } from '@tanstack/react-router'
 
 import { panels } from '@/lib/panels'
 
-import { AppSidebar } from './AppSidebar'
+import { AppMenu } from './AppMenu'
 import { LogPanel } from './LogPanel'
 import { PanelLayout } from './PanelLayout'
 
@@ -19,14 +19,14 @@ function AppShellInner() {
 
   return (
     <>
-      <header>
+      <header className='app-header'>
         <h1>SplitState</h1>
+        <AppMenu />
       </header>
-      <AppSidebar />
       <main className='app-main'>
         {isPanelMode ? <PanelLayout /> : <Outlet />}
       </main>
-      <LogPanel />
+      <LogPanel className='app-footer' />
     </>
   )
 }

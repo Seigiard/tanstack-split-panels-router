@@ -17,8 +17,9 @@
     "test:types": "vitest run --typecheck"
   },
   "dependencies": {
-    "@lowlighter/matcha": "^3.0.1",
     "@tanstack/react-router": "^1.157.16",
+    "highlight.js": "^11.11.1",
+    "marked-highlight": "^2.2.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-icons": "^5.5.0"
