@@ -130,42 +130,42 @@ right.close()
 ## Architecture Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  Browser URL: /?left=/categories/phones&right=/posts/5      │
-└───────────────────────┬─────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│  Browser URL: /?left=/categories/phones&right=/posts/5              │
+└───────────────────────┬─────────────────────────────────────────────┘
                         │
                         ▼
-┌──────────────────────────────────────────────────────────────┐
-│               Main Router (TanStack Router)                   │
-│         - Owns browser history and URL bar                    │
-│         - Manages search params (left, right)                 │
-└──────────────────┬───────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│               Main Router (TanStack Router)                         │
+│         - Owns browser history and URL bar                          │
+│         - Manages search params (left, right)                       │
+└──────────────────┬──────────────────────────────────────────────────┘
                    │
                    ▼
-┌──────────────────────────────────────────────────────────────┐
-│           panels.Provider (PanelSystemContext)                │
-│    - Reads search params from main router                     │
-│    - Creates/retrieves panel routers (lazy)                   │
-│    - Syncs URL → panel routers (useLayoutEffect)              │
-│    - Provides navigation methods                              │
-└─────┬────────────────────────────────────────────────┬───────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│           panels.Provider (PanelSystemContext)                      │
+│    - Reads search params from main router                           │
+│    - Creates/retrieves panel routers (lazy)                         │
+│    - Syncs URL → panel routers (useLayoutEffect)                    │
+│    - Provides navigation methods                                    │
+└─────┬─────────────────────────────────────────────────┬─────────────┘
       │                                                 │
       ▼                                                 ▼
-┌─────────────────────────┐               ┌─────────────────────────┐
-│  Left Panel Router      │               │  Right Panel Router     │
-│  (Memory History)       │               │  (Memory History)       │
-│  - Independent state    │               │  - Independent state    │
-│  - Route tree           │               │  - Route tree           │
-│  - Navigation stack     │               │  - Navigation stack     │
-└────────┬────────────────┘               └────────┬────────────────┘
+┌──────────────────────────┐               ┌──────────────────────────┐
+│  Left Panel Router       │               │  Right Panel Router      │
+│  (Memory History)        │               │  (Memory History)        │
+│  - Independent state     │               │  - Independent state     │
+│  - Route tree            │               │  - Route tree            │
+│  - Navigation stack      │               │  - Navigation stack      │
+└────────┬─────────────────┘               └───────┬──────────────────┘
          │                                         │
          ▼                                         ▼
-┌─────────────────────────┐               ┌─────────────────────────┐
-│  <leftPanel.Outlet />   │               │  <rightPanel.Outlet />  │
+┌──────────────────────────┐               ┌──────────────────────────┐
+│  <leftPanel.Outlet />    │               │  <rightPanel.Outlet />   │
 │  - Renders RouterProvider│               │  - Renders RouterProvider│
-│  - PanelIdentityContext │               │  - PanelIdentityContext │
-│  - Error boundary       │               │  - Error boundary       │
-└─────────────────────────┘               └─────────────────────────┘
+│  - PanelIdentityContext  │               │  - PanelIdentityContext  │
+│  - Error boundary        │               │  - Error boundary        │
+└──────────────────────────┘               └──────────────────────────┘
 ```
 
 ## Navigation Flow
