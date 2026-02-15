@@ -1,4 +1,5 @@
-import { ComponentPropsWithoutRef, useEffect, useRef } from 'react'
+import { ComponentPropsWithoutRef, useEffect, useRef, useState } from 'react'
+import { TbChevronDown, TbChevronUp } from 'react-icons/tb'
 
 import { useLogEntries } from '../../lib/logger'
 
@@ -7,6 +8,7 @@ function formatTime(date: Date): string {
 }
 
 export function LogPanel(props: ComponentPropsWithoutRef<'footer'>) {
+  const [collapsed, setCollapsed] = useState(true)
   const entries = useLogEntries()
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -17,8 +19,12 @@ export function LogPanel(props: ComponentPropsWithoutRef<'footer'>) {
   }, [entries.length])
 
   return (
-    <footer ref={scrollRef} {...props}>
-      <Logs />
+    <footer data-collapsed={collapsed} ref={scrollRef} {...props}>
+      <button className='icon-button' onClick={() => setCollapsed(!collapsed)}>
+        {collapsed ? <TbChevronDown /> : <TbChevronUp />}
+      </button>
+      {collapsed && <h4>Logs</h4>}
+      {!collapsed && <Logs />}
     </footer>
   )
 }

@@ -21,7 +21,10 @@ export function PanelLayout() {
       ) : (
         <section className='panel panel-collapsed'>
           <div className='panel-header'>
-            <button onClick={() => left.navigate('/categories')}>
+            <button
+              className='icon-button'
+              onClick={() => left.navigate('/categories')}
+            >
               <TbLayoutSidebarLeftExpand />
             </button>
           </div>
@@ -35,7 +38,7 @@ export function PanelLayout() {
       ) : (
         <section className='panel panel-collapsed'>
           <div className='panel-header'>
-            <button onClick={() => right.navigate('/')}>
+            <button className='icon-button' onClick={() => right.navigate('/')}>
               <TbLayoutSidebarRightExpand />
             </button>
           </div>
@@ -54,7 +57,7 @@ function Panel({
     <section className='panel panel-expanded'>
       <div className='panel-header'>
         <h2>{title}</h2>
-        <button onClick={onClose}>
+        <button className='icon-button' onClick={onClose}>
           <TbX />
         </button>
       </div>
