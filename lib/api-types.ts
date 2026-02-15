@@ -1,22 +1,3 @@
-export type User = {
-  id: number
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  image: string
-  address: {
-    address: string
-    city: string
-    state: string
-    postalCode: string
-    country: string
-  }
-  age: number
-  username: string
-  company: { name: string; title: string }
-}
-
 export type Category = {
   slug: string
   name: string

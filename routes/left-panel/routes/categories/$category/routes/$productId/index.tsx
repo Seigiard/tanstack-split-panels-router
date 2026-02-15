@@ -33,19 +33,20 @@ function ProductDetailView() {
     <div>
       <Breadcrumbs />
 
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <img
-          src={product.thumbnail}
-          alt={product.title}
-          className='product-thumb'
-        />
-        <div>
-          <h3>{product.title}</h3>
-          {product.brand && <p>{product.brand}</p>}
-          <p>${product.price}</p>
-          <p>Rating: {product.rating}/5</p>
-        </div>
-      </div>
+      <article>
+        <aside>
+          <img
+            src={product.thumbnail}
+            alt={product.title}
+            className='product-thumb'
+          />
+        </aside>
+
+        <h3>{product.title}</h3>
+        {product.brand && <p>{product.brand}</p>}
+        <p>${product.price}</p>
+        <p>Rating: {product.rating}/5</p>
+      </article>
 
       <p>{product.description}</p>
     </div>

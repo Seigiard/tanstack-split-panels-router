@@ -130,6 +130,11 @@ button.icon-button:hover {
   color: var(--success-text-color);
 }
 
+article > aside {
+  float: right;
+  max-width: 30%;
+}
+
 .panel-body {
   overflow-y: auto;
   padding: 0 1rem;
@@ -174,13 +179,4 @@ button.icon-button:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-/* Comment card */
-.comment-card {
-  border: 1px solid var(--bg-muted, #e4e4e7);
-  border-radius: 0.25rem;
-  padding: 0.5rem;
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
 }

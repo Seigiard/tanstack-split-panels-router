@@ -1,7 +1,8 @@
-import '@/lib/breadcrumb'
+import '@/lib/panel-system/breadcrumb'
 
 import { Link, useMatches } from '@tanstack/react-router'
 import { Fragment, type MouseEvent } from 'react'
+import { TbChevronRight } from 'react-icons/tb'
 
 import { panels } from '@/lib/panels'
 import { mainRouter } from '@/routes/route'
@@ -43,7 +44,7 @@ export function Breadcrumbs() {
 
   return (
     <nav>
-      <ol>
+      <ul>
         {crumbs.map((crumb, i) => {
           const isLast = i === crumbs.length - 1
           return (
@@ -67,10 +68,15 @@ export function Breadcrumbs() {
                   </Link>
                 )}
               </li>
+              {!isLast && (
+                <li>
+                  <TbChevronRight />
+                </li>
+              )}
             </Fragment>
           )
         })}
-      </ol>
+      </ul>
     </nav>
   )
 }

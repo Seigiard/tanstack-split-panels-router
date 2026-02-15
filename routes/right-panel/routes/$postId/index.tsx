@@ -38,7 +38,7 @@ function PostDetailView() {
       <h4>Comments ({comments.length})</h4>
       <ul>
         {comments.map((c) => (
-          <li key={c.id} className='comment-card'>
+          <li key={c.id}>
             <strong>{c.user.fullName}</strong>
             <p>{c.body}</p>
           </li>
