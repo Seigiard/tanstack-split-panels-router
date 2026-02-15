@@ -1,9 +1,21 @@
 import path from 'path'
 
 import react from '@vitejs/plugin-react'
+import hljs from 'highlight.js'
 import { marked } from 'marked'
+import { markedHighlight } from 'marked-highlight'
 import type { Plugin } from 'vite'
 import { defineConfig, loadEnv } from 'vite'
+
+marked.use(
+  markedHighlight({
+    langPrefix: 'hljs language-',
+    highlight(code, lang) {
+      const language = hljs.getLanguage(lang) ? lang : 'plaintext'
+      return hljs.highlight(code, { language }).value
+    },
+  }),
+)
 
 function markdown(): Plugin {
   return {
