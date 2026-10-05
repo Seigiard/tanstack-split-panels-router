@@ -1,21 +1,12 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "typescript",
-    "react",
-    "import"
-  ],
+  "plugins": ["typescript", "react", "import"],
   "categories": {},
   "rules": {
     "no-console": [
       "error",
       {
-        "allow": [
-          "error",
-          "debug",
-          "warn",
-          "info"
-        ]
+        "allow": ["error", "debug", "warn", "info"]
       }
     ],
     "typescript/no-unused-vars": [
