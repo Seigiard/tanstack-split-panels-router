@@ -43,6 +43,7 @@ export const categoryProductsIndexRoute = createRoute({
     qs.set('skip', String(deps.skip))
     qs.set('select', 'title,price')
     const res = await fetch(`https://dummyjson.com/products?${qs}`)
+
     return res.json()
   },
   component: CategoryProductsView,

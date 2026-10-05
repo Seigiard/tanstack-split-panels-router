@@ -4,10 +4,12 @@ import { rightPanel } from '@/routes/right-panel'
 
 // ─── Left panel Link: valid static paths ──────────────────────────
 ;<leftPanel.Link to='/' />
+
 ;<leftPanel.Link to='/categories' />
 
 // ─── Left panel Link: dynamic paths require params ────────────────
 ;<leftPanel.Link to='/categories/$category' params={{ category: 'phones' }} />
+
 ;<leftPanel.Link
   to='/categories/$category/$productId'
   params={{ category: 'phones', productId: '42' }}
@@ -27,6 +29,7 @@ import { rightPanel } from '@/routes/right-panel'
 
 // ─── Right panel Link: valid paths ────────────────────────────────
 ;<rightPanel.Link to='/' />
+
 ;<rightPanel.Link to='/$postId' params={{ postId: '5' }} />
 
 // ─── Right panel Link: with className ─────────────────────────────
@@ -51,6 +54,7 @@ import { rightPanel } from '@/routes/right-panel'
 
 // ─── MainLink: valid main router paths ──────────────────────────
 ;<panels.MainLink to='/' />
+
 ;<panels.MainLink to='/docs/$docId' params={{ docId: 'features' }} />
 
 // ─── MainLink: dynamic paths require params ─────────────────────
@@ -58,7 +62,9 @@ import { rightPanel } from '@/routes/right-panel'
 
 // ─── MainLink: standard Link props ──────────────────────────────
 ;<panels.MainLink to='/' className='foo' />
+
 ;<panels.MainLink to='/' preload='intent' />
+
 ;<panels.MainLink to='/'>Children</panels.MainLink>
 
 // ─── MainLink: search is NOT required (always cleared) ──────────

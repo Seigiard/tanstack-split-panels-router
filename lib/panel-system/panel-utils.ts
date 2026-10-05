@@ -9,7 +9,9 @@ export function parsePanelValue(value: string): {
   searchString: string
 } {
   const qIndex = value.indexOf('?')
+
   if (qIndex === -1) return { pathname: value, searchString: '' }
+
   return {
     pathname: value.substring(0, qIndex),
     searchString: value.substring(qIndex),
@@ -21,11 +23,14 @@ export function buildPanelValue(
   search?: Record<string, string>,
 ): string {
   if (!search || Object.keys(search).length === 0) return pathname
+
   const filtered = Object.fromEntries(
     Object.entries(search).filter(([, v]) => v !== ''),
   )
+
   if (Object.keys(filtered).length === 0) return pathname
   const qs = new URLSearchParams(filtered).toString()
+
   return `${pathname}?${qs}`
 }
 
@@ -36,13 +41,16 @@ export function resolvePath(
   params?: Record<string, string>,
 ): string {
   if (!params) return to
+
   return to.replace(/\$([^/]+)/g, (_, key: string) => {
     const value = params[key]
+
     if (value === undefined) {
       throw new Error(
         `Missing param "${key}" for path "${to}". Got params: ${JSON.stringify(params)}`,
       )
     }
+
     return encodeURIComponent(value)
   })
 }
@@ -51,9 +59,11 @@ export function resolvePath(
 
 export function panelNavigate(router: PanelRouter, panelValue: string): void {
   const { pathname, searchString } = parsePanelValue(panelValue)
+
   const searchParams = searchString
     ? Object.fromEntries(new URLSearchParams(searchString))
     : undefined
+
   ;(
     router.navigate as (opts: {
       to: string
@@ -82,6 +92,7 @@ export function createPanelRouterFactory(
           : {}),
       })
     }
+
     return instance
   }
 }

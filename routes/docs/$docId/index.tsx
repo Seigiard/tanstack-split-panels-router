@@ -24,6 +24,7 @@ export const docPageRoute = createRoute({
     if (!resolveDoc(params.docId)) {
       throw redirect({ to: '/docs/$docId', params: { docId: '01-quickstart' } })
     }
+
     beforeLoadLog(cause, `/docs/${params.docId}`)
   },
   component: DocPageView,

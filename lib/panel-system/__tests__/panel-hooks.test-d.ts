@@ -45,6 +45,7 @@ test('usePanelRouteContext with select narrows return type', () => {
     from: staticRoute,
     select: (ctx) => ctx.title,
   })
+
   expectTypeOf(title).toEqualTypeOf<'hello'>()
 })
 
@@ -60,6 +61,7 @@ test('usePanelLoaderData with select narrows return type', () => {
     from: staticRoute,
     select: (data) => data.items.length,
   })
+
   expectTypeOf(count).toBeNumber()
 })
 
@@ -81,6 +83,7 @@ test('usePanelParams with select narrows return type', () => {
     from: dynamicRoute,
     select: (p) => p.itemId,
   })
+
   expectTypeOf(id).toBeString()
 })
 
@@ -97,6 +100,7 @@ test('usePanelSearch with select narrows return type', () => {
     from: dynamicRoute,
     select: (s) => s.page,
   })
+
   expectTypeOf(page).toBeNumber()
 })
 
@@ -121,6 +125,7 @@ test('usePanelMatch with select narrows return type', () => {
     from: dynamicRoute,
     select: (m) => m.status,
   })
+
   expectTypeOf(status).toEqualTypeOf<
     'pending' | 'success' | 'error' | 'redirected' | 'notFound'
   >()

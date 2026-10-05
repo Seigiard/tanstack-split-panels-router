@@ -21,6 +21,7 @@ export const productDetailRoute = createRoute({
     const res = await fetch(
       `https://dummyjson.com/products/${params.productId}`,
     )
+
     return res.json()
   },
   component: ProductDetailView,

@@ -11,8 +11,10 @@ type Crumb = { path: string; label: string }
 
 export function Breadcrumbs() {
   const matches = useMatches()
+
   let currentPanel: { name: string; navigate: (to: string) => void } | null =
     null
+
   try {
     currentPanel = panels.useCurrentPanel()
   } catch {
@@ -20,8 +22,10 @@ export function Breadcrumbs() {
   }
 
   const crumbs: Crumb[] = []
+
   for (const match of matches) {
     const bc = (match.staticData as { breadcrumb?: unknown }).breadcrumb
+
     if (!bc) continue
 
     const label =
@@ -47,6 +51,7 @@ export function Breadcrumbs() {
       <ul>
         {crumbs.map((crumb, i) => {
           const isLast = i === crumbs.length - 1
+
           return (
             <Fragment key={crumb.path}>
               <li>

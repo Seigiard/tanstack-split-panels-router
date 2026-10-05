@@ -14,6 +14,7 @@ export const postsRoute = createRoute({
     await wait(1000)
     const res = await fetch('https://dummyjson.com/posts?limit=30')
     const data: { posts: Post[] } = await res.json()
+
     return data.posts
   },
   component: PostsListView,
@@ -21,6 +22,7 @@ export const postsRoute = createRoute({
 
 function PostsListView() {
   const posts = usePanelLoaderData({ from: postsRoute })
+
   return (
     <div>
       <h3>Posts</h3>

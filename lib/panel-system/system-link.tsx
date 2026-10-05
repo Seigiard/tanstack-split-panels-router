@@ -12,8 +12,10 @@ import { PanelSystemContext } from './system-provider'
 
 function resolveTarget(target: PanelLinkTarget<any>): string | false {
   if (target === false) return false
+
   if (typeof target === 'string') return target
   const resolved = resolvePath(target.to, target.params)
+
   return target.search ? buildPanelValue(resolved, target.search) : resolved
 }
 
@@ -26,12 +28,15 @@ export function createSystemLink<TPanels extends PanelMap>(
 
     const href = useMemo(() => {
       if (!ctx?.mainRouter) return '/'
+
       return ctx.mainRouter.buildLocation({
         to: '/',
         search: (prev: Record<string, unknown>) => {
           const next: Record<string, string | undefined> = {}
+
           for (const name of panelNames) {
             const target = (panelTargets as Record<string, unknown>)[name]
+
             if (target === undefined) {
               next[name] = (prev as Record<string, string | undefined>)[name]
             } else if (target === false) {
@@ -41,6 +46,7 @@ export function createSystemLink<TPanels extends PanelMap>(
                 resolveTarget(target as PanelLinkTarget<any>) || undefined
             }
           }
+
           return next
         },
       }).href
@@ -48,16 +54,20 @@ export function createSystemLink<TPanels extends PanelMap>(
 
     const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
       if (e.metaKey || e.ctrlKey || e.shiftKey) return
+
       if (!ctx) return
       e.preventDefault()
 
       for (const name of panelNames) {
         const target = (panelTargets as Record<string, unknown>)[name]
+
         if (target === undefined) continue
+
         if (target === false) {
           ctx.closePanel(name)
         } else {
           const resolved = resolveTarget(target as PanelLinkTarget<any>)
+
           if (resolved !== false) {
             ctx.navigatePanel(name, resolved)
           }
@@ -79,6 +89,7 @@ export function createSystemLink<TPanels extends PanelMap>(
 
 export function createMainLink(panelNames: string[]): LinkComponent<'a'> {
   const clearSearch: Record<string, undefined> = {}
+
   for (const key of panelNames) {
     clearSearch[key] = undefined
   }

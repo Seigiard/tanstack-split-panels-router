@@ -27,20 +27,24 @@ export function createPanelSystem<TPanels extends PanelMap>(
     search: Record<string, unknown>,
   ): Record<string, string | undefined> {
     const result: Record<string, string | undefined> = {}
+
     for (const name of panelNames) {
       result[name] =
         typeof search[name] === 'string' ? (search[name] as string) : undefined
     }
+
     return result
   }
 
   function usePanel(): UsePanelReturn<TPanels> {
     const ctx = useContext(PanelSystemContext)
+
     if (!ctx) {
       throw new Error('usePanel must be used within panels.Provider')
     }
 
     const result: Record<string, unknown> = {}
+
     for (const name of panelNames) {
       result[name] = {
         navigate: (to: string, opts?: { search?: Record<string, string> }) =>

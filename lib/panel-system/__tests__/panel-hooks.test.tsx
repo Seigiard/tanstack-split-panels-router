@@ -63,6 +63,7 @@ describe('usePanelRouteContext', () => {
     staticRoute.update({
       component: function TestComponent() {
         const ctx = usePanelRouteContext({ from: staticRoute })
+
         return <div data-testid='ctx'>{ctx.title}</div>
       },
     })
@@ -83,6 +84,7 @@ describe('usePanelLoaderData', () => {
     staticRoute.update({
       component: function TestComponent() {
         const data = usePanelLoaderData({ from: staticRoute })
+
         return <div data-testid='data'>{JSON.stringify(data)}</div>
       },
     })
@@ -104,6 +106,7 @@ describe('usePanelParams', () => {
     dynamicRoute.update({
       component: function TestComponent() {
         const params = usePanelParams({ from: dynamicRoute })
+
         return <div data-testid='params'>{params.itemId}</div>
       },
     })
@@ -124,6 +127,7 @@ describe('usePanelSearch', () => {
     dynamicRoute.update({
       component: function TestComponent() {
         const search = usePanelSearch({ from: dynamicRoute })
+
         return <div data-testid='search'>{search.page}</div>
       },
     })
@@ -143,6 +147,7 @@ describe('usePanelSearch', () => {
           from: dynamicRoute,
           select: (s) => s.page,
         })
+
         return <div data-testid='page'>{page}</div>
       },
     })
@@ -159,6 +164,7 @@ describe('usePanelSearch', () => {
     dynamicRoute.update({
       component: function TestComponent() {
         const search = usePanelSearch({ from: dynamicRoute })
+
         return <div data-testid='search'>{search.page}</div>
       },
     })
@@ -179,6 +185,7 @@ describe('usePanelMatch', () => {
     dynamicRoute.update({
       component: function TestComponent() {
         const match = usePanelMatch({ from: dynamicRoute })
+
         return (
           <div>
             <span data-testid='status'>{match.status}</span>

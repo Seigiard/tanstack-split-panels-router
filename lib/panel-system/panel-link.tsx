@@ -32,16 +32,19 @@ export function createPanelLink<TTree extends AnyRoute>(
     const href = useMemo(() => {
       if (!ctx?.mainRouter)
         return `/?${panelName}=${encodeURIComponent(panelValue)}`
+
       return ctx.mainRouter.buildLocation({
         to: '/',
         search: (prev: Record<string, unknown>) => {
           const next: Record<string, string | undefined> = {}
+
           for (const key of ctx.panelNames) {
             next[key] =
               key === panelName
                 ? panelValue
                 : (prev as Record<string, string | undefined>)[key]
           }
+
           return next
         },
       }).href
@@ -50,6 +53,7 @@ export function createPanelLink<TTree extends AnyRoute>(
     const handleClick = useCallback(
       (e: MouseEvent<HTMLAnchorElement>) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey) return
+
         if (!ctx) return
         e.preventDefault()
         ctx.navigatePanel(panelName, panelValue)
