@@ -80,6 +80,8 @@ export function usePanelRouteContext<
 >(
   opts: PanelRouteContextOptions<TRoute, TSelected>,
 ): ResolveResult<TRoute['types']['allContext'], TSelected> {
+  // SAFETY: strict lookup uses opts.from.id in the nearest panel RouterProvider;
+  // the result and selector types come from that same route, not the global registry.
   return useRouteContext(rewrite(opts) as never)
 }
 
@@ -89,6 +91,7 @@ export function usePanelLoaderData<
 >(
   opts: PanelLoaderDataOptions<TRoute, TSelected>,
 ): ResolveResult<TRoute['types']['loaderData'], TSelected> {
+  // SAFETY: strict lookup uses the supplied panel route ID and its loader contract.
   return useLoaderData(rewrite(opts) as never)
 }
 
@@ -96,6 +99,8 @@ export function usePanelParams<TRoute extends AnyRoute, TSelected = unknown>(
   opts: PanelParamsOptions<TRoute, TSelected>,
 ): ResolveResult<TRoute['types']['allParams'], TSelected> {
   // shouldThrow defaults to true — the hook throws if route not matched, never returns undefined
+  // SAFETY: strict lookup uses the supplied panel route ID; its params and selector
+  // determine the result, while the global registry only knows the main router.
   return useParams(rewrite(opts) as never) as ResolveResult<
     TRoute['types']['allParams'],
     TSelected
@@ -105,6 +110,7 @@ export function usePanelParams<TRoute extends AnyRoute, TSelected = unknown>(
 export function usePanelSearch<TRoute extends AnyRoute, TSelected = unknown>(
   opts: PanelSearchOptions<TRoute, TSelected>,
 ): ResolveResult<TRoute['types']['fullSearchSchema'], TSelected> {
+  // SAFETY: strict lookup uses the supplied route's validator and optional selector.
   return useSearch(rewrite(opts) as never) as ResolveResult<
     TRoute['types']['fullSearchSchema'],
     TSelected
@@ -114,6 +120,7 @@ export function usePanelSearch<TRoute extends AnyRoute, TSelected = unknown>(
 export function usePanelMatch<TRoute extends AnyRoute, TSelected = unknown>(
   opts: PanelMatchOptions<TRoute, TSelected>,
 ): ResolveResult<MakeRouteMatchFromRoute<TRoute>, TSelected> {
+  // SAFETY: strict lookup uses opts.from.id and throws if that route has no match.
   return useMatch(rewrite(opts) as never) as ResolveResult<
     MakeRouteMatchFromRoute<TRoute>,
     TSelected

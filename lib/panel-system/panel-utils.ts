@@ -4,10 +4,7 @@ import { createRouter, createMemoryHistory } from '@tanstack/react-router'
 
 // ─── URL parsing ──────────────────────────────────────────────────
 
-export function parsePanelValue(value: string): {
-  pathname: string
-  searchString: string
-} {
+export function parsePanelValue(value: string) {
   const qIndex = value.indexOf('?')
 
   if (qIndex === -1) return { pathname: value, searchString: '' }
@@ -57,6 +54,11 @@ export function resolvePath(
 
 // ─── Panel router navigation ─────────────────────────────────────
 
+interface PanelNavigation {
+  to: string
+  search?: Record<string, string>
+}
+
 export function panelNavigate(router: PanelRouter, panelValue: string): void {
   const { pathname, searchString } = parsePanelValue(panelValue)
 
@@ -64,12 +66,14 @@ export function panelNavigate(router: PanelRouter, panelValue: string): void {
     ? Object.fromEntries(new URLSearchParams(searchString))
     : undefined
 
-  ;(
-    router.navigate as (opts: {
-      to: string
-      search?: Record<string, string>
-    }) => void
-  )({ to: pathname, ...(searchParams ? { search: searchParams } : {}) })
+  const options: PanelNavigation = { to: pathname }
+
+  if (searchParams) options.search = searchParams
+
+  // SAFETY: this memory router owns the panel tree; pathname is a resolved
+  // panel path and search comes from URLSearchParams, not the main registry.
+  const navigate = router.navigate as (opts: PanelNavigation) => void
+  navigate(options)
 }
 
 // ─── Router factory ───────────────────────────────────────────────
@@ -82,15 +86,19 @@ export function createPanelRouterFactory(
 
   return (initialPath?: string) => {
     if (!instance) {
-      instance = createRouter({
+      const options: Parameters<typeof createRouter>[0] = {
         routeTree,
         history: createMemoryHistory({
           initialEntries: [initialPath ?? '/'],
         }),
-        ...(pendingComponent
-          ? { defaultPendingComponent: pendingComponent, defaultPendingMs: 200 }
-          : {}),
-      })
+      }
+
+      if (pendingComponent) {
+        options.defaultPendingComponent = pendingComponent
+        options.defaultPendingMs = 200
+      }
+
+      instance = createRouter(options)
     }
 
     return instance

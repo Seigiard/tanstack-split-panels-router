@@ -1,6 +1,7 @@
 import { createRootRoute, createRoute, Outlet } from '@tanstack/react-router'
 import type { MakeRouteMatchFromRoute } from '@tanstack/router-core'
 import { expectTypeOf, test } from 'vitest'
+import { z } from 'zod'
 
 import {
   usePanelLoaderData,
@@ -14,6 +15,8 @@ import {
 
 const root = createRootRoute({ component: () => Outlet })
 
+const searchInput = z.object({ page: z.unknown().optional() })
+
 const staticRoute = createRoute({
   getParentRoute: () => root,
   path: '/static',
@@ -25,9 +28,11 @@ const staticRoute = createRoute({
 const dynamicRoute = createRoute({
   getParentRoute: () => root,
   path: '/items/$itemId',
-  validateSearch: (s: Record<string, unknown>) => ({
-    page: Number(s.page) || 1,
-  }),
+  validateSearch: (input: z.input<typeof searchInput>) => {
+    const s = searchInput.parse(input)
+
+    return { page: Number(s.page) || 1 }
+  },
   loader: async (): Promise<{ name: string }> => ({ name: '' }),
   component: () => null,
 })

@@ -1,13 +1,13 @@
 import { createRoute, redirect } from '@tanstack/react-router'
 
-import { beforeLoadLog, logger } from '@/lib/logger'
+import { beforeLoadLog } from '@/lib/logger'
 
 import { docsRoute } from '../route'
 
-const docs = import.meta.glob('/docs/*.md', {
+const docs = import.meta.glob<string>('/docs/*.md', {
   eager: true,
   import: 'default',
-}) as Record<string, string>
+})
 
 function resolveDoc(docId: string): string | undefined {
   return docs[`/docs/${docId}.md`]

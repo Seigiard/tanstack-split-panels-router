@@ -55,7 +55,7 @@ export function createPanel<TTree extends AnyRoute>(
   return {
     name,
     tree,
-    defaultPath: defaultPath as string,
+    defaultPath,
     getRouter,
     Outlet,
     Link,

@@ -4,8 +4,10 @@ import {
   type LinkComponent,
 } from '@tanstack/react-router'
 import { useContext, useMemo, type MouseEvent } from 'react'
+import { z } from 'zod'
 
 import { buildPanelValue, resolvePath } from './panel-utils'
+import { panelSearchSchema } from './search-schema'
 import { PanelSystemContext } from './system-provider'
 
 // ─── Multi-panel Link factory ─────────────────────────────────────
@@ -13,10 +15,23 @@ import { PanelSystemContext } from './system-provider'
 function resolveTarget(target: PanelLinkTarget<any>): string | false {
   if (target === false) return false
 
-  if (typeof target === 'string') return target
-  const resolved = resolvePath(target.to, target.params)
+  const path = z.string().safeParse(target)
 
-  return target.search ? buildPanelValue(resolved, target.search) : resolved
+  if (path.success) return path.data
+
+  const navigation = z
+    .object({
+      to: z.string(),
+      params: z.record(z.string(), z.string()).optional(),
+      search: z.record(z.string(), z.string()).optional(),
+    })
+    .parse(target)
+
+  const resolved = resolvePath(navigation.to, navigation.params)
+
+  return navigation.search
+    ? buildPanelValue(resolved, navigation.search)
+    : resolved
 }
 
 export function createSystemLink<TPanels extends PanelMap>(
@@ -24,6 +39,12 @@ export function createSystemLink<TPanels extends PanelMap>(
 ): React.ComponentType<SystemLinkProps<TPanels>> {
   function SystemLink(props: SystemLinkProps<TPanels>) {
     const { children, className, ...panelTargets } = props
+
+    // SAFETY: omitting children and className leaves only optional panel targets.
+    const targets = panelTargets as {
+      [K in keyof TPanels]?: PanelLinkTarget<TPanels[K]['tree']>
+    }
+
     const ctx = useContext(PanelSystemContext)
 
     const href = useMemo(() => {
@@ -31,26 +52,26 @@ export function createSystemLink<TPanels extends PanelMap>(
 
       return ctx.mainRouter.buildLocation({
         to: '/',
-        search: (prev: Record<string, unknown>) => {
+        search: (prev) => {
+          const parsed = panelSearchSchema.parse(prev)
           const next: Record<string, string | undefined> = {}
 
           for (const name of panelNames) {
-            const target = (panelTargets as Record<string, unknown>)[name]
+            const target = targets[name]
 
             if (target === undefined) {
-              next[name] = (prev as Record<string, string | undefined>)[name]
+              next[name] = parsed[name]
             } else if (target === false) {
               next[name] = undefined
             } else {
-              next[name] =
-                resolveTarget(target as PanelLinkTarget<any>) || undefined
+              next[name] = resolveTarget(target) || undefined
             }
           }
 
           return next
         },
       }).href
-    }, [ctx, panelTargets])
+    }, [ctx, targets])
 
     const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
       if (e.metaKey || e.ctrlKey || e.shiftKey) return
@@ -59,14 +80,14 @@ export function createSystemLink<TPanels extends PanelMap>(
       e.preventDefault()
 
       for (const name of panelNames) {
-        const target = (panelTargets as Record<string, unknown>)[name]
+        const target = targets[name]
 
         if (target === undefined) continue
 
         if (target === false) {
           ctx.closePanel(name)
         } else {
-          const resolved = resolveTarget(target as PanelLinkTarget<any>)
+          const resolved = resolveTarget(target)
 
           if (resolved !== false) {
             ctx.navigatePanel(name, resolved)
@@ -94,9 +115,10 @@ export function createMainLink(panelNames: string[]): LinkComponent<'a'> {
     clearSearch[key] = undefined
   }
 
-  const MainLink: LinkComponent<'a'> = (props) => (
-    <TanStackLink {...(props as any)} search={clearSearch} />
-  )
+  const MainLink: LinkComponent<'a'> = (props) => {
+    // SAFETY: props have TanStack's LinkComponent contract; only search is replaced.
+    return <TanStackLink {...(props as any)} search={clearSearch} />
+  }
 
   return MainLink
 }

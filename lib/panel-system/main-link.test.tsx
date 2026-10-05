@@ -8,10 +8,16 @@ import {
 } from '@tanstack/react-router'
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, test } from 'vitest'
+import { z } from 'zod'
 
 import { createMainLink } from './system-link'
 
 const PANEL_NAMES = ['left', 'right']
+
+const searchSchema = z.object({
+  left: z.string().optional().catch(undefined),
+  right: z.string().optional().catch(undefined),
+})
 
 function createTestRouter(
   IndexComponent: () => React.ReactNode,
@@ -19,12 +25,7 @@ function createTestRouter(
 ) {
   const root = createRootRoute({
     component: () => <Outlet />,
-    validateSearch: (
-      s: Record<string, unknown>,
-    ): { left?: string; right?: string } => ({
-      left: typeof s.left === 'string' ? s.left : undefined,
-      right: typeof s.right === 'string' ? s.right : undefined,
-    }),
+    validateSearch: (s: z.input<typeof searchSchema>) => searchSchema.parse(s),
   })
 
   const index = createRoute({

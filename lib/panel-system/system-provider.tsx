@@ -10,6 +10,7 @@ import {
 } from 'react'
 
 import { buildPanelValue, panelNavigate } from './panel-utils'
+import { panelSearchSchema } from './search-schema'
 
 // ─── Context types ────────────────────────────────────────────────
 
@@ -49,10 +50,12 @@ export function createSystemProvider<TPanels extends PanelMap>(
     const mainRouter = useRouter()
     const navigate = useNavigate()
 
-    const search = useSearch({ strict: false }) as Record<
-      string,
-      string | undefined
-    >
+    const rawSearch = useSearch({ strict: false })
+
+    const search = useMemo(
+      () => panelSearchSchema.parse(rawSearch),
+      [rawSearch],
+    )
 
     const prevRefs = useRef<Record<string, string | undefined>>({})
 
@@ -110,7 +113,7 @@ export function createSystemProvider<TPanels extends PanelMap>(
 
         navigate({
           to: '/',
-          search: nextSearch as Record<string, string>,
+          search: nextSearch,
         })
       },
       [navigate, search, getRouter],
@@ -128,7 +131,7 @@ export function createSystemProvider<TPanels extends PanelMap>(
 
         navigate({
           to: '/',
-          search: nextSearch as Record<string, string>,
+          search: nextSearch,
         })
       },
       [navigate, search],
@@ -148,9 +151,11 @@ export function createSystemProvider<TPanels extends PanelMap>(
           clearSearch[key] = undefined
         }
 
+        // SAFETY: to is a resolved main-router pathname; the global registry only
+        // describes the demo tree, while this factory accepts any main router.
         navigate({
           to: to as '/',
-          search: clearSearch as unknown as Record<string, string>,
+          search: clearSearch,
         })
       },
       [navigate],

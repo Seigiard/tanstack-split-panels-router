@@ -1,3 +1,4 @@
+import type { PanelSearchInput, PanelSearch } from './search-schema'
 import type { AnyRoute, LinkComponent } from '@tanstack/react-router'
 import type { RoutePaths } from '@tanstack/router-core'
 
@@ -96,12 +97,15 @@ export type PanelControl = {
   isOpen: boolean
 }
 
-export type UsePanelReturn<TPanels extends PanelMap> = {
+export type PanelControls<TPanels extends PanelMap> = {
   [K in keyof TPanels]: PanelControl
-} & {
-  isPanelMode: boolean
-  navigateMain: (to: string) => void
 }
+
+export type UsePanelReturn<TPanels extends PanelMap> =
+  PanelControls<TPanels> & {
+    isPanelMode: boolean
+    navigateMain: (to: string) => void
+  }
 
 // ─── createPanelSystem options ────────────────────────────────────
 
@@ -130,7 +134,5 @@ export interface PanelSystem<TPanels extends PanelMap> {
   MainLink: LinkComponent<'a'>
   usePanel: () => UsePanelReturn<TPanels>
   useCurrentPanel: () => PanelIdentity
-  validateSearch: (
-    search: Record<string, unknown>,
-  ) => Record<string, string | undefined>
+  validateSearch: (search: PanelSearchInput) => PanelSearch
 }
