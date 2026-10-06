@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-router'
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, test } from 'vitest'
+import { z } from 'zod'
 
 import {
   usePanelLoaderData,
@@ -23,6 +24,8 @@ afterEach(cleanup)
 
 type SearchSchema = { page: number }
 
+const searchInput = z.object({ page: z.unknown().optional() })
+
 const root = createRootRoute({ component: () => <Outlet /> })
 
 const staticRoute = createRoute({
@@ -36,9 +39,11 @@ const staticRoute = createRoute({
 const dynamicRoute = createRoute({
   getParentRoute: () => root,
   path: '/items/$itemId',
-  validateSearch: (s: Record<string, unknown>): SearchSchema => ({
-    page: Number(s.page) || 1,
-  }),
+  validateSearch: (input: z.input<typeof searchInput>): SearchSchema => {
+    const s = searchInput.parse(input)
+
+    return { page: Number(s.page) || 1 }
+  },
   loader: async () => ({ name: 'widget' }),
   component: () => null,
 })
@@ -63,6 +68,7 @@ describe('usePanelRouteContext', () => {
     staticRoute.update({
       component: function TestComponent() {
         const ctx = usePanelRouteContext({ from: staticRoute })
+
         return <div data-testid='ctx'>{ctx.title}</div>
       },
     })
@@ -83,6 +89,7 @@ describe('usePanelLoaderData', () => {
     staticRoute.update({
       component: function TestComponent() {
         const data = usePanelLoaderData({ from: staticRoute })
+
         return <div data-testid='data'>{JSON.stringify(data)}</div>
       },
     })
@@ -104,6 +111,7 @@ describe('usePanelParams', () => {
     dynamicRoute.update({
       component: function TestComponent() {
         const params = usePanelParams({ from: dynamicRoute })
+
         return <div data-testid='params'>{params.itemId}</div>
       },
     })
@@ -124,6 +132,7 @@ describe('usePanelSearch', () => {
     dynamicRoute.update({
       component: function TestComponent() {
         const search = usePanelSearch({ from: dynamicRoute })
+
         return <div data-testid='search'>{search.page}</div>
       },
     })
@@ -143,6 +152,7 @@ describe('usePanelSearch', () => {
           from: dynamicRoute,
           select: (s) => s.page,
         })
+
         return <div data-testid='page'>{page}</div>
       },
     })
@@ -159,6 +169,7 @@ describe('usePanelSearch', () => {
     dynamicRoute.update({
       component: function TestComponent() {
         const search = usePanelSearch({ from: dynamicRoute })
+
         return <div data-testid='search'>{search.page}</div>
       },
     })
@@ -179,6 +190,7 @@ describe('usePanelMatch', () => {
     dynamicRoute.update({
       component: function TestComponent() {
         const match = usePanelMatch({ from: dynamicRoute })
+
         return (
           <div>
             <span data-testid='status'>{match.status}</span>

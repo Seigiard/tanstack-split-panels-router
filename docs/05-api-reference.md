@@ -582,10 +582,10 @@ function usePanelRouteContext<TRoute, TSelected>(opts: {
 
 **Options:**
 
-| Name     | Type                         | Description                                    |
-| -------- | ---------------------------- | ---------------------------------------------- |
-| `from`   | `TRoute`                     | Route created with `createRoute()`             |
-| `select` | `(ctx) => TSelected` (opt.)  | Derive a value from context for memoized reads |
+| Name     | Type                        | Description                                    |
+| -------- | --------------------------- | ---------------------------------------------- |
+| `from`   | `TRoute`                    | Route created with `createRoute()`             |
+| `select` | `(ctx) => TSelected` (opt.) | Derive a value from context for memoized reads |
 
 **Returns:** The route's `allContext` type, or `TSelected` if `select` is provided.
 
@@ -622,11 +622,11 @@ function usePanelLoaderData<TRoute, TSelected>(opts: {
 
 **Options:**
 
-| Name                 | Type                          | Description                                    |
-| -------------------- | ----------------------------- | ---------------------------------------------- |
-| `from`               | `TRoute`                      | Route created with `createRoute()`             |
-| `select`             | `(data) => TSelected` (opt.)  | Derive a value from loader data                |
-| `structuralSharing`  | `boolean` (opt.)              | Enable structural sharing for stable refs      |
+| Name                | Type                         | Description                               |
+| ------------------- | ---------------------------- | ----------------------------------------- |
+| `from`              | `TRoute`                     | Route created with `createRoute()`        |
+| `select`            | `(data) => TSelected` (opt.) | Derive a value from loader data           |
+| `structuralSharing` | `boolean` (opt.)             | Enable structural sharing for stable refs |
 
 **Returns:** The resolved return type of the route's `loader`, or `TSelected` if `select` is provided.
 
@@ -670,11 +670,11 @@ function usePanelParams<TRoute, TSelected>(opts: {
 
 **Options:**
 
-| Name                 | Type                            | Description                            |
-| -------------------- | ------------------------------- | -------------------------------------- |
-| `from`               | `TRoute`                        | Route created with `createRoute()`     |
-| `select`             | `(params) => TSelected` (opt.)  | Derive a value from params             |
-| `structuralSharing`  | `boolean` (opt.)                | Enable structural sharing              |
+| Name                | Type                           | Description                        |
+| ------------------- | ------------------------------ | ---------------------------------- |
+| `from`              | `TRoute`                       | Route created with `createRoute()` |
+| `select`            | `(params) => TSelected` (opt.) | Derive a value from params         |
+| `structuralSharing` | `boolean` (opt.)               | Enable structural sharing          |
 
 **Returns:** Object with path parameter values (keys match `$param` segments), or `TSelected` if `select` is provided.
 
@@ -708,11 +708,11 @@ function usePanelSearch<TRoute, TSelected>(opts: {
 
 **Options:**
 
-| Name                 | Type                            | Description                            |
-| -------------------- | ------------------------------- | -------------------------------------- |
-| `from`               | `TRoute`                        | Route created with `createRoute()`     |
-| `select`             | `(search) => TSelected` (opt.)  | Derive a value from search schema      |
-| `structuralSharing`  | `boolean` (opt.)                | Enable structural sharing              |
+| Name                | Type                           | Description                        |
+| ------------------- | ------------------------------ | ---------------------------------- |
+| `from`              | `TRoute`                       | Route created with `createRoute()` |
+| `select`            | `(search) => TSelected` (opt.) | Derive a value from search schema  |
+| `structuralSharing` | `boolean` (opt.)               | Enable structural sharing          |
 
 **Returns:** The validated search schema (as defined by `validateSearch`), or `TSelected` if `select` is provided.
 
@@ -749,11 +749,11 @@ function usePanelMatch<TRoute, TSelected>(opts: {
 
 **Options:**
 
-| Name                 | Type                            | Description                            |
-| -------------------- | ------------------------------- | -------------------------------------- |
-| `from`               | `TRoute`                        | Route created with `createRoute()`     |
-| `select`             | `(match) => TSelected` (opt.)   | Derive a value from the match          |
-| `structuralSharing`  | `boolean` (opt.)                | Enable structural sharing              |
+| Name                | Type                          | Description                        |
+| ------------------- | ----------------------------- | ---------------------------------- |
+| `from`              | `TRoute`                      | Route created with `createRoute()` |
+| `select`            | `(match) => TSelected` (opt.) | Derive a value from the match      |
+| `structuralSharing` | `boolean` (opt.)              | Enable structural sharing          |
 
 **Returns:** `MakeRouteMatchFromRoute<TRoute>` — full match including `params`, `search`, `loaderData` (optional), `context`, `status`, etc. Or `TSelected` if `select` is provided.
 

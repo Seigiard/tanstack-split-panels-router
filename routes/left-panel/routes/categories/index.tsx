@@ -12,12 +12,14 @@ export const categoriesIndexRoute = createRoute({
   path: '/',
   beforeLoad: ({ cause }) => {
     beforeLoadLog(cause, 'left:/categories')
+
     return {
       title: 'Categories (injected from beforeLoad)',
     }
   },
   loader: async (): Promise<Category[]> => {
     const res = await fetch('https://dummyjson.com/products/categories')
+
     return res.json()
   },
   component: CategoriesView,

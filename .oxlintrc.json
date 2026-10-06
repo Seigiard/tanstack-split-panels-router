@@ -36,6 +36,7 @@
     "**/*.cjs",
     "**/*.stories.tsx",
     "**/*.test.ts",
-    "**/*.test.tsx"
+    "**/*.test.tsx",
+    "tools/oxlint/anti-slop/**"
   ]
 }

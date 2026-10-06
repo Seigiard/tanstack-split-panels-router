@@ -1,5 +1,6 @@
 import type { Product } from '@/lib/api-types'
 import { createRoute } from '@tanstack/react-router'
+import { z } from 'zod'
 
 import { beforeLoadLog } from '@/lib/logger'
 import {
@@ -24,13 +25,21 @@ export type CategoryProductsData = {
   limit: number
 }
 
+const categorySearchInput = z.object({
+  skip: z.unknown().optional(),
+  limit: z.unknown().optional(),
+})
+
 export const categoryProductsIndexRoute = createRoute({
   getParentRoute: () => categoryProductsRoute,
   path: '/',
-  validateSearch: (search: Record<string, unknown>): CategorySearch => ({
-    skip: Number(search.skip) || 0,
-    limit: Number(search.limit) || 10,
-  }),
+  validateSearch: (
+    input: z.input<typeof categorySearchInput>,
+  ): CategorySearch => {
+    const search = categorySearchInput.parse(input)
+
+    return { skip: Number(search.skip) || 0, limit: Number(search.limit) || 10 }
+  },
   loaderDeps: ({ search }) => ({
     skip: search.skip,
     limit: search.limit,
@@ -43,6 +52,7 @@ export const categoryProductsIndexRoute = createRoute({
     qs.set('skip', String(deps.skip))
     qs.set('select', 'title,price')
     const res = await fetch(`https://dummyjson.com/products?${qs}`)
+
     return res.json()
   },
   component: CategoryProductsView,

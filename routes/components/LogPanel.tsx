@@ -36,9 +36,7 @@ function Logs() {
     entries.length === 0
       ? 'No log entries yet.'
       : entries
-          .map(
-            (entry, i) => `[${formatTime(entry.timestamp)}] ${entry.message}`,
-          )
+          .map((entry) => `[${formatTime(entry.timestamp)}] ${entry.message}`)
           .join('\n')
 
   return <pre>{log}</pre>

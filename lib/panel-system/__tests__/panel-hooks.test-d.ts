@@ -1,6 +1,7 @@
 import { createRootRoute, createRoute, Outlet } from '@tanstack/react-router'
 import type { MakeRouteMatchFromRoute } from '@tanstack/router-core'
 import { expectTypeOf, test } from 'vitest'
+import { z } from 'zod'
 
 import {
   usePanelLoaderData,
@@ -14,6 +15,8 @@ import {
 
 const root = createRootRoute({ component: () => Outlet })
 
+const searchInput = z.object({ page: z.unknown().optional() })
+
 const staticRoute = createRoute({
   getParentRoute: () => root,
   path: '/static',
@@ -25,9 +28,11 @@ const staticRoute = createRoute({
 const dynamicRoute = createRoute({
   getParentRoute: () => root,
   path: '/items/$itemId',
-  validateSearch: (s: Record<string, unknown>) => ({
-    page: Number(s.page) || 1,
-  }),
+  validateSearch: (input: z.input<typeof searchInput>) => {
+    const s = searchInput.parse(input)
+
+    return { page: Number(s.page) || 1 }
+  },
   loader: async (): Promise<{ name: string }> => ({ name: '' }),
   component: () => null,
 })
@@ -45,6 +50,7 @@ test('usePanelRouteContext with select narrows return type', () => {
     from: staticRoute,
     select: (ctx) => ctx.title,
   })
+
   expectTypeOf(title).toEqualTypeOf<'hello'>()
 })
 
@@ -60,6 +66,7 @@ test('usePanelLoaderData with select narrows return type', () => {
     from: staticRoute,
     select: (data) => data.items.length,
   })
+
   expectTypeOf(count).toBeNumber()
 })
 
@@ -81,6 +88,7 @@ test('usePanelParams with select narrows return type', () => {
     from: dynamicRoute,
     select: (p) => p.itemId,
   })
+
   expectTypeOf(id).toBeString()
 })
 
@@ -97,6 +105,7 @@ test('usePanelSearch with select narrows return type', () => {
     from: dynamicRoute,
     select: (s) => s.page,
   })
+
   expectTypeOf(page).toBeNumber()
 })
 
@@ -121,6 +130,7 @@ test('usePanelMatch with select narrows return type', () => {
     from: dynamicRoute,
     select: (m) => m.status,
   })
+
   expectTypeOf(status).toEqualTypeOf<
     'pending' | 'success' | 'error' | 'redirected' | 'notFound'
   >()

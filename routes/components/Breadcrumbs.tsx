@@ -3,6 +3,7 @@ import '@/lib/panel-system/breadcrumb'
 import { Link, useMatches } from '@tanstack/react-router'
 import { Fragment, type MouseEvent } from 'react'
 import { TbChevronRight } from 'react-icons/tb'
+import { z } from 'zod'
 
 import { panels } from '@/lib/panels'
 import { mainRouter } from '@/routes/route'
@@ -11,8 +12,10 @@ type Crumb = { path: string; label: string }
 
 export function Breadcrumbs() {
   const matches = useMatches()
+
   let currentPanel: { name: string; navigate: (to: string) => void } | null =
     null
+
   try {
     currentPanel = panels.useCurrentPanel()
   } catch {
@@ -20,22 +23,19 @@ export function Breadcrumbs() {
   }
 
   const crumbs: Crumb[] = []
+
   for (const match of matches) {
-    const bc = (match.staticData as { breadcrumb?: unknown }).breadcrumb
+    const bc = match.staticData.breadcrumb
+
     if (!bc) continue
 
     const label =
-      typeof bc === 'function'
-        ? (
-            bc as (m: {
-              params: Record<string, string>
-              loaderData: unknown
-            }) => string | undefined
-          )({
-            params: match.params as Record<string, string>,
+      bc instanceof Function
+        ? bc({
+            params: z.record(z.string(), z.string()).parse(match.params),
             loaderData: match.loaderData,
           })
-        : (bc as string)
+        : bc
 
     if (label) crumbs.push({ path: match.pathname, label })
   }
@@ -47,6 +47,7 @@ export function Breadcrumbs() {
       <ul>
         {crumbs.map((crumb, i) => {
           const isLast = i === crumbs.length - 1
+
           return (
             <Fragment key={crumb.path}>
               <li>
@@ -60,6 +61,7 @@ export function Breadcrumbs() {
                     navigate={currentPanel.navigate}
                   />
                 ) : (
+                  // SAFETY: crumb.path is the pathname of a matched main route.
                   <Link
                     to={crumb.path as '/'}
                     search={{ left: undefined, right: undefined }}
@@ -94,8 +96,8 @@ function PanelCrumbLink({
 }) {
   const href = mainRouter.buildLocation({
     to: '/',
-    search: (prev: Record<string, unknown>) => ({
-      ...(prev as Record<string, string | undefined>),
+    search: (prev) => ({
+      ...prev,
       [panelName]: path,
     }),
   }).href

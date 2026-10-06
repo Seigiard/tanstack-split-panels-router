@@ -10,6 +10,7 @@ import {
 } from 'react'
 
 import { buildPanelValue, panelNavigate } from './panel-utils'
+import { panelSearchSchema } from './search-schema'
 
 // ─── Context types ────────────────────────────────────────────────
 
@@ -30,6 +31,7 @@ export interface PanelSystemContextValue {
 export const PanelSystemContext = createContext<PanelSystemContextValue | null>(
   null,
 )
+
 export const PanelIdentityContext = createContext<PanelIdentity | null>(null)
 
 // ─── Provider factory ─────────────────────────────────────────────
@@ -47,10 +49,13 @@ export function createSystemProvider<TPanels extends PanelMap>(
   function PanelSystemProvider({ children }: { children: React.ReactNode }) {
     const mainRouter = useRouter()
     const navigate = useNavigate()
-    const search = useSearch({ strict: false }) as Record<
-      string,
-      string | undefined
-    >
+
+    const rawSearch = useSearch({ strict: false })
+
+    const search = useMemo(
+      () => panelSearchSchema.parse(rawSearch),
+      [rawSearch],
+    )
 
     const prevRefs = useRef<Record<string, string | undefined>>({})
 
@@ -58,8 +63,10 @@ export function createSystemProvider<TPanels extends PanelMap>(
     const getRouter = useCallback(
       (name: string): PanelRouter | null => {
         const panel = panels[name]
+
         if (!panel) return null
         const panelValue = search[name]
+
         return panel.getRouter(panelValue || panel.defaultPath)
       },
       [search],
@@ -70,10 +77,13 @@ export function createSystemProvider<TPanels extends PanelMap>(
       for (const name of panelNames) {
         const current = search[name]
         const prev = prevRefs.current[name]
+
         if (current && current !== prev) {
           const router = getRouter(name)
+
           if (router) panelNavigate(router, current)
         }
+
         prevRefs.current[name] = current
       }
     }, [search, getRouter])
@@ -88,38 +98,45 @@ export function createSystemProvider<TPanels extends PanelMap>(
         onNavigate?.(name, 'navigate', panelValue)
 
         const router = getRouter(name)
+
         if (router) panelNavigate(router, panelValue)
 
-        const nextSearch: Record<string, string | undefined> = {}
-        for (const key of panelNames) {
-          if (key === name) {
-            nextSearch[key] = panelValue
-          } else {
-            nextSearch[key] = search[key]
-          }
-        }
         navigate({
           to: '/',
-          search: nextSearch as Record<string, string>,
+          search: (previous) => {
+            const current = panelSearchSchema.parse(previous)
+            const nextSearch: Record<string, string | undefined> = {}
+
+            for (const key of panelNames) {
+              nextSearch[key] = key === name ? panelValue : current[key]
+            }
+
+            return nextSearch
+          },
         })
       },
-      [navigate, search, getRouter],
+      [navigate, getRouter],
     )
 
     const closePanel = useCallback(
       (name: string) => {
         onNavigate?.(name, 'close')
 
-        const nextSearch: Record<string, string | undefined> = {}
-        for (const key of panelNames) {
-          nextSearch[key] = key === name ? undefined : search[key]
-        }
         navigate({
           to: '/',
-          search: nextSearch as Record<string, string>,
+          search: (previous) => {
+            const current = panelSearchSchema.parse(previous)
+            const nextSearch: Record<string, string | undefined> = {}
+
+            for (const key of panelNames) {
+              nextSearch[key] = key === name ? undefined : current[key]
+            }
+
+            return nextSearch
+          },
         })
       },
-      [navigate, search],
+      [navigate],
     )
 
     const isPanelOpen = useCallback(
@@ -131,12 +148,16 @@ export function createSystemProvider<TPanels extends PanelMap>(
       (to: string) => {
         onNavigate?.('main', 'navigate', to)
         const clearSearch: Record<string, string | undefined> = {}
+
         for (const key of panelNames) {
           clearSearch[key] = undefined
         }
+
+        // SAFETY: to is a resolved main-router pathname; the global registry only
+        // describes the demo tree, while this factory accepts any main router.
         navigate({
           to: to as '/',
-          search: clearSearch as unknown as Record<string, string>,
+          search: clearSearch,
         })
       },
       [navigate],
@@ -176,8 +197,10 @@ export function createSystemProvider<TPanels extends PanelMap>(
 
 export function useCurrentPanel(): PanelIdentity {
   const ctx = useContext(PanelIdentityContext)
+
   if (!ctx) {
     throw new Error('useCurrentPanel must be used inside a panel Outlet')
   }
+
   return ctx
 }

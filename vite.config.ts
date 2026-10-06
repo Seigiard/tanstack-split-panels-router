@@ -12,6 +12,7 @@ marked.use(
     langPrefix: 'hljs language-',
     highlight(code, lang) {
       const language = hljs.getLanguage(lang) ? lang : 'plaintext'
+
       return hljs.highlight(code, { language }).value
     },
   }),
@@ -23,6 +24,7 @@ function markdown(): Plugin {
     async transform(code, id) {
       if (!id.endsWith('.md')) return
       const html = await marked(code)
+
       return { code: `export default ${JSON.stringify(html)}`, map: null }
     },
   }
@@ -30,6 +32,7 @@ function markdown(): Plugin {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '')
+
   return {
     server: {
       port: 3000,

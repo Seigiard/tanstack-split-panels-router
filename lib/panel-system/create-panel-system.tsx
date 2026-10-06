@@ -3,9 +3,16 @@ import type {
   PanelSystem,
   PanelSystemOptions,
   UsePanelReturn,
+  PanelControl,
+  PanelControls,
 } from './types'
 import { useContext } from 'react'
 
+import {
+  panelSearchSchema,
+  type PanelSearchInput,
+  type PanelSearch,
+} from './search-schema'
 import { createMainLink, createSystemLink } from './system-link'
 import {
   createSystemProvider,
@@ -23,24 +30,26 @@ export function createPanelSystem<TPanels extends PanelMap>(
   const Link = createSystemLink<TPanels>(panelNames)
   const MainLink = createMainLink(panelNames)
 
-  function validateSearch(
-    search: Record<string, unknown>,
-  ): Record<string, string | undefined> {
-    const result: Record<string, string | undefined> = {}
+  function validateSearch(search: PanelSearchInput) {
+    const parsed = panelSearchSchema.parse(search)
+    const result: PanelSearch = {}
+
     for (const name of panelNames) {
-      result[name] =
-        typeof search[name] === 'string' ? (search[name] as string) : undefined
+      result[name] = parsed[name]
     }
+
     return result
   }
 
   function usePanel(): UsePanelReturn<TPanels> {
     const ctx = useContext(PanelSystemContext)
+
     if (!ctx) {
       throw new Error('usePanel must be used within panels.Provider')
     }
 
-    const result: Record<string, unknown> = {}
+    const result: Record<string, PanelControl> = {}
+
     for (const name of panelNames) {
       result[name] = {
         navigate: (to: string, opts?: { search?: Record<string, string> }) =>
@@ -50,10 +59,14 @@ export function createPanelSystem<TPanels extends PanelMap>(
       }
     }
 
-    result.isPanelMode = panelNames.some((name) => ctx.isPanelOpen(name))
-    result.navigateMain = ctx.navigateMain
+    // SAFETY: every key of panels has a PanelControl built in the loop above.
+    const controls = result as PanelControls<TPanels>
 
-    return result as UsePanelReturn<TPanels>
+    return {
+      ...controls,
+      isPanelMode: panelNames.some((name) => ctx.isPanelOpen(name)),
+      navigateMain: ctx.navigateMain,
+    }
   }
 
   return {

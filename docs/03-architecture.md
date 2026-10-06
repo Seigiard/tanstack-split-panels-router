@@ -536,6 +536,8 @@ type MySystemLinkProps = {
 
 ### System Link Click
 
+Each panel action uses a functional main-router search updater. It reads the latest URL values, so sequential actions from one click preserve earlier changes before React renders again.
+
 ```
 1. User clicks <panels.Link left="/categories" right={false} />
 

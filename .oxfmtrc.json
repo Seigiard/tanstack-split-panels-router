@@ -21,5 +21,10 @@
       ["index", "index-type"]
     ]
   },
-  "ignorePatterns": ["**/node_modules/**", "**/dist/**", "**/*.d.ts"]
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/*.d.ts",
+    "tools/oxlint/anti-slop/**"
+  ]
 }

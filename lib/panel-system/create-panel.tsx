@@ -16,9 +16,11 @@ export function createPanel<TTree extends AnyRoute>(
 
   function Outlet(): React.ReactElement | null {
     const ctx = useContext(PanelSystemContext)
+
     if (!ctx) return null
 
     const router = ctx.getRouter(name)
+
     if (!router) return null
 
     return (
@@ -36,11 +38,13 @@ export function createPanel<TTree extends AnyRoute>(
 
   function useNav(): PanelNavReturn {
     const ctx = useContext(PanelSystemContext)
+
     if (!ctx) {
       throw new Error(
         `useNav for panel "${name}" must be used within panels.Provider`,
       )
     }
+
     return {
       navigate: (to, opts) => ctx.navigatePanel(name, to, opts),
       close: () => ctx.closePanel(name),
@@ -51,7 +55,7 @@ export function createPanel<TTree extends AnyRoute>(
   return {
     name,
     tree,
-    defaultPath: defaultPath as string,
+    defaultPath,
     getRouter,
     Outlet,
     Link,

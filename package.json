@@ -14,7 +14,8 @@
     "fix": "bun run format:fix && bun run lint:fix",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:types": "vitest run --typecheck"
+    "test:types": "vitest run --typecheck",
+    "lint:anti-slop": "oxlint --config .oxlintrc.anti-slop.json ."
   },
   "dependencies": {
     "@tanstack/react-router": "^1.157.16",
@@ -22,9 +23,11 @@
     "marked-highlight": "^2.2.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@oxlint/plugins": "1.87.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^22.14.0",
@@ -34,7 +37,7 @@
     "jsdom": "^28.0.0",
     "marked": "^17.0.2",
     "oxfmt": "^0.27.0",
-    "oxlint": "^1.42.0",
+    "oxlint": "1.87.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
     "vitest": "^4.0.18"

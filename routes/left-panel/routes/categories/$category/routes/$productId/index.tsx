@@ -10,6 +10,7 @@ export const productDetailRoute = createRoute({
   getParentRoute: () => categoryProductsRoute,
   path: '/$productId',
   staticData: {
+    // SAFETY: this route's loader returns Product; loaderData is absent while pending.
     breadcrumb: ({ loaderData }) => (loaderData as Product | undefined)?.title,
   },
   beforeLoad: ({ cause, params }) =>
@@ -21,6 +22,7 @@ export const productDetailRoute = createRoute({
     const res = await fetch(
       `https://dummyjson.com/products/${params.productId}`,
     )
+
     return res.json()
   },
   component: ProductDetailView,

@@ -13,6 +13,7 @@ export const postDetailRoute = createRoute({
     beforeLoadLog(cause, `right:/${params.postId}`),
   loader: async ({ params }): Promise<{ post: Post; comments: Comment[] }> => {
     await wait(1000)
+
     const [post, commentsData] = await Promise.all([
       fetch(`https://dummyjson.com/posts/${params.postId}`).then((r) =>
         r.json(),
@@ -21,6 +22,7 @@ export const postDetailRoute = createRoute({
         r.json(),
       ),
     ])
+
     return { post, comments: commentsData.comments }
   },
   component: PostDetailView,
@@ -28,6 +30,7 @@ export const postDetailRoute = createRoute({
 
 function PostDetailView() {
   const { post, comments } = usePanelLoaderData({ from: postDetailRoute })
+
   return (
     <div>
       <p>
