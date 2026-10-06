@@ -101,40 +101,42 @@ export function createSystemProvider<TPanels extends PanelMap>(
 
         if (router) panelNavigate(router, panelValue)
 
-        const nextSearch: Record<string, string | undefined> = {}
-
-        for (const key of panelNames) {
-          if (key === name) {
-            nextSearch[key] = panelValue
-          } else {
-            nextSearch[key] = search[key]
-          }
-        }
-
         navigate({
           to: '/',
-          search: nextSearch,
+          search: (previous) => {
+            const current = panelSearchSchema.parse(previous)
+            const nextSearch: Record<string, string | undefined> = {}
+
+            for (const key of panelNames) {
+              nextSearch[key] = key === name ? panelValue : current[key]
+            }
+
+            return nextSearch
+          },
         })
       },
-      [navigate, search, getRouter],
+      [navigate, getRouter],
     )
 
     const closePanel = useCallback(
       (name: string) => {
         onNavigate?.(name, 'close')
 
-        const nextSearch: Record<string, string | undefined> = {}
-
-        for (const key of panelNames) {
-          nextSearch[key] = key === name ? undefined : search[key]
-        }
-
         navigate({
           to: '/',
-          search: nextSearch,
+          search: (previous) => {
+            const current = panelSearchSchema.parse(previous)
+            const nextSearch: Record<string, string | undefined> = {}
+
+            for (const key of panelNames) {
+              nextSearch[key] = key === name ? undefined : current[key]
+            }
+
+            return nextSearch
+          },
         })
       },
-      [navigate, search],
+      [navigate],
     )
 
     const isPanelOpen = useCallback(

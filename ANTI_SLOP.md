@@ -35,6 +35,8 @@ These exit codes describe the installation baseline. The cleanup also removes th
 - Open dictionary casts and the chained assertion are removed. Remaining registry-bridge assertions state the panel route invariant with `SAFETY:` comments.
 - Whitespace is committed separately. A second fix/format pass leaves the source diff unchanged.
 
+System.Link regression tests use real main and memory routers. They cover opening both panels, navigate/close in either order, closing both, object targets, preservation of an unspecified panel, and agreement between ordinary clicks and href navigation. The old source fails the multi-panel cases; functional search updaters make them pass with unchanged expected results.
+
 ## Scope
 
 Owned source and tests are included in cleanup. Vendored plugin source, installed dependencies, generated output, and agent tooling are excluded from the check. Existing rules are not suppressed. The separate config avoids inheriting broad legacy ignores that would exclude owned JavaScript or tests.
